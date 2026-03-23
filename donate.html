@@ -117,7 +117,7 @@
                     <option value="livelihood">Economic Empowerment Project</option>
                   </select>
                 </div>
-                <button type="button" class="btn-wei-primary d-block w-100 text-center" onclick="nextStep(2)">Continue</button>
+                <button type="button" id="btn-step1-next" class="btn-wei-primary d-block w-100 text-center">Continue</button>
               </div>
 
               <!-- Step 2 -->
@@ -147,8 +147,8 @@
                   <img id="receipt-preview" class="wei-receipt-preview">
                 </div>
                 <div class="d-flex justify-content-between">
-                  <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
-                  <button type="button" class="btn-wei-primary" onclick="nextStep(3)">Continue</button>
+                  <button type="button" id="btn-step2-back" class="btn btn-secondary">Back</button>
+                  <button type="button" id="btn-step2-next" class="btn-wei-primary">Continue</button>
                 </div>
               </div>
 
@@ -177,7 +177,7 @@
                   <label class="form-check-label" for="anonymous">Make my donation anonymous</label>
                 </div>
                 <div class="d-flex justify-content-between">
-                  <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                  <button type="button" id="btn-step3-back" class="btn btn-secondary">Back</button>
                   <button type="submit" class="btn-wei-primary" id="submit-btn">Submit Donation</button>
                 </div>
               </div>
@@ -343,11 +343,14 @@
     } catch (e) {}
     const container = document.getElementById('payment-methods-container');
     container.innerHTML = methods.map(m =>
-      `<div class="wei-payment-option" onclick="selectPayment(this,'${m.id}')">
+      `<div class="wei-payment-option" data-method="${m.id}">
         <h5>${m.title}</h5>
         ${m.details.map(d => `<p><strong>${d.label}:</strong> ${d.value}</p>`).join('')}
       </div>`
     ).join('');
+    container.querySelectorAll('.wei-payment-option').forEach(function(el) {
+      el.addEventListener('click', function() { selectPayment(this, this.dataset.method); });
+    });
   }
   loadPaymentMethods();
 
@@ -439,6 +442,11 @@
     } catch (e) {}
   }
   loadRecentDonors();
+
+  document.getElementById('btn-step1-next').addEventListener('click', function() { nextStep(2); });
+  document.getElementById('btn-step2-back').addEventListener('click', function() { prevStep(1); });
+  document.getElementById('btn-step2-next').addEventListener('click', function() { nextStep(3); });
+  document.getElementById('btn-step3-back').addEventListener('click', function() { prevStep(2); });
 </script>
 
 </body>
