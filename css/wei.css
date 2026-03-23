@@ -183,19 +183,53 @@ img {
 .wei-logo a {
   display: flex;
   align-items: center;
+  gap: 10px;
   text-decoration: none;
 }
 
 .wei-logo-img {
-  height: 48px;
+  height: 44px;
   width: auto;
   display: block;
   filter: drop-shadow(0 1px 4px rgba(0,0,0,0.35));
   transition: var(--wei-transition);
+  border-radius: 4px;
 }
 
 .wei-navbar.scrolled .wei-logo-img {
   filter: none;
+}
+
+.wei-logo-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1;
+}
+
+.wei-logo-main {
+  font-family: var(--wei-font-heading);
+  font-size: 26px;
+  color: #fff;
+  font-weight: bold;
+  line-height: 1;
+  transition: var(--wei-transition);
+}
+
+.wei-logo-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 300;
+  display: block;
+  transition: var(--wei-transition);
+}
+
+.wei-navbar.scrolled .wei-logo-main {
+  color: var(--wei-primary);
+}
+
+.wei-navbar.scrolled .wei-logo-sub {
+  color: var(--wei-gray);
 }
 
 /* Mobile nav logo */
@@ -866,29 +900,6 @@ img {
   opacity: 1;
 }
 
-.wei-partner-fallback {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 4px;
-  width: 100%;
-}
-
-.wei-partner-fallback i {
-  font-size: 32px;
-  color: var(--wei-primary);
-  opacity: 0.7;
-}
-
-.wei-partner-fallback span {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--wei-gray);
-  line-height: 1.3;
-  text-align: center;
-  word-break: break-word;
-}
 
 /* ============================================================
    TEAM CARDS
