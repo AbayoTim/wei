@@ -22,6 +22,9 @@ const mediaRoutes = require('./routes/media');
 
 const app = express();
 
+// Trust the first proxy (required on Render, Railway, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Ensure required directories exist
 const dirs = [
   path.join(__dirname, 'data'),
