@@ -43,14 +43,15 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc:  ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
-      styleSrc:   ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
-      imgSrc:     ["'self'", "data:", "blob:"],
-      fontSrc:    ["'self'", "cdn.jsdelivr.net"],
-      connectSrc: ["'self'"],
-      objectSrc:  ["'none'"],
-      baseUri:    ["'self'"],
-      formAction: ["'self'"],
+      scriptSrc:     ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "https://esm.sh"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc:      ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+      imgSrc:        ["'self'", "data:", "blob:"],
+      fontSrc:       ["'self'", "cdn.jsdelivr.net"],
+      connectSrc:    ["'self'", "https://esm.sh"],
+      objectSrc:     ["'none'"],
+      baseUri:       ["'self'"],
+      formAction:    ["'self'"],
       frameAncestors: ["'none'"]
     }
   },
