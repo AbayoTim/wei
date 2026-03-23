@@ -182,32 +182,32 @@ img {
 /* Logo */
 .wei-logo a {
   display: flex;
-  align-items: baseline;
-  gap: 4px;
+  align-items: center;
   text-decoration: none;
 }
 
-.wei-logo-main {
-  font-family: var(--wei-font-heading);
-  font-size: 28px;
-  color: #fff;
-  font-weight: bold;
+.wei-logo-img {
+  height: 48px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.35));
   transition: var(--wei-transition);
 }
 
-.wei-logo-sub {
-  font-size: 13px;
-  color: rgba(255,255,255,0.8);
-  font-weight: 300;
-  transition: var(--wei-transition);
+.wei-navbar.scrolled .wei-logo-img {
+  filter: none;
 }
 
-.wei-navbar.scrolled .wei-logo-main {
-  color: var(--wei-primary);
+/* Mobile nav logo */
+.wei-mobile-nav-logo {
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 4px;
 }
 
-.wei-navbar.scrolled .wei-logo-sub {
-  color: var(--wei-gray);
+.wei-mobile-logo-img {
+  height: 40px;
+  width: auto;
 }
 
 /* Desktop Nav */
@@ -830,20 +830,64 @@ img {
    ============================================================ */
 .wei-partner-item {
   text-align: center;
-  padding: 20px;
+  padding: 16px 12px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: var(--wei-transition);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wei-partner-item a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .wei-partner-item img {
-  max-height: 70px;
+  max-height: 60px;
+  max-width: 100%;
   filter: grayscale(100%);
   opacity: 0.6;
   transition: var(--wei-transition);
 }
 
+.wei-partner-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
 .wei-partner-item:hover img {
   filter: none;
   opacity: 1;
+}
+
+.wei-partner-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  width: 100%;
+}
+
+.wei-partner-fallback i {
+  font-size: 32px;
+  color: var(--wei-primary);
+  opacity: 0.7;
+}
+
+.wei-partner-fallback span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--wei-gray);
+  line-height: 1.3;
+  text-align: center;
+  word-break: break-word;
 }
 
 /* ============================================================
@@ -1504,20 +1548,91 @@ textarea.form-control {
   .wei-menu-toggle { display: block; }
   .wei-mobile-nav  { display: block; }
 
+  .wei-logo-img { height: 40px; }
+
   .wei-hero-content h1 { font-size: 36px; }
   .wei-hero-content p  { font-size: 16px; }
 
-  .wei-page-hero { height: 280px; }
-  .wei-page-hero-content h1 { font-size: 32px; }
+  .wei-page-hero { height: 260px; }
+  .wei-page-hero-content h1 { font-size: 30px; }
 
   .wei-section { padding: 55px 0; }
   .wei-cta { flex-direction: column; text-align: center; }
+  .wei-cta h2 { font-size: 24px; }
 }
 
 @media (max-width: 767px) {
-  .wei-hero { height: 85vh; }
-  .wei-hero-content h1 { font-size: 30px; }
+  .wei-hero { height: 85vh; min-height: 500px; }
+  .wei-hero-content h1 { font-size: 28px; }
+  .wei-hero-content p  { font-size: 15px; margin-bottom: 24px; }
   .wei-program-tiles { margin-top: 0; }
-  .wei-section-title { font-size: 28px; }
-  .wei-footer { padding-top: 50px; }
+  .wei-section-title { font-size: 26px; }
+  .wei-section { padding: 48px 0; }
+  .wei-section-sm { padding: 36px 0; }
+  .wei-footer { padding-top: 48px; }
+
+  /* Page hero */
+  .wei-page-hero { height: 200px; }
+  .wei-page-hero-content h1 { font-size: 26px; }
+  .wei-page-hero-content p  { font-size: 14px; }
+
+  /* Donate box */
+  .wei-donate-box { padding: 24px 18px; }
+  .wei-donate-box h3 { font-size: 22px; }
+
+  /* CTA */
+  .wei-cta { padding: 28px 20px; }
+  .wei-cta h2 { font-size: 22px; }
+
+  /* Event cards */
+  .wei-event-meta { gap: 12px; }
+  .wei-event-date { min-width: 56px; padding: 10px; }
+  .wei-event-date-day { font-size: 22px; }
+  .wei-event-details h4 { font-size: 15px; }
+
+  /* Blog */
+  .wei-blog-meta-bar { gap: 10px; }
+  .wei-blog-date { min-width: 54px; padding: 8px 10px; }
+  .wei-blog-date-day { font-size: 20px; }
+  .wei-blog-info h3 { font-size: 16px; }
+
+  /* Feature items */
+  .wei-feature-num { width: 42px; height: 42px; font-size: 17px; }
+  .wei-feature-text h3 { font-size: 16px; }
+  .wei-feature-item { margin-bottom: 24px; }
+
+  /* Partners */
+  .wei-partner-fallback i { font-size: 26px; }
+  .wei-partner-fallback span { font-size: 10px; }
+
+  /* Newsletter in footer */
+  .input-group { flex-wrap: nowrap; }
+
+  /* Contact info box */
+  .wei-contact-info-box { padding: 24px 18px; }
+
+  /* Step indicator on donate */
+  .wei-step-line { max-width: 30px; }
+  .wei-step-num { width: 34px; height: 34px; font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+  .wei-logo-img { height: 36px; }
+  .wei-hero-content h1 { font-size: 24px; }
+  .wei-hero-content p  { font-size: 14px; }
+  .wei-section-title { font-size: 22px; }
+  .btn-wei-primary, .btn-wei-outline { padding: 9px 20px; font-size: 14px; }
+
+  /* Program tiles full height on tiny screens */
+  .wei-program-tile { height: 180px; }
+  .wei-program-tile-text h3 { font-size: 22px; }
+
+  /* Cause cards */
+  .wei-cause-card img { height: 170px; }
+
+  /* Amount buttons on donate */
+  .wei-amount-btn { min-width: 80px; font-size: 13px; }
+
+  /* Payment options */
+  .wei-payment-option { padding: 14px; }
 }
