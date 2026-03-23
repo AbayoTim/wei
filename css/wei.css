@@ -1,0 +1,1523 @@
+/*
+ * WEI Tanzania - Custom Stylesheet
+ * Women Empowerment Initiatives
+ * Copyright (c) Women Empowerment Initiatives (WEI). All rights reserved.
+ * Original work - no third-party template.
+ */
+
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --wei-primary: #00B0D8;
+  --wei-primary-dark: #0090B5;
+  --wei-tz-green: #1EB53A;
+  --wei-tz-yellow: #FCD116;
+  --wei-tz-black: #000000;
+  --wei-tz-blue: #00A3DD;
+  --wei-secondary: #28a745;
+  --wei-warning: #ffc107;
+  --wei-danger: #dc3545;
+  --wei-dark: #2d2d2d;
+  --wei-gray: #6c757d;
+  --wei-light: #f8f9fa;
+  --wei-white: #ffffff;
+  --wei-font-heading: 'Mansalva', cursive;
+  --wei-font-body: 'Roboto', sans-serif;
+  --wei-transition: all 0.3s ease;
+  --wei-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --wei-radius: 4px;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--wei-font-body);
+  color: var(--wei-dark);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--wei-primary);
+  text-decoration: none;
+  transition: var(--wei-transition);
+}
+
+a:hover {
+  color: var(--wei-primary-dark);
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+.wei-cursive {
+  font-family: var(--wei-font-heading);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-wei-primary {
+  background: var(--wei-primary);
+  color: #fff;
+  border: 2px solid var(--wei-primary);
+  padding: 10px 28px;
+  font-weight: 500;
+  border-radius: var(--wei-radius);
+  transition: var(--wei-transition);
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn-wei-primary:hover {
+  background: var(--wei-primary-dark);
+  border-color: var(--wei-primary-dark);
+  color: #fff;
+}
+
+.btn-wei-outline {
+  background: transparent;
+  color: var(--wei-primary);
+  border: 2px solid var(--wei-primary);
+  padding: 10px 28px;
+  font-weight: 500;
+  border-radius: var(--wei-radius);
+  transition: var(--wei-transition);
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn-wei-outline:hover {
+  background: var(--wei-primary);
+  color: #fff;
+}
+
+.btn-wei-donate {
+  background: #0090B5;
+  color: #fff;
+  border: 2px solid #0090B5;
+  padding: 8px 20px;
+  font-weight: 600;
+  border-radius: var(--wei-radius);
+  transition: var(--wei-transition);
+  display: inline-block;
+  font-size: 14px;
+}
+
+.btn-wei-donate:hover {
+  background: #007A9A;
+  border-color: #007A9A;
+  color: #fff;
+}
+
+/* Bootstrap .btn-primary override to match light-blue branding */
+.btn-primary {
+  background-color: var(--wei-primary) !important;
+  border-color: var(--wei-primary) !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  background-color: var(--wei-primary-dark) !important;
+  border-color: var(--wei-primary-dark) !important;
+  color: #fff !important;
+}
+
+.btn-outline-primary {
+  color: var(--wei-primary) !important;
+  border-color: var(--wei-primary) !important;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary.selected {
+  background-color: var(--wei-primary) !important;
+  color: #fff !important;
+}
+
+/* ============================================================
+   LAYOUT WRAPPER
+   ============================================================ */
+.wei-wrap {
+  position: relative;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.wei-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 18px 0;
+  transition: var(--wei-transition);
+  background: transparent;
+}
+
+.wei-navbar.scrolled {
+  background: #fff;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  padding: 12px 0;
+}
+
+.wei-navbar .container {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo */
+.wei-logo a {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.wei-logo-main {
+  font-family: var(--wei-font-heading);
+  font-size: 28px;
+  color: #fff;
+  font-weight: bold;
+  transition: var(--wei-transition);
+}
+
+.wei-logo-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 300;
+  transition: var(--wei-transition);
+}
+
+.wei-navbar.scrolled .wei-logo-main {
+  color: var(--wei-primary);
+}
+
+.wei-navbar.scrolled .wei-logo-sub {
+  color: var(--wei-gray);
+}
+
+/* Desktop Nav */
+.wei-nav-menu {
+  display: flex;
+  list-style: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+  gap: 4px;
+}
+
+.wei-nav-menu li a {
+  color: rgba(255,255,255,0.9);
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  display: block;
+  border-radius: var(--wei-radius);
+  transition: var(--wei-transition);
+}
+
+.wei-nav-menu li a:hover,
+.wei-nav-menu li.active a {
+  color: #fff;
+  background: rgba(255,255,255,0.15);
+}
+
+.wei-navbar.scrolled .wei-nav-menu li a {
+  color: var(--wei-dark);
+}
+
+.wei-navbar.scrolled .wei-nav-menu li a:hover,
+.wei-navbar.scrolled .wei-nav-menu li.active a {
+  color: var(--wei-primary);
+  background: rgba(0,176,216,0.08);
+}
+
+/* Social Icons in Header */
+.wei-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.wei-header-social {
+  color: rgba(255,255,255,0.8);
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--wei-transition);
+}
+
+.wei-header-social:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+}
+
+.wei-navbar.scrolled .wei-header-social {
+  color: var(--wei-gray);
+}
+
+.wei-navbar.scrolled .wei-header-social:hover {
+  color: var(--wei-primary);
+  background: rgba(0,176,216,0.1);
+}
+
+/* Mobile toggle */
+.wei-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 4px;
+  transition: var(--wei-transition);
+}
+
+.wei-navbar.scrolled .wei-menu-toggle {
+  color: var(--wei-dark);
+}
+
+/* Mobile Menu */
+.wei-mobile-nav {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+  z-index: 1100;
+  transition: right 0.3s ease;
+  padding: 60px 0 30px;
+  overflow-y: auto;
+}
+
+.wei-mobile-nav.open {
+  right: 0;
+}
+
+.wei-mobile-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wei-mobile-nav ul li a {
+  display: block;
+  padding: 14px 24px;
+  color: var(--wei-dark);
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+  transition: var(--wei-transition);
+}
+
+.wei-mobile-nav ul li a:hover,
+.wei-mobile-nav ul li.active a {
+  color: var(--wei-primary);
+  background: rgba(0,176,216,0.05);
+}
+
+.wei-mobile-nav-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--wei-dark);
+}
+
+.wei-mobile-donate {
+  padding: 16px 24px;
+}
+
+.wei-overlay-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1050;
+}
+
+.wei-overlay-bg.active {
+  display: block;
+}
+
+/* ============================================================
+   HERO SECTION (Homepage)
+   ============================================================ */
+.wei-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.wei-hero-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.wei-hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.wei-hero-slide.active {
+  opacity: 1;
+}
+
+.wei-hero-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+}
+
+.wei-hero-content {
+  position: relative;
+  z-index: 4;
+  color: #fff;
+  max-width: 680px;
+}
+
+.wei-hero-content h1 {
+  font-family: var(--wei-font-heading);
+  font-size: 52px;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.wei-hero-content p {
+  font-size: 18px;
+  margin-bottom: 32px;
+  color: rgba(255,255,255,0.9);
+}
+
+/* Tanzania flag diagonal design inside hero */
+/* The Tanzania flag has: green (top-left), yellow/black/yellow diagonal band, blue (bottom-right) */
+
+/* Green triangle — top-left corner */
+.wei-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 220px 180px 0 0;
+  border-color: rgba(30,181,58,0.45) transparent transparent transparent;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Blue triangle — bottom-right corner */
+.wei-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 220px 180px;
+  border-color: transparent transparent rgba(0,163,221,0.45) transparent;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Diagonal band: yellow, black, yellow — runs from bottom-left to top-right */
+.wei-hero-flag-band {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to top right,
+    transparent 38%,
+    rgba(252,209,22,0.55) 38%, rgba(252,209,22,0.55) 41%,
+    rgba(0,0,0,0.55)     41%, rgba(0,0,0,0.55)     59%,
+    rgba(252,209,22,0.55) 59%, rgba(252,209,22,0.55) 62%,
+    transparent 62%
+  );
+}
+
+.wei-hero-dots {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+}
+
+.wei-hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+  border: none;
+  transition: var(--wei-transition);
+}
+
+.wei-hero-dot.active {
+  background: #fff;
+  width: 24px;
+  border-radius: 5px;
+}
+
+/* ============================================================
+   PAGE HERO (Inner pages)
+   ============================================================ */
+.wei-page-hero {
+  position: relative;
+  height: 360px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+}
+
+.wei-page-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+.wei-page-hero-content {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+}
+
+.wei-page-hero-content h1 {
+  font-family: var(--wei-font-heading);
+  font-size: 42px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.wei-page-hero-content p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.wei-section {
+  padding: 80px 0;
+}
+
+.wei-section-sm {
+  padding: 50px 0;
+}
+
+.wei-section-title {
+  font-family: var(--wei-font-heading);
+  font-size: 36px;
+  color: var(--wei-dark);
+  margin-bottom: 16px;
+}
+
+.wei-section-subtitle {
+  color: var(--wei-gray);
+  font-size: 15px;
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   PROGRAM TILES (Homepage feature blocks)
+   ============================================================ */
+.wei-program-tiles {
+  margin-top: -30px;
+  position: relative;
+  z-index: 5;
+}
+
+.wei-program-tile {
+  position: relative;
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: var(--wei-radius);
+  transition: var(--wei-transition);
+  text-decoration: none;
+}
+
+.wei-program-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transition: var(--wei-transition);
+}
+
+.wei-program-tile-danger::after { background: rgba(220,53,69,0.7); }
+.wei-program-tile-success::after { background: rgba(40,167,69,0.7); }
+.wei-program-tile-warning::after { background: rgba(255,193,7,0.7); }
+
+.wei-program-tile:hover::after {
+  opacity: 0.85;
+}
+
+.wei-program-tile-text {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+  color: #fff;
+}
+
+.wei-program-tile-text span {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.wei-program-tile-text h3 {
+  font-family: var(--wei-font-heading);
+  font-size: 28px;
+  margin: 0;
+  color: #fff;
+}
+
+/* ============================================================
+   CAUSE CARDS
+   ============================================================ */
+.wei-cause-card {
+  background: #fff;
+  border-radius: var(--wei-radius);
+  overflow: hidden;
+  box-shadow: var(--wei-shadow);
+  height: 100%;
+  transition: var(--wei-transition);
+}
+
+.wei-cause-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.wei-cause-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.wei-cause-progress-wrap {
+  padding: 10px 16px;
+  background: var(--wei-light);
+}
+
+.wei-cause-progress-label {
+  font-size: 12px;
+  color: var(--wei-gray);
+  margin-bottom: 5px;
+}
+
+.wei-cause-progress-bar {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.wei-cause-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+.wei-cause-progress-fill.primary { background: var(--wei-primary); }
+.wei-cause-progress-fill.success { background: var(--wei-secondary); }
+.wei-cause-progress-fill.warning { background: var(--wei-warning); }
+.wei-cause-progress-fill.danger  { background: var(--wei-danger); }
+
+.wei-cause-body {
+  padding: 16px;
+}
+
+.wei-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.wei-badge-primary { background: rgba(0,176,216,0.12); color: var(--wei-primary); }
+.wei-badge-success { background: rgba(40,167,69,0.12); color: var(--wei-secondary); }
+.wei-badge-warning { background: rgba(255,193,7,0.15); color: #856404; }
+.wei-badge-danger  { background: rgba(220,53,69,0.12); color: var(--wei-danger); }
+
+.wei-cause-raised {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+/* ============================================================
+   WHY CHOOSE WEI - FEATURES
+   ============================================================ */
+.wei-features-bg {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.wei-features-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,60,90,0.85);
+}
+
+.wei-features-bg .container {
+  position: relative;
+  z-index: 2;
+}
+
+.wei-feature-item {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.wei-feature-num {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  background: var(--wei-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.wei-feature-text h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.wei-feature-text p {
+  color: rgba(255,255,255,0.75);
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+.wei-event-card {
+  margin-bottom: 30px;
+}
+
+.wei-event-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: var(--wei-radius);
+  margin-bottom: 16px;
+}
+
+.wei-event-meta {
+  display: flex;
+  gap: 16px;
+}
+
+.wei-event-date {
+  flex-shrink: 0;
+  background: var(--wei-primary);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: var(--wei-radius);
+  text-align: center;
+  min-width: 64px;
+}
+
+.wei-event-date-day {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+}
+
+.wei-event-date-month {
+  font-size: 12px;
+  display: block;
+  margin-top: 2px;
+}
+
+.wei-event-details h4 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.wei-event-details h4 a {
+  color: var(--wei-dark);
+}
+
+.wei-event-details h4 a:hover {
+  color: var(--wei-primary);
+}
+
+.wei-event-info {
+  font-size: 13px;
+  color: var(--wei-gray);
+  margin-bottom: 6px;
+}
+
+.wei-event-info i {
+  margin-right: 4px;
+}
+
+/* ============================================================
+   PARTNERS
+   ============================================================ */
+.wei-partner-item {
+  text-align: center;
+  padding: 20px;
+  transition: var(--wei-transition);
+}
+
+.wei-partner-item img {
+  max-height: 70px;
+  filter: grayscale(100%);
+  opacity: 0.6;
+  transition: var(--wei-transition);
+}
+
+.wei-partner-item:hover img {
+  filter: none;
+  opacity: 1;
+}
+
+/* ============================================================
+   TEAM CARDS
+   ============================================================ */
+.wei-team-card {
+  background: #fff;
+  border-radius: var(--wei-radius);
+  overflow: hidden;
+  box-shadow: var(--wei-shadow);
+  text-align: center;
+  transition: var(--wei-transition);
+  height: 100%;
+}
+
+.wei-team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.wei-team-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+.wei-team-card-body {
+  padding: 20px;
+}
+
+.wei-team-card-body .position {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--wei-primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.wei-team-card-body h4 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.wei-team-card-body p {
+  font-size: 13px;
+  color: var(--wei-gray);
+  margin-bottom: 10px;
+}
+
+/* ============================================================
+   DONATE SECTION
+   ============================================================ */
+.wei-donate-box {
+  background: #fff;
+  padding: 32px;
+  box-shadow: var(--wei-shadow);
+}
+
+.wei-donate-box h3 {
+  font-family: var(--wei-font-heading);
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   CTA BAND
+   ============================================================ */
+.wei-cta {
+  background: var(--wei-light);
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-radius: var(--wei-radius);
+}
+
+.wei-cta h2 {
+  font-family: var(--wei-font-heading);
+  font-size: 28px;
+  margin: 0;
+}
+
+/* ============================================================
+   ABOUT - MISSION/VISION
+   ============================================================ */
+.wei-about-section img {
+  border-radius: var(--wei-radius);
+}
+
+.wei-values-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wei-values-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.wei-values-list li:last-child {
+  border-bottom: none;
+}
+
+.wei-values-list li i {
+  color: var(--wei-primary);
+  margin-right: 8px;
+}
+
+/* ============================================================
+   AREAS OF OPERATION
+   ============================================================ */
+.wei-area-card {
+  background: var(--wei-light);
+  padding: 32px 20px;
+  text-align: center;
+  border-radius: var(--wei-radius);
+  height: 100%;
+  transition: var(--wei-transition);
+}
+
+.wei-area-card:hover {
+  background: #fff;
+  box-shadow: var(--wei-shadow);
+}
+
+.wei-area-card i {
+  font-size: 42px;
+  color: var(--wei-primary);
+  margin-bottom: 16px;
+}
+
+.wei-area-card h4 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   BLOG CARDS
+   ============================================================ */
+.wei-blog-card {
+  margin-bottom: 40px;
+}
+
+.wei-blog-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: var(--wei-radius);
+  margin-bottom: 16px;
+}
+
+.wei-blog-meta-bar {
+  display: flex;
+  gap: 16px;
+}
+
+.wei-blog-date {
+  flex-shrink: 0;
+  background: var(--wei-primary);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: var(--wei-radius);
+  text-align: center;
+  min-width: 60px;
+}
+
+.wei-blog-date-day {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+}
+
+.wei-blog-date-month {
+  font-size: 11px;
+  display: block;
+  margin-top: 2px;
+}
+
+.wei-blog-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.wei-blog-info h3 a {
+  color: var(--wei-dark);
+}
+
+.wei-blog-info h3 a:hover {
+  color: var(--wei-primary);
+}
+
+.wei-blog-category {
+  font-size: 12px;
+  color: var(--wei-gray);
+}
+
+.wei-blog-category i {
+  margin-right: 4px;
+}
+
+/* ============================================================
+   SINGLE POST
+   ============================================================ */
+.wei-post-content {
+  line-height: 1.8;
+}
+
+.wei-post-content h2, .wei-post-content h3, .wei-post-content h4 {
+  font-family: var(--wei-font-heading);
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.wei-post-content img {
+  border-radius: var(--wei-radius);
+  margin: 20px 0;
+}
+
+.wei-post-content blockquote {
+  border-left: 4px solid var(--wei-primary);
+  padding: 16px 20px;
+  background: var(--wei-light);
+  margin: 24px 0;
+  font-style: italic;
+  color: var(--wei-gray);
+}
+
+/* ============================================================
+   CONTACT PAGE
+   ============================================================ */
+.wei-contact-info-box {
+  background: var(--wei-light);
+  padding: 32px;
+  border-radius: var(--wei-radius);
+  height: 100%;
+}
+
+.wei-contact-info-box h3 {
+  font-family: var(--wei-font-heading);
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+
+.wei-contact-item {
+  margin-bottom: 20px;
+}
+
+.wei-contact-item .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--wei-gray);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.wei-contact-item a {
+  color: var(--wei-dark);
+}
+
+.wei-contact-item a:hover {
+  color: var(--wei-primary);
+}
+
+/* ============================================================
+   DONATION FORM STEPS
+   ============================================================ */
+.wei-step-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 36px;
+}
+
+.wei-step-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #888;
+  transition: var(--wei-transition);
+  font-size: 15px;
+}
+
+.wei-step-num.active {
+  background: var(--wei-primary);
+  color: #fff;
+}
+
+.wei-step-num.done {
+  background: var(--wei-secondary);
+  color: #fff;
+}
+
+.wei-step-line {
+  flex: 1;
+  height: 2px;
+  background: #e0e0e0;
+  max-width: 60px;
+}
+
+.wei-donation-step {
+  display: none;
+}
+
+.wei-donation-step.active {
+  display: block;
+}
+
+.wei-payment-option {
+  border: 2px solid #e0e0e0;
+  border-radius: var(--wei-radius);
+  padding: 18px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: var(--wei-transition);
+}
+
+.wei-payment-option:hover, .wei-payment-option.selected {
+  border-color: var(--wei-primary);
+  background: rgba(0,176,216,0.04);
+}
+
+.wei-payment-option h5 {
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.wei-payment-option p {
+  margin-bottom: 2px;
+  font-size: 13px;
+  color: var(--wei-gray);
+}
+
+.wei-amount-btn {
+  margin: 4px;
+  min-width: 100px;
+}
+
+.wei-amount-btn.selected {
+  background: var(--wei-primary);
+  color: #fff;
+  border-color: var(--wei-primary);
+}
+
+/* ============================================================
+   NEWSLETTER
+   ============================================================ */
+.wei-newsletter-section {
+  background: var(--wei-light);
+}
+
+.wei-newsletter-form .input-group {
+  max-width: 460px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.wei-footer {
+  background: #fff;
+  padding-top: 70px;
+  border-top: 1px solid #eee;
+}
+
+.wei-footer-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--wei-dark);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wei-footer p {
+  color: var(--wei-gray);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.wei-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wei-footer-links li {
+  margin-bottom: 8px;
+}
+
+.wei-footer-links li a {
+  color: var(--wei-gray);
+  font-size: 14px;
+  transition: var(--wei-transition);
+}
+
+.wei-footer-links li a:hover {
+  color: var(--wei-primary);
+  padding-left: 4px;
+}
+
+.wei-footer-contact p {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.wei-footer-contact p i {
+  color: var(--wei-primary);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.wei-footer-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.wei-footer-social a {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--wei-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wei-gray);
+  font-size: 15px;
+  transition: var(--wei-transition);
+}
+
+.wei-footer-social a:hover {
+  background: var(--wei-primary);
+  color: #fff;
+}
+
+.wei-footer-bottom {
+  border-top: 1px solid #eee;
+  padding: 24px 0;
+  margin-top: 50px;
+  text-align: center;
+}
+
+.wei-footer-bottom p {
+  margin: 0;
+  color: var(--wei-gray);
+  font-size: 13px;
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-control {
+  border-radius: var(--wei-radius);
+  border-color: #ddd;
+  font-size: 14px;
+  padding: 10px 14px;
+  transition: var(--wei-transition);
+}
+
+.form-control:focus {
+  border-color: var(--wei-primary);
+  box-shadow: 0 0 0 3px rgba(0,176,216,0.2);
+}
+
+/* ---- Custom Select / Dropdown -------------------------------- */
+
+/* Form selects: donate & contact pages */
+select.wei-select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  height: auto !important;
+  padding: 10px 44px 10px 14px !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--wei-dark) !important;
+  background-color: #fff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%2300B0D8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 20px 20px !important;
+  border: 1.5px solid #ddd !important;
+  border-radius: var(--wei-radius) !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+select.wei-select:hover {
+  border-color: var(--wei-primary) !important;
+}
+
+select.wei-select:focus {
+  border-color: var(--wei-primary) !important;
+  box-shadow: 0 0 0 3px rgba(0,176,216,0.18) !important;
+  outline: none !important;
+}
+
+/* Pill-style filter selects (blog/causes filter bar) */
+.wei-filter-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 9px 40px 9px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--wei-dark);
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%2300B0D8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 20px 20px;
+  border: 1.5px solid #ddd;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--wei-transition);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.wei-filter-select:hover {
+  border-color: var(--wei-primary);
+}
+
+.wei-filter-select:focus {
+  border-color: var(--wei-primary);
+  box-shadow: 0 0 0 3px rgba(0,176,216,0.18);
+  outline: none;
+}
+
+/* ---- Textarea ------------------------------------------------- */
+textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   IMPACT NUMBERS SIDEBAR (Donate page)
+   ============================================================ */
+.wei-impact-box {
+  background: var(--wei-light);
+  padding: 28px;
+  border-radius: var(--wei-radius);
+}
+
+.wei-impact-box h4 {
+  font-family: var(--wei-font-heading);
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.wei-impact-item {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.wei-impact-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.wei-impact-item h5 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--wei-primary);
+  margin-bottom: 2px;
+}
+
+.wei-impact-item p {
+  font-size: 13px;
+  color: var(--wei-gray);
+  margin: 0;
+}
+
+/* ============================================================
+   RECEIPT PREVIEW
+   ============================================================ */
+.wei-receipt-preview {
+  max-width: 200px;
+  max-height: 200px;
+  margin-top: 10px;
+  border-radius: var(--wei-radius);
+  display: none;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+.wei-alert {
+  padding: 14px 18px;
+  border-radius: var(--wei-radius);
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.wei-alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.wei-alert-danger  { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.wei-alert-info    { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.wei-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.wei-pagination a {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--wei-radius);
+  border: 1px solid #ddd;
+  color: var(--wei-dark);
+  font-size: 14px;
+  transition: var(--wei-transition);
+}
+
+.wei-pagination a:hover,
+.wei-pagination a.active {
+  background: var(--wei-primary);
+  color: #fff;
+  border-color: var(--wei-primary);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 991px) {
+  .wei-nav-desktop { display: none !important; }
+  .wei-menu-toggle { display: block; }
+  .wei-mobile-nav  { display: block; }
+
+  .wei-hero-content h1 { font-size: 36px; }
+  .wei-hero-content p  { font-size: 16px; }
+
+  .wei-page-hero { height: 280px; }
+  .wei-page-hero-content h1 { font-size: 32px; }
+
+  .wei-section { padding: 55px 0; }
+  .wei-cta { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 767px) {
+  .wei-hero { height: 85vh; }
+  .wei-hero-content h1 { font-size: 30px; }
+  .wei-program-tiles { margin-top: 0; }
+  .wei-section-title { font-size: 28px; }
+  .wei-footer { padding-top: 50px; }
+}

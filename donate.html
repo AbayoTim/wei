@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Donate - Women Empowerment Initiatives (WEI)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Support Women Empowerment Initiatives (WEI) with your donation. Help empower women and transform communities in Tanzania.">
+
+  <link href="https://fonts.googleapis.com/css2?family=Mansalva&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/wei.css">
+</head>
+
+<body>
+<div class="wei-wrap">
+
+  <div class="wei-overlay-bg"></div>
+  <nav class="wei-mobile-nav">
+    <button class="wei-mobile-nav-close"><i class="bi bi-x-lg"></i></button>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="causes.html">Our Programs</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="wei-mobile-donate mt-3">
+      <a href="donate.html" class="btn-wei-donate d-block text-center">Donate Now</a>
+    </div>
+  </nav>
+
+  <header class="wei-navbar scrolled">
+    <div class="container">
+      <div class="wei-logo mr-auto">
+        <a href="index.html">
+          <span class="wei-logo-main">WEI</span>
+          <span class="wei-logo-sub">Tanzania</span>
+        </a>
+      </div>
+      <ul class="wei-nav-menu wei-nav-desktop mb-0">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="causes.html">Our Programs</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="wei-header-actions wei-nav-desktop">
+        <a href="https://facebook.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-facebook"></i></a>
+        <a href="https://twitter.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-twitter-x"></i></a>
+        <a href="https://instagram.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-instagram"></i></a>
+        <a href="donate.html" class="btn-wei-donate ml-2">Donate Now</a>
+      </div>
+      <button class="wei-menu-toggle"><i class="bi bi-list"></i></button>
+    </div>
+  </header>
+
+  <!-- Page Hero -->
+  <div class="wei-page-hero" style="background-image: url('images/hero_2.jpg');">
+    <div class="container">
+      <div class="wei-page-hero-content">
+        <h1>Make a Donation</h1>
+        <p>Your generosity helps us empower women and transform communities in Tanzania.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Donation Form -->
+  <section class="wei-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 mb-4 mb-lg-0">
+          <div class="bg-white p-4 p-md-5 shadow rounded">
+
+            <!-- Step Indicator -->
+            <div class="wei-step-indicator">
+              <div class="wei-step-num active" data-step="1">1</div>
+              <div class="wei-step-line"></div>
+              <div class="wei-step-num" data-step="2">2</div>
+              <div class="wei-step-line"></div>
+              <div class="wei-step-num" data-step="3">3</div>
+            </div>
+
+            <form id="donation-form" enctype="multipart/form-data">
+              <!-- Honeypot: hidden from humans, bots fill it — server rejects if non-empty -->
+              <div style="position:absolute;left:-9999px;height:0;overflow:hidden;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+              </div>
+
+              <!-- Step 1 -->
+              <div class="wei-donation-step active" id="step-1">
+                <h4 class="wei-cursive mb-4">Step 1: Donation Amount</h4>
+                <div class="form-group">
+                  <label><strong>Select Currency</strong></label>
+                  <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                    <label class="btn btn-outline-primary active"><input type="radio" name="currency" value="TZS" checked> TZS</label>
+                    <label class="btn btn-outline-primary"><input type="radio" name="currency" value="USD"> USD</label>
+                    <label class="btn btn-outline-primary"><input type="radio" name="currency" value="EUR"> EUR</label>
+                    <label class="btn btn-outline-primary"><input type="radio" name="currency" value="GBP"> GBP</label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label><strong>Select Amount</strong></label>
+                  <div class="d-flex flex-wrap mb-3" id="amount-buttons"></div>
+                  <input type="number" name="amount" id="amount" class="form-control" placeholder="Or enter custom amount" required min="1000">
+                </div>
+                <div class="form-group">
+                  <label><strong>Donation Purpose (Optional)</strong></label>
+                  <select name="cause" class="form-control wei-select">
+                    <option value="">General Support</option>
+                    <option value="education">Women Education Initiative</option>
+                    <option value="health">Healthcare Access Program</option>
+                    <option value="livelihood">Economic Empowerment Project</option>
+                  </select>
+                </div>
+                <button type="button" class="btn-wei-primary d-block w-100 text-center" onclick="nextStep(2)">Continue</button>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="wei-donation-step" id="step-2">
+                <h4 class="wei-cursive mb-4">Step 2: Payment Information</h4>
+                <div class="wei-alert wei-alert-info">
+                  <strong>How to Donate:</strong><br>
+                  1. Make a payment using one of the methods below<br>
+                  2. Upload your payment receipt/screenshot<br>
+                  3. Our team will verify and confirm your donation
+                </div>
+                <div class="form-group">
+                  <label><strong>Payment Method Used</strong></label>
+                  <div id="payment-methods-container">
+                    <div class="text-center text-muted py-3 small">Loading payment methods...</div>
+                  </div>
+                  <input type="hidden" name="paymentMethod" id="paymentMethod" required>
+                </div>
+                <div class="form-group">
+                  <label><strong>Transaction Reference (if available)</strong></label>
+                  <input type="text" name="transactionReference" class="form-control" placeholder="Enter transaction ID or reference number">
+                </div>
+                <div class="form-group">
+                  <label><strong>Upload Payment Receipt/Screenshot *</strong></label>
+                  <input type="file" name="receipt" id="receipt" class="form-control-file" accept="image/*,.pdf" required>
+                  <small class="text-muted">Accepted formats: JPG, PNG, GIF, PDF (Max 5MB)</small>
+                  <img id="receipt-preview" class="wei-receipt-preview">
+                </div>
+                <div class="d-flex justify-content-between">
+                  <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+                  <button type="button" class="btn-wei-primary" onclick="nextStep(3)">Continue</button>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="wei-donation-step" id="step-3">
+                <h4 class="wei-cursive mb-4">Step 3: Your Information</h4>
+                <div class="form-group">
+                  <label><strong>Full Name *</strong></label>
+                  <input type="text" name="donorName" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                  <label><strong>Email Address *</strong></label>
+                  <input type="email" name="donorEmail" class="form-control" placeholder="Enter your email" required>
+                  <small class="text-muted">We'll send the confirmation to this email</small>
+                </div>
+                <div class="form-group">
+                  <label><strong>Phone Number (Optional)</strong></label>
+                  <input type="tel" name="donorPhone" class="form-control" placeholder="+255 XXX XXX XXX">
+                </div>
+                <div class="form-group">
+                  <label><strong>Message (Optional)</strong></label>
+                  <textarea name="message" class="form-control" rows="5" placeholder="Leave a message with your donation"></textarea>
+                </div>
+                <div class="form-check mb-4">
+                  <input type="checkbox" name="isAnonymous" value="true" class="form-check-input" id="anonymous">
+                  <label class="form-check-label" for="anonymous">Make my donation anonymous</label>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                  <button type="submit" class="btn-wei-primary" id="submit-btn">Submit Donation</button>
+                </div>
+              </div>
+
+            </form>
+
+            <!-- Success -->
+            <div id="donation-success" class="text-center d-none">
+              <i class="bi bi-check-circle-fill text-success" style="font-size:80px;"></i>
+              <h3 class="wei-cursive mt-3 mb-2">Thank You for Your Donation!</h3>
+              <p class="lead">Your donation has been submitted successfully.</p>
+              <div class="wei-alert wei-alert-success">
+                <strong>Reference Number:</strong> <span id="reference-number"></span>
+              </div>
+              <p>Our team will verify your payment and send a confirmation email shortly.</p>
+              <a href="index.html" class="btn-wei-primary">Return to Home</a>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="wei-impact-box">
+            <h4>Your Impact</h4>
+            <div class="wei-impact-item">
+              <h5>TZS 50,000</h5>
+              <p>Provides school supplies for 5 children for a term</p>
+            </div>
+            <div class="wei-impact-item">
+              <h5>TZS 100,000</h5>
+              <p>Supports a woman's vocational training for a month</p>
+            </div>
+            <div class="wei-impact-item">
+              <h5>TZS 500,000</h5>
+              <p>Provides healthcare access for 10 women for a year</p>
+            </div>
+            <div class="wei-impact-item">
+              <h5>TZS 1,000,000</h5>
+              <p>Seeds a small business for a woman entrepreneur</p>
+            </div>
+            <hr>
+            <h6 class="mb-3">Recent Donors</h6>
+            <div id="recent-donors"><p class="small text-muted">Loading...</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="wei-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">About WEI</h3>
+          <p>Women Empowerment Initiatives (WEI) focuses on enhancing women's autonomy and capabilities through sustainable programs in education, healthcare, and economic development.</p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h3 class="wei-footer-heading">Quick Links</h3>
+          <ul class="wei-footer-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="causes.html">Our Programs</a></li>
+            <li><a href="donate.html">Donate</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">Contact Info</h3>
+          <div class="wei-footer-contact">
+            <p><i class="bi bi-geo-alt"></i> Dodoma - Makulu, Tanzania</p>
+            <p><i class="bi bi-telephone"></i> +255 743 111 867</p>
+            <p><i class="bi bi-envelope"></i> info@wei.or.tz</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <h3 class="wei-footer-heading">Follow Us</h3>
+          <div class="wei-footer-social">
+            <a href="https://facebook.com/weitanzania" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://twitter.com/weitanzania" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://instagram.com/weitanzania" target="_blank"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wei-footer-bottom">
+      <div class="container d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
+        <p class="mb-0">Copyright &copy; <script>document.write(new Date().getFullYear());</script> Women Empowerment Initiatives (WEI). All rights reserved.</p>
+        <a href="admin/" style="color:#bbb;font-size:12px;text-decoration:none;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#bbb'"><i class="bi bi-shield-lock"></i> Admin</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/wei-main.js"></script>
+
+<script>
+  let currentStep = 1;
+
+  const CURRENCY_CONFIG = {
+    TZS: { presets: [50000, 100000, 250000, 500000, 1000000], min: 1000,  format: n => Number(n).toLocaleString() },
+    USD: { presets: [20, 50, 100, 250, 500],                  min: 5,     format: n => Number(n).toLocaleString() },
+    EUR: { presets: [20, 50, 100, 250, 500],                  min: 5,     format: n => Number(n).toLocaleString() },
+    GBP: { presets: [20, 50, 100, 250, 500],                  min: 5,     format: n => Number(n).toLocaleString() }
+  };
+
+  function renderAmountButtons(currency) {
+    const cfg = CURRENCY_CONFIG[currency] || CURRENCY_CONFIG.TZS;
+    const container = document.getElementById('amount-buttons');
+    container.innerHTML = cfg.presets.map(amount =>
+      `<button type="button" class="btn btn-outline-primary wei-amount-btn" data-amount="${amount}">${cfg.format(amount)}</button>`
+    ).join('');
+    container.querySelectorAll('.wei-amount-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        container.querySelectorAll('.wei-amount-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        document.getElementById('amount').value = this.dataset.amount;
+      });
+    });
+    const amountInput = document.getElementById('amount');
+    amountInput.min = cfg.min;
+    amountInput.placeholder = 'Or enter custom amount (min ' + cfg.format(cfg.min) + ')';
+    amountInput.value = '';
+  }
+
+  // Init with default currency
+  renderAmountButtons('TZS');
+
+  // Re-render on currency change
+  document.querySelectorAll('input[name="currency"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      renderAmountButtons(this.value);
+    });
+  });
+
+  // Default payment methods shown if API has none configured
+  const DEFAULT_PAYMENT_METHODS = [
+    { id: 'bank', title: 'Bank Transfer', details: [
+        { label: 'Bank', value: 'CRDB Bank' },
+        { label: 'Account Name', value: 'Women Empowerment Initiatives' },
+        { label: 'Account Number', value: '0150XXXXXXXX' },
+        { label: 'Swift Code', value: 'CORUTZTZ' }
+    ]},
+    { id: 'mobile_money', title: 'Mobile Money (M-Pesa / Tigo Pesa / Airtel Money)', details: [
+        { label: 'Number', value: '+255 743 111 867' },
+        { label: 'Name', value: 'Women Empowerment Initiatives' }
+    ]},
+    { id: 'other', title: 'Other Payment Method', details: [
+        { label: 'Description', value: 'Western Union, MoneyGram, or other methods' }
+    ]}
+  ];
+
+  async function loadPaymentMethods() {
+    let methods = DEFAULT_PAYMENT_METHODS;
+    try {
+      const res = await fetch('/api/content/site/payment_methods');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data?.value) && data.data.value.length) {
+        methods = data.data.value;
+      }
+    } catch (e) {}
+    const container = document.getElementById('payment-methods-container');
+    container.innerHTML = methods.map(m =>
+      `<div class="wei-payment-option" onclick="selectPayment(this,'${m.id}')">
+        <h5>${m.title}</h5>
+        ${m.details.map(d => `<p><strong>${d.label}:</strong> ${d.value}</p>`).join('')}
+      </div>`
+    ).join('');
+  }
+  loadPaymentMethods();
+
+  function selectPayment(el, method) {
+    document.querySelectorAll('.wei-payment-option').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('paymentMethod').value = method;
+  }
+
+  document.getElementById('receipt').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const preview = document.getElementById('receipt-preview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  function nextStep(step) {
+    if (currentStep === 1) {
+      const currency = document.querySelector('input[name="currency"]:checked')?.value || 'TZS';
+      const cfg = CURRENCY_CONFIG[currency] || CURRENCY_CONFIG.TZS;
+      const amount = document.getElementById('amount').value;
+      if (!amount || Number(amount) < cfg.min) { alert('Please enter a valid donation amount (minimum ' + cfg.format(cfg.min) + ' ' + currency + ')'); return; }
+    } else if (currentStep === 2) {
+      if (!document.getElementById('paymentMethod').value) { alert('Please select a payment method'); return; }
+      if (!document.getElementById('receipt').files[0]) { alert('Please upload your payment receipt'); return; }
+    }
+    document.querySelector(`.wei-step-num[data-step="${currentStep}"]`).classList.remove('active');
+    document.querySelector(`.wei-step-num[data-step="${currentStep}"]`).classList.add('done');
+    document.querySelector(`.wei-step-num[data-step="${step}"]`).classList.add('active');
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    document.getElementById('step-' + step).classList.add('active');
+    currentStep = step;
+  }
+
+  function prevStep(step) {
+    document.querySelector(`.wei-step-num[data-step="${currentStep}"]`).classList.remove('active');
+    document.querySelector(`.wei-step-num[data-step="${step}"]`).classList.remove('done');
+    document.querySelector(`.wei-step-num[data-step="${step}"]`).classList.add('active');
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    document.getElementById('step-' + step).classList.add('active');
+    currentStep = step;
+  }
+
+  document.getElementById('donation-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    try {
+      const res = await fetch('/api/donations', { method: 'POST', body: new FormData(this) });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('donation-form').classList.add('d-none');
+        document.querySelector('.wei-step-indicator').classList.add('d-none');
+        document.getElementById('donation-success').classList.remove('d-none');
+        document.getElementById('reference-number').textContent = data.data.referenceNumber;
+      } else {
+        alert(data.message || 'Error submitting donation. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Donation';
+      }
+    } catch (err) {
+      alert('Error submitting donation. Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Donation';
+    }
+  });
+
+  async function loadRecentDonors() {
+    try {
+      const res = await fetch('/api/donations/approved?limit=5');
+      const data = await res.json();
+      const container = document.getElementById('recent-donors');
+      if (data.success && data.data.length > 0) {
+        container.innerHTML = data.data.map(d => `
+          <div class="wei-impact-item">
+            <strong>${d.donorName}</strong><br>
+            <small class="text-muted">${d.currency} ${Number(d.amount).toLocaleString()}</small>
+          </div>`).join('');
+      } else {
+        container.innerHTML = '<p class="small text-muted">Be the first to donate!</p>';
+      }
+    } catch (e) {}
+  }
+  loadRecentDonors();
+</script>
+
+</body>
+</html>

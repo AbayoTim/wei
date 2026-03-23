@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - WEI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root { --sidebar-width: 260px; }
+    body { background: #f0f2f5; }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #1a1d23; color: #fff; overflow-y: auto; z-index: 1000; transition: transform .3s; }
+    .sidebar.collapsed { transform: translateX(-100%); }
+    .sidebar .logo { padding: 18px 20px; border-bottom: 1px solid #2d3139; }
+    .sidebar .logo h5 { color: #fff; margin: 0; font-weight: 700; }
+    .sidebar .logo small { color: #8a8fa8; }
+    .sidebar .nav-section { padding: 10px 20px 4px; font-size: 10px; text-transform: uppercase; color: #555b70; letter-spacing: 1px; }
+    .sidebar .nav-link { color: #8a8fa8; padding: 9px 20px; border-left: 3px solid transparent; font-size: 13.5px; display: flex; align-items: center; gap: 9px; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background: rgba(255,255,255,0.07); border-left-color: #6c63ff; }
+    .sidebar .nav-link i { width: 18px; text-align: center; font-size: 15px; }
+    .main-content { margin-left: var(--sidebar-width); padding: 24px; transition: margin-left .3s; min-height: 100vh; }
+    .main-content.expanded { margin-left: 0; }
+    .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,.08); border-radius: 10px; }
+    .stat-card { border-left: 4px solid; }
+    .stat-card.primary { border-left-color: #6c63ff; }
+    .stat-card.success { border-left-color: #28a745; }
+    .stat-card.warning { border-left-color: #ffc107; }
+    .stat-card.danger { border-left-color: #dc3545; }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    #login-page { display: flex; min-height: 100vh; }
+    .login-left { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; background: #1EB53A; color: #fff; }
+    .login-left::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top right, #1EB53A 38%, #FCD116 38%, #FCD116 41%, #000 41%, #000 59%, #FCD116 59%, #FCD116 62%, #00A3DD 62%); }
+    .login-left-content { position: relative; z-index: 1; text-align: center; }
+    .login-logo-circle { width: 90px; height: 90px; background: rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; backdrop-filter: blur(4px); }
+    .login-logo-text { font-size: 2rem; font-weight: 900; color: #fff; letter-spacing: 2px; line-height: 1; }
+    .login-logo-sub { font-size: 0.85rem; color: rgba(255,255,255,0.85); letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
+    .login-tagline { font-size: 1rem; color: rgba(255,255,255,0.9); max-width: 260px; line-height: 1.5; margin-top: 20px; }
+    .login-right { width: 420px; display: flex; align-items: center; justify-content: center; background: #fff; padding: 40px; }
+    .login-right-inner { width: 100%; max-width: 340px; }
+    @media (max-width: 768px) {
+      .login-left { display: none; }
+      .login-right { width: 100%; }
+    }
+    .toggle-sidebar { display: none; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.show { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .toggle-sidebar { display: block; }
+    }
+
+    /* TipTap Editor */
+    .tiptap-wrapper { border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden; }
+    .tiptap-toolbar { background: #f8f9fa; border-bottom: 1px solid #dee2e6; padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
+    .tiptap-toolbar .btn { padding: 3px 7px; font-size: 12px; }
+    .tiptap-toolbar .btn.is-active { background-color: #cfe2ff; border-color: #9ec5fe; color: #0a58ca; }
+    .tiptap-toolbar .vr { margin: 0 4px; }
+    .tiptap-body { padding: 12px 14px; min-height: 220px; background: #fff; cursor: text; }
+    .tiptap-body .ProseMirror { outline: none; min-height: 200px; }
+    .tiptap-body .ProseMirror > * + * { margin-top: .65em; }
+    .tiptap-body .ProseMirror h1 { font-size: 1.6em; }
+    .tiptap-body .ProseMirror h2 { font-size: 1.35em; }
+    .tiptap-body .ProseMirror h3 { font-size: 1.15em; }
+    .tiptap-body .ProseMirror ul, .tiptap-body .ProseMirror ol { padding-left: 1.4rem; }
+    .tiptap-body .ProseMirror a { color: #0d6efd; }
+    .tiptap-body .ProseMirror img { max-width: 100%; height: auto; border-radius: 4px; }
+    .tiptap-body .ProseMirror blockquote { border-left: 3px solid #dee2e6; padding-left: 1rem; color: #6c757d; }
+    .tiptap-body .ProseMirror pre { background: #1e1e1e; color: #e0e0e0; padding: .8em 1em; border-radius: 5px; }
+    .tiptap-body .ProseMirror code { background: #f0f0f0; padding: .15em .35em; border-radius: 3px; font-size: .9em; }
+    .tiptap-body .ProseMirror iframe { max-width: 100%; width: 100%; min-height: 300px; border: 0; border-radius: 6px; }
+    .tiptap-body .ProseMirror p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: #adb5bd; pointer-events: none; float: left; height: 0; }
+
+    /* Media Library */
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .media-card { border: 2px solid #dee2e6; border-radius: 8px; overflow: hidden; cursor: pointer; transition: all .15s; position: relative; background: #fff; }
+    .media-card:hover { border-color: #6c63ff; box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
+    .media-card.selected { border-color: #6c63ff; }
+    .media-card .media-thumb { width: 100%; height: 90px; object-fit: cover; display: block; }
+    .media-card .media-thumb-icon { width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; font-size: 2rem; color: #6c757d; }
+    .media-card .media-name { font-size: 10px; padding: 4px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #495057; }
+    .media-card .media-del { position: absolute; top: 4px; right: 4px; display: none; }
+    .media-card:hover .media-del { display: block; }
+
+    /* Featured image preview */
+    .feat-img-preview { max-height: 120px; border-radius: 6px; border: 1px solid #dee2e6; }
+    .feat-img-wrap { position: relative; display: inline-block; }
+    .feat-img-wrap .remove-feat { position: absolute; top: -8px; right: -8px; }
+
+    /* Hero slides */
+    .slide-card { border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; background: #fff; }
+    .slide-card .slide-thumb { width: 100%; height: 130px; object-fit: cover; background: #e9ecef; display: flex; align-items: center; justify-content: center; }
+
+    .table th { font-weight: 600; background: #f8f9fa; font-size: 12.5px; text-transform: uppercase; letter-spacing: .3px; }
+    .badge { font-weight: 500; }
+  </style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-page">
+
+  <!-- Left: Tanzania flag + WEI branding -->
+  <div class="login-left">
+    <div class="login-left-content">
+      <div class="login-logo-circle">
+        <div>
+          <div class="login-logo-text">WEI</div>
+        </div>
+      </div>
+      <div class="login-logo-sub">Tanzania</div>
+      <p class="login-tagline">Women Empowerment Initiatives — Empowering women, building stronger communities.</p>
+    </div>
+  </div>
+
+  <!-- Right: Login form -->
+  <div class="login-right">
+    <div class="login-right-inner">
+      <div class="mb-4">
+        <h4 class="fw-bold mb-1">Admin Sign In</h4>
+        <p class="text-muted small">Enter your credentials to access the dashboard.</p>
+      </div>
+      <form id="login-form">
+        <div class="mb-3"><label class="form-label fw-semibold">Email</label><input type="email" name="email" class="form-control" required autofocus></div>
+        <div class="mb-3"><label class="form-label fw-semibold">Password</label><input type="password" name="password" class="form-control" required></div>
+        <div id="login-error" class="alert alert-danger d-none py-2 small"></div>
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">Sign In</button>
+      </form>
+      <div class="text-center mt-4"><a href="../index.html" class="text-muted small">← Back to Website</a></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Admin -->
+<div id="admin-dashboard" class="d-none">
+  <button class="btn btn-dark toggle-sidebar" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="logo">
+      <h5>WEI Admin</h5>
+      <small>Management Panel</small>
+    </div>
+    <nav class="nav flex-column mt-2 pb-4">
+      <div class="nav-section">Overview</div>
+      <a class="nav-link active" href="#" onclick="showPage('dashboard',this)"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <div class="nav-section">Inbox</div>
+      <a class="nav-link" href="#" onclick="showPage('donations',this)"><i class="bi bi-heart"></i> Donations</a>
+      <a class="nav-link" href="#" onclick="showPage('contacts',this)"><i class="bi bi-envelope"></i> Messages</a>
+      <a class="nav-link" href="#" onclick="showPage('subscribers',this)"><i class="bi bi-people"></i> Subscribers</a>
+      <div class="nav-section">Content</div>
+      <a class="nav-link" href="#" onclick="showPage('blogs',this)"><i class="bi bi-file-text"></i> Blog Posts</a>
+      <a class="nav-link" href="#" onclick="showPage('causes',this)"><i class="bi bi-flag"></i> Programs</a>
+      <a class="nav-link" href="#" onclick="showPage('events',this)"><i class="bi bi-calendar-event"></i> Events</a>
+      <a class="nav-link" href="#" onclick="showPage('categories',this)"><i class="bi bi-tags"></i> Categories</a>
+      <div class="nav-section">Website</div>
+      <a class="nav-link" href="#" onclick="showPage('hero',this)"><i class="bi bi-card-image"></i> Hero Slides</a>
+      <a class="nav-link" href="#" onclick="showPage('about',this)"><i class="bi bi-info-circle"></i> About Page</a>
+      <a class="nav-link" href="#" onclick="showPage('team',this)"><i class="bi bi-person-badge"></i> Team</a>
+      <a class="nav-link" href="#" onclick="showPage('partners',this)"><i class="bi bi-building"></i> Partners</a>
+      <a class="nav-link" href="#" onclick="showPage('homepage',this)"><i class="bi bi-house"></i> Home Page</a>
+      <a class="nav-link" href="#" onclick="showPage('contactpage',this)"><i class="bi bi-telephone"></i> Contact Page</a>
+      <a class="nav-link" href="#" onclick="showPage('donatepage',this)"><i class="bi bi-credit-card"></i> Donate Page</a>
+      <a class="nav-link" href="#" onclick="showPage('media',this)"><i class="bi bi-folder2-open"></i> Media Library</a>
+      <div class="nav-section">Config</div>
+      <a class="nav-link" href="#" onclick="showPage('settings',this)"><i class="bi bi-gear"></i> Settings</a>
+      <a class="nav-link" href="#" onclick="showPage('users',this)"><i class="bi bi-people-fill"></i> Admin Users</a>
+      <hr class="mx-3 border-secondary my-2">
+      <a class="nav-link" href="../index.html" target="_blank"><i class="bi bi-box-arrow-up-right"></i> View Website</a>
+      <a class="nav-link text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Logout</a>
+    </nav>
+  </div>
+
+  <div class="main-content" id="main-content">
+
+    <!-- Dashboard -->
+    <div class="page-section active" id="page-dashboard">
+      <h4 class="fw-bold mb-4">Dashboard</h4>
+      <div class="row mb-4">
+        <div class="col-6 col-md-3 mb-3"><div class="card stat-card primary"><div class="card-body"><h6 class="text-muted small mb-1">Pending Donations</h6><h3 class="mb-0" id="stat-pending-donations">0</h3></div></div></div>
+        <div class="col-6 col-md-3 mb-3"><div class="card stat-card success"><div class="card-body"><h6 class="text-muted small mb-1">Total Raised</h6><h3 class="mb-0 fs-5" id="stat-total-raised">TZS 0</h3></div></div></div>
+        <div class="col-6 col-md-3 mb-3"><div class="card stat-card warning"><div class="card-body"><h6 class="text-muted small mb-1">New Messages</h6><h3 class="mb-0" id="stat-new-messages">0</h3></div></div></div>
+        <div class="col-6 col-md-3 mb-3"><div class="card stat-card danger"><div class="card-body"><h6 class="text-muted small mb-1">Subscribers</h6><h3 class="mb-0" id="stat-subscribers">0</h3></div></div></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4"><div class="card"><div class="card-header bg-white fw-semibold small">Recent Donations</div><div class="card-body p-0"><table class="table table-hover mb-0 small" id="recent-donations-table"><tbody></tbody></table></div></div></div>
+        <div class="col-md-6 mb-4"><div class="card"><div class="card-header bg-white fw-semibold small">Recent Messages</div><div class="card-body p-0"><table class="table table-hover mb-0 small" id="recent-messages-table"><tbody></tbody></table></div></div></div>
+      </div>
+    </div>
+
+    <!-- Donations -->
+    <div class="page-section" id="page-donations">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Donations</h4>
+        <select id="donation-filter" class="form-select form-select-sm w-auto" onchange="loadDonations()">
+          <option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Reference</th><th>Donor</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="donations-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Messages -->
+    <div class="page-section" id="page-contacts">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Messages</h4>
+        <select id="contact-filter" class="form-select form-select-sm w-auto" onchange="loadContacts()">
+          <option value="">All</option><option value="new">New</option><option value="read">Read</option><option value="replied">Replied</option>
+        </select>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="contacts-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Subscribers -->
+    <div class="page-section" id="page-subscribers">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Subscribers</h4>
+        <a href="/api/subscribers/export" class="btn btn-success btn-sm" target="_blank"><i class="bi bi-download"></i> Export CSV</a>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Email</th><th>Name</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="subscribers-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Blogs -->
+    <div class="page-section" id="page-blogs">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Blog Posts</h4>
+        <button class="btn btn-primary btn-sm" onclick="openBlogModal()"><i class="bi bi-plus-lg"></i> New Post</button>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="blogs-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Causes/Programs -->
+    <div class="page-section" id="page-causes">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Programs</h4>
+        <button class="btn btn-primary btn-sm" onclick="openCauseModal()"><i class="bi bi-plus-lg"></i> Add Program</button>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Goal</th><th>Raised</th><th>Status</th><th>Actions</th></tr></thead><tbody id="causes-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Events -->
+    <div class="page-section" id="page-events">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Events</h4>
+        <button class="btn btn-primary btn-sm" onclick="openEventModal()"><i class="bi bi-plus-lg"></i> Add Event</button>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Image</th><th>Title</th><th>Date</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody id="events-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Categories -->
+    <div class="page-section" id="page-categories">
+      <h4 class="fw-bold mb-4">Categories</h4>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+              Program Categories
+              <button class="btn btn-primary btn-sm" onclick="addCategoryItem('cause')"><i class="bi bi-plus-lg"></i> Add</button>
+            </div>
+            <div class="card-body" id="cause-categories-list">
+              <p class="text-muted small">Loading...</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+              Blog Categories
+              <button class="btn btn-primary btn-sm" onclick="addCategoryItem('blog')"><i class="bi bi-plus-lg"></i> Add</button>
+            </div>
+            <div class="card-body" id="blog-categories-list">
+              <p class="text-muted small">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Slides -->
+    <div class="page-section" id="page-hero">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Hero Slides</h4>
+        <button class="btn btn-primary btn-sm" onclick="openSlideModal()"><i class="bi bi-plus-lg"></i> Add Slide</button>
+      </div>
+      <div class="row" id="slides-grid"></div>
+    </div>
+
+    <!-- About Page -->
+    <div class="page-section" id="page-about">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">About Page Content</h4>
+        <button class="btn btn-success btn-sm" onclick="saveAboutContent()"><i class="bi bi-check-lg"></i> Save All</button>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card h-100"><div class="card-header bg-white fw-semibold">Mission Statement</div>
+            <div class="card-body">
+              <div class="tiptap-wrapper" id="about-mission-wrap">
+                <div class="tiptap-toolbar" id="about-mission-toolbar"></div>
+                <div class="tiptap-body" id="about-mission-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100"><div class="card-header bg-white fw-semibold">Vision Statement</div>
+            <div class="card-body">
+              <div class="tiptap-wrapper" id="about-vision-wrap">
+                <div class="tiptap-toolbar" id="about-vision-toolbar"></div>
+                <div class="tiptap-body" id="about-vision-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Our Story / Full About Content</div>
+            <div class="card-body">
+              <div class="tiptap-wrapper" id="about-story-wrap">
+                <div class="tiptap-toolbar" id="about-story-toolbar"></div>
+                <div class="tiptap-body" id="about-story-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Short Description (Homepage)</div>
+            <div class="card-body"><textarea id="about-short-input" class="form-control" rows="3" placeholder="Brief description shown on homepage..."></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card h-100"><div class="card-header bg-white fw-semibold">Our Values</div>
+            <div class="card-body">
+              <p class="text-muted small mb-2">Use bullet list with <strong>Bold title:</strong> followed by description text.</p>
+              <div class="tiptap-wrapper">
+                <div class="tiptap-toolbar" id="about-values-toolbar"></div>
+                <div class="tiptap-body" id="about-values-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100"><div class="card-header bg-white fw-semibold">Areas of Operation</div>
+            <div class="card-body">
+              <p class="text-muted small mb-2">Use H4 headings for area names, paragraphs for descriptions.</p>
+              <div class="tiptap-wrapper">
+                <div class="tiptap-toolbar" id="about-areas-toolbar"></div>
+                <div class="tiptap-body" id="about-areas-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="page-section" id="page-team">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Team Members</h4>
+        <button class="btn btn-primary btn-sm" onclick="openTeamModal()"><i class="bi bi-plus-lg"></i> Add Member</button>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Photo</th><th>Name</th><th>Position</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead><tbody id="team-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Partners -->
+    <div class="page-section" id="page-partners">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Partners</h4>
+        <button class="btn btn-primary btn-sm" onclick="openPartnerModal()"><i class="bi bi-plus-lg"></i> Add Partner</button>
+      </div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Logo</th><th>Name</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody id="partners-table"></tbody></table></div></div></div>
+    </div>
+
+    <!-- Home Page Content -->
+    <div class="page-section" id="page-homepage">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Home Page Content</h4>
+        <button class="btn btn-success btn-sm" onclick="saveHomepageContent()"><i class="bi bi-check-lg"></i> Save All</button>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Hero Text</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label small fw-semibold">Hero Title</label><input type="text" id="home-hero-title" class="form-control" placeholder="Empowering Women, Building Stronger Communities"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Hero Subtitle</label><input type="text" id="home-hero-subtitle" class="form-control" placeholder="Join us in creating opportunities..."></div>
+              <div><label class="form-label small fw-semibold">CTA Button Text</label><input type="text" id="home-cta-text" class="form-control" placeholder="Donate Now"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Homepage Short Description</div>
+            <div class="card-body">
+              <textarea id="home-about-short" class="form-control" rows="5" placeholder="Brief description shown on the homepage about section..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">"Why Choose WEI" Section</div>
+            <div class="card-body">
+              <p class="text-muted small mb-2">Use <strong>H3 headings</strong> for feature titles and paragraphs for descriptions. The numbered bullets are auto-assigned by order.</p>
+              <div class="tiptap-wrapper">
+                <div class="tiptap-toolbar" id="home-features-toolbar"></div>
+                <div class="tiptap-body" id="home-features-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Page Content -->
+    <div class="page-section" id="page-contactpage">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Contact Page Content</h4>
+        <button class="btn btn-success btn-sm" onclick="saveContactPageContent()"><i class="bi bi-check-lg"></i> Save All</button>
+      </div>
+      <div class="alert alert-info py-2 small mb-4"><i class="bi bi-info-circle me-1"></i> Main contact details (email, phone, address, social links) are managed in <strong>Settings</strong>.</div>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card h-100"><div class="card-header bg-white fw-semibold">Page Introduction</div>
+            <div class="card-body">
+              <div class="tiptap-wrapper">
+                <div class="tiptap-toolbar" id="contact-intro-toolbar"></div>
+                <div class="tiptap-body" id="contact-intro-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100"><div class="card-header bg-white fw-semibold">Volunteer / Get Involved Section</div>
+            <div class="card-body">
+              <div class="tiptap-wrapper">
+                <div class="tiptap-toolbar" id="contact-volunteer-toolbar"></div>
+                <div class="tiptap-body" id="contact-volunteer-editor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Google Maps Embed</div>
+            <div class="card-body">
+              <label class="form-label small fw-semibold">Google Maps iframe src URL</label>
+              <input type="text" id="contact-map-url" class="form-control" placeholder="https://www.google.com/maps/embed?pb=...">
+              <div class="form-text">Paste the src URL from a Google Maps embed code (not the full iframe, just the URL).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donate Page -->
+    <div class="page-section" id="page-donatepage">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Donate Page — Payment Methods</h4>
+        <button class="btn btn-primary btn-sm" onclick="openPaymentMethodModal()"><i class="bi bi-plus-lg"></i> Add Method</button>
+      </div>
+      <p class="text-muted small mb-4">These are the payment options shown to donors on the donation page. Click a method to edit it.</p>
+      <div id="payment-methods-list" class="row"></div>
+    </div>
+
+    <!-- Media Library -->
+    <div class="page-section" id="page-media">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Media Library</h4>
+        <div class="d-flex gap-2">
+          <select id="media-type-filter" class="form-select form-select-sm w-auto" onchange="loadMedia()">
+            <option value="">All Types</option><option value="image">Images</option><option value="video">Videos</option><option value="document">Documents</option>
+          </select>
+          <label class="btn btn-primary btn-sm mb-0"><i class="bi bi-upload"></i> Upload <input type="file" id="media-upload-input" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" class="d-none" onchange="uploadMediaFiles(this)"></label>
+        </div>
+      </div>
+      <div id="media-upload-progress" class="d-none mb-3">
+        <div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%">Uploading...</div></div>
+      </div>
+      <div id="media-grid" class="media-grid"></div>
+      <div id="media-empty" class="text-center text-muted py-5 d-none"><i class="bi bi-folder2-open fs-1 d-block mb-2"></i>No media files yet. Upload some!</div>
+    </div>
+
+    <!-- Settings -->
+    <div class="page-section" id="page-settings">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Site Settings</h4>
+        <button class="btn btn-success btn-sm" onclick="saveSettings()"><i class="bi bi-check-lg"></i> Save Settings</button>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">General</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label small fw-semibold">Site Name</label><input type="text" id="set-site_name" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Site Tagline</label><input type="text" id="set-site_tagline" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">CTA Button Text</label><input type="text" id="set-cta_text" class="form-control form-control-sm"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Contact Information</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label small fw-semibold">Email</label><input type="email" id="set-contact_email" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Phone</label><input type="text" id="set-contact_phone" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Address</label><input type="text" id="set-contact_address" class="form-control form-control-sm"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Social Media</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label small fw-semibold">Facebook URL</label><input type="url" id="set-social_facebook" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Twitter URL</label><input type="url" id="set-social_twitter" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Instagram URL</label><input type="url" id="set-social_instagram" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">YouTube URL</label><input type="url" id="set-social_youtube" class="form-control form-control-sm"></div>
+              <div><label class="form-label small fw-semibold">LinkedIn URL</label><input type="url" id="set-social_linkedin" class="form-control form-control-sm"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Admin Email Notifications</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label small fw-semibold">Notification Email</label><input type="email" id="set-admin_email" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Donation Bank Name</label><input type="text" id="set-bank_name" class="form-control form-control-sm"></div>
+              <div class="mb-3"><label class="form-label small fw-semibold">Bank Account Number</label><input type="text" id="set-bank_account" class="form-control form-control-sm"></div>
+              <div><label class="form-label small fw-semibold">Bank Account Name</label><input type="text" id="set-bank_account_name" class="form-control form-control-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Users -->
+    <div class="page-section" id="page-users">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Admin Users</h4>
+        <button class="btn btn-primary btn-sm" onclick="openUserModal()"><i class="bi bi-person-plus"></i> Add User</button>
+      </div>
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last Login</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="users-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /admin-dashboard -->
+
+<!-- ========== MODALS ========== -->
+
+<!-- Donation Modal -->
+<div class="modal fade" id="donationModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Donation Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body" id="donation-detail-content"></div>
+  <div class="modal-footer" id="donation-actions"></div>
+</div></div></div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Message Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body" id="contact-detail-content"></div>
+  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button class="btn btn-primary" id="reply-btn" onclick="openReplyForm()">Reply</button></div>
+</div></div></div>
+
+<!-- Blog Modal -->
+<div class="modal fade" id="blogModal" tabindex="-1"><div class="modal-dialog modal-xl modal-fullscreen-lg-down"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="blog-modal-title">New Blog Post</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="blog-id">
+    <div class="row mb-3">
+      <div class="col-md-8"><label class="form-label fw-semibold">Title *</label><input type="text" id="blog-title" class="form-control" required></div>
+      <div class="col-md-2"><label class="form-label fw-semibold">Category</label><select id="blog-category" class="form-select"></select></div>
+      <div class="col-md-2"><label class="form-label fw-semibold">Status</label><select id="blog-status" class="form-select"><option value="draft">Draft</option><option value="published">Published</option></select></div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Featured Image</label>
+      <div class="d-flex align-items-center gap-2">
+        <div id="blog-feat-preview"></div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pickFeaturedImage('blog')"><i class="bi bi-image"></i> Pick from Media</button>
+        <input type="hidden" id="blog-featuredImage">
+      </div>
+    </div>
+    <div class="mb-3"><label class="form-label fw-semibold">Excerpt</label><textarea id="blog-excerpt" class="form-control" rows="2" placeholder="Short summary..."></textarea></div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Content *</label>
+      <div class="tiptap-wrapper">
+        <div class="tiptap-toolbar" id="blog-content-toolbar"></div>
+        <div class="tiptap-body" id="blog-content-editor"></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="saveBlog()">Save Post</button></div>
+</div></div></div>
+
+<!-- Cause Modal -->
+<div class="modal fade" id="causeModal" tabindex="-1"><div class="modal-dialog modal-xl modal-fullscreen-lg-down"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="cause-modal-title">New Program</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="cause-id">
+    <div class="row mb-3">
+      <div class="col-md-6"><label class="form-label fw-semibold">Title *</label><input type="text" id="cause-title" class="form-control" required></div>
+      <div class="col-md-3"><label class="form-label fw-semibold">Category</label>
+        <select id="cause-category" class="form-select"></select>
+      </div>
+      <div class="col-md-3"><label class="form-label fw-semibold">Status</label>
+        <select id="cause-status" class="form-select"><option value="active">Active</option><option value="completed">Completed</option><option value="paused">Paused</option></select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-4"><label class="form-label fw-semibold">Goal Amount (TZS)</label><input type="number" id="cause-goalAmount" class="form-control" placeholder="0"></div>
+      <div class="col-md-4"><label class="form-label fw-semibold">Raised Amount (TZS)</label><input type="number" id="cause-raisedAmount" class="form-control" placeholder="0"></div>
+      <div class="col-md-4 d-flex align-items-end gap-3 pb-1">
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="cause-isFeatured"><label class="form-check-label" for="cause-isFeatured">Featured</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="cause-isPublished" checked><label class="form-check-label" for="cause-isPublished">Published</label></div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Featured Image</label>
+      <div class="d-flex align-items-center gap-2">
+        <div id="cause-feat-preview"></div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pickFeaturedImage('cause')"><i class="bi bi-image"></i> Pick from Media</button>
+        <input type="hidden" id="cause-featuredImage">
+      </div>
+    </div>
+    <div class="mb-3"><label class="form-label fw-semibold">Short Description</label><textarea id="cause-description" class="form-control" rows="2"></textarea></div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Full Content</label>
+      <div class="tiptap-wrapper">
+        <div class="tiptap-toolbar" id="cause-content-toolbar"></div>
+        <div class="tiptap-body" id="cause-content-editor"></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="saveCause()">Save Program</button></div>
+</div></div></div>
+
+<!-- Event Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1"><div class="modal-dialog modal-xl modal-fullscreen-lg-down"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="event-modal-title">New Event</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="event-id">
+    <div class="row mb-3">
+      <div class="col-md-6"><label class="form-label fw-semibold">Title *</label><input type="text" id="event-title" class="form-control" required></div>
+      <div class="col-md-3"><label class="form-label fw-semibold">Status</label>
+        <select id="event-status" class="form-select"><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+      </div>
+      <div class="col-md-3 d-flex align-items-end pb-1">
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="event-isPublished" checked><label class="form-check-label" for="event-isPublished">Published</label></div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-3"><label class="form-label fw-semibold">Event Date *</label><input type="date" id="event-eventDate" class="form-control" required></div>
+      <div class="col-md-3"><label class="form-label fw-semibold">End Date</label><input type="date" id="event-endDate" class="form-control"></div>
+      <div class="col-md-3"><label class="form-label fw-semibold">Start Time</label><input type="time" id="event-startTime" class="form-control"></div>
+      <div class="col-md-3"><label class="form-label fw-semibold">End Time</label><input type="time" id="event-endTime" class="form-control"></div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6"><label class="form-label fw-semibold">Location</label><input type="text" id="event-location" class="form-control" placeholder="City, Country"></div>
+      <div class="col-md-6"><label class="form-label fw-semibold">Venue</label><input type="text" id="event-venue" class="form-control" placeholder="Venue name"></div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Featured Image</label>
+      <div class="d-flex align-items-center gap-2">
+        <div id="event-feat-preview"></div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pickFeaturedImage('event')"><i class="bi bi-image"></i> Pick from Media</button>
+        <input type="hidden" id="event-featuredImage">
+      </div>
+    </div>
+    <div class="mb-3"><label class="form-label fw-semibold">Short Description</label><textarea id="event-description" class="form-control" rows="2"></textarea></div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Full Content</label>
+      <div class="tiptap-wrapper">
+        <div class="tiptap-toolbar" id="event-content-toolbar"></div>
+        <div class="tiptap-body" id="event-content-editor"></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save Event</button></div>
+</div></div></div>
+
+<!-- Team Member Modal -->
+<div class="modal fade" id="teamModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="team-modal-title">Team Member</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <form id="team-form" enctype="multipart/form-data">
+    <div class="modal-body">
+      <input type="hidden" name="id" id="team-id">
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" required></div>
+        <div class="col-md-6 mb-3"><label class="form-label">Position *</label><input type="text" name="position" class="form-control" required></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="3"></textarea></div>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control"></div>
+        <div class="col-md-6 mb-3"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">LinkedIn URL</label><input type="url" name="linkedIn" class="form-control"></div>
+        <div class="col-md-6 mb-3"><label class="form-label">Twitter URL</label><input type="url" name="twitter" class="form-control"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Photo</label>
+          <div id="team-photo-preview" class="mb-2"></div>
+          <input type="hidden" name="currentPhoto" id="team-current-photo">
+          <input type="file" name="photo" class="form-control" accept="image/*">
+        </div>
+        <div class="col-md-3 mb-3"><label class="form-label">Display Order</label><input type="number" name="displayOrder" class="form-control" value="0"></div>
+        <div class="col-md-3 mb-3 d-flex align-items-end pb-2"><div class="form-check"><input class="form-check-input" type="checkbox" name="isActive" value="true" id="team-active" checked><label class="form-check-label" for="team-active">Active</label></div></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
+  </form>
+</div></div></div>
+
+<!-- Partner Modal -->
+<div class="modal fade" id="partnerModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="partner-modal-title">Partner</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <form id="partner-form" enctype="multipart/form-data">
+    <div class="modal-body">
+      <input type="hidden" name="id" id="partner-id">
+      <div class="mb-3"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" required></div>
+      <div class="mb-3">
+        <label class="form-label">Logo</label>
+        <div id="partner-logo-preview" class="mb-2"></div>
+        <input type="hidden" name="currentLogo" id="partner-current-logo">
+        <input type="file" name="logo" class="form-control" accept="image/*">
+      </div>
+      <div class="mb-3"><label class="form-label">Website</label><input type="url" name="website" class="form-control"></div>
+      <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">Partner Type</label>
+          <select name="partnerType" class="form-select"><option value="funding">Funding Partner</option><option value="implementing">Implementing Partner</option><option value="government">Government</option><option value="other">Other</option></select>
+        </div>
+        <div class="col-md-3 mb-3"><label class="form-label">Order</label><input type="number" name="displayOrder" class="form-control" value="0"></div>
+        <div class="col-md-3 mb-3 d-flex align-items-end pb-2"><div class="form-check"><input class="form-check-input" type="checkbox" name="isActive" value="true" id="partner-active" checked><label class="form-check-label" for="partner-active">Active</label></div></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
+  </form>
+</div></div></div>
+
+<!-- Hero Slide Modal -->
+<div class="modal fade" id="slideModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="slide-modal-title">Hero Slide</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="slide-index" value="-1">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Background Image *</label>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <div id="slide-img-preview"></div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pickFeaturedImage('slide')"><i class="bi bi-image"></i> Pick Image</button>
+        <input type="hidden" id="slide-image">
+      </div>
+    </div>
+    <div class="mb-3"><label class="form-label fw-semibold">Heading</label><input type="text" id="slide-title" class="form-control" placeholder="Empowering Women..."></div>
+    <div class="mb-3"><label class="form-label fw-semibold">Subheading</label><input type="text" id="slide-subtitle" class="form-control" placeholder="Join us in building..."></div>
+    <div class="row">
+      <div class="col-md-6 mb-3"><label class="form-label fw-semibold">CTA Button Text</label><input type="text" id="slide-cta_text" class="form-control" placeholder="Learn More"></div>
+      <div class="col-md-6 mb-3"><label class="form-label fw-semibold">CTA Link</label><input type="text" id="slide-cta_link" class="form-control" placeholder="/causes.html"></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="saveSlide()">Save Slide</button></div>
+</div></div></div>
+
+<!-- Payment Method Modal -->
+<div class="modal fade" id="paymentMethodModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" id="pm-modal-title">Add Payment Method</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="pm-index" value="-1">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Method ID *</label>
+      <input type="text" id="pm-id" class="form-control" placeholder="e.g. bank, mobile_money, paypal">
+      <div class="form-text">A short unique identifier (no spaces). Used internally.</div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Title *</label>
+      <input type="text" id="pm-title" class="form-control" placeholder="e.g. Bank Transfer">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Details</label>
+      <div class="form-text mb-2">Add label/value pairs shown to donors (e.g. Account Number: 1234567).</div>
+      <div id="pm-details-list"></div>
+      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addPmDetailRow()"><i class="bi bi-plus"></i> Add Detail Row</button>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="savePaymentMethod()">Save</button>
+  </div>
+</div></div></div>
+
+<!-- Media Picker Modal -->
+<div class="modal fade" id="mediaPickerModal" tabindex="-1"><div class="modal-dialog modal-xl"><div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Select Media</h5>
+    <div class="ms-auto me-3 d-flex gap-2">
+      <select id="picker-type-filter" class="form-select form-select-sm w-auto" onchange="loadPickerMedia()">
+        <option value="image">Images</option><option value="video">Videos</option><option value="document">Documents</option><option value="">All</option>
+      </select>
+      <label class="btn btn-sm btn-outline-primary mb-0"><i class="bi bi-upload"></i> Upload <input type="file" id="picker-upload-input" multiple class="d-none" onchange="uploadFromPicker(this)"></label>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <div id="picker-grid" class="media-grid"></div>
+    <div id="picker-empty" class="text-center text-muted py-4 d-none"><i class="bi bi-folder2-open fs-1 d-block mb-2"></i>No media files. Upload some!</div>
+  </div>
+</div></div></div>
+
+<!-- Admin User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" id="user-modal-title">Add Admin User</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="user-id">
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Full Name *</label>
+        <input type="text" id="user-name" class="form-control" placeholder="John Doe" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Role *</label>
+        <select id="user-role" class="form-select">
+          <option value="admin">Admin (full access)</option>
+          <option value="editor">Editor (limited access)</option>
+        </select>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Email *</label>
+      <input type="email" id="user-email" class="form-control" placeholder="user@wei.or.tz" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold" id="user-password-label">Password *</label>
+      <div class="input-group">
+        <input type="password" id="user-password" class="form-control" placeholder="Min 6 characters" autocomplete="new-password">
+        <button type="button" class="btn btn-outline-secondary" onclick="toggleUserPasswordVisibility()"><i class="bi bi-eye" id="user-pwd-eye"></i></button>
+      </div>
+      <div id="user-password-hint" class="form-text"></div>
+    </div>
+    <div class="mb-3 d-flex align-items-center gap-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="user-isActive" checked>
+        <label class="form-check-label fw-semibold" for="user-isActive">Active</label>
+      </div>
+    </div>
+    <div id="user-modal-error" class="alert alert-danger d-none py-2 small"></div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="saveUser()">Save User</button>
+  </div>
+</div></div></div>
+
+<div id="toast-container" style="position:fixed;bottom:20px;right:20px;z-index:9999"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+import { Editor } from 'https://esm.sh/@tiptap/core@2.11.5'
+import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.11.5'
+import TiptapImage from 'https://esm.sh/@tiptap/extension-image@2.11.5'
+import Link from 'https://esm.sh/@tiptap/extension-link@2.11.5'
+import Underline from 'https://esm.sh/@tiptap/extension-underline@2.11.5'
+import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.11.5'
+import Youtube from 'https://esm.sh/@tiptap/extension-youtube@2.11.5'
+
+// ==================== STATE ====================
+let token = localStorage.getItem('wei_admin_token');
+let currentUser = null;
+const editorInstances = {};
+let mediaPickerCallback = null;
+let mediaPickerFilter = 'image';
+let heroSlides = [];
+let currentContactId = null;
+
+// ==================== AUTH ====================
+window.logout = function() {
+  localStorage.removeItem('wei_admin_token');
+  token = null; currentUser = null;
+  document.getElementById('login-page').classList.remove('d-none');
+  document.getElementById('admin-dashboard').classList.add('d-none');
+};
+
+async function checkAuth() {
+  try {
+    const r = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+    if (r.ok) { const d = await r.json(); currentUser = d.data; showDashboard(); }
+    else window.logout();
+  } catch { window.logout(); }
+}
+
+function showDashboard() {
+  document.getElementById('login-page').classList.add('d-none');
+  document.getElementById('admin-dashboard').classList.remove('d-none');
+  loadDashboardStats();
+}
+
+document.getElementById('login-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(this));
+  try {
+    const r = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    const result = await r.json();
+    if (result.success) {
+      token = result.data.token; currentUser = result.data.user;
+      localStorage.setItem('wei_admin_token', token); showDashboard();
+    } else {
+      const el = document.getElementById('login-error');
+      el.textContent = result.message; el.classList.remove('d-none');
+    }
+  } catch { document.getElementById('login-error').textContent = 'Login failed.'; document.getElementById('login-error').classList.remove('d-none'); }
+});
+
+// ==================== UTILS ====================
+async function apiCall(url, method = 'GET', data = null) {
+  const opts = { method, headers: { Authorization: `Bearer ${token}` } };
+  if (data) {
+    if (data instanceof FormData) { opts.body = data; }
+    else { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(data); }
+  }
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+function toast(msg, type = 'success') {
+  const id = 'toast-' + Date.now();
+  const div = document.createElement('div');
+  div.className = `alert alert-${type} alert-dismissible shadow-sm py-2 px-3 mb-2`;
+  div.innerHTML = `${msg}<button type="button" class="btn-close btn-sm" onclick="this.parentElement.remove()"></button>`;
+  div.id = id;
+  document.getElementById('toast-container').appendChild(div);
+  setTimeout(() => { div.remove(); }, 4000);
+}
+
+function imgUrl(src) {
+  if (!src) return '';
+  if (src.startsWith('http') || src.startsWith('/uploads') || src.startsWith('data:')) return src;
+  return '/uploads/images/' + src;
+}
+
+window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('show'); };
+
+window.showPage = function(page, el) {
+  document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('sidebar').classList.remove('show');
+  switch(page) {
+    case 'dashboard': loadDashboardStats(); break;
+    case 'donations': loadDonations(); break;
+    case 'contacts': loadContacts(); break;
+    case 'subscribers': loadSubscribers(); break;
+    case 'blogs': loadBlogs(); break;
+    case 'causes': loadCauses(); break;
+    case 'events': loadEvents(); break;
+    case 'categories': loadCategoryPage(); break;
+    case 'partners': loadPartners(); break;
+    case 'team': loadTeam(); break;
+    case 'hero': loadHeroSlides(); break;
+    case 'about': loadAboutContent(); break;
+    case 'homepage': loadHomepageContent(); break;
+    case 'contactpage': loadContactPageContent(); break;
+    case 'donatepage': loadDonatePage(); break;
+    case 'media': loadMedia(); break;
+    case 'settings': loadSettings(); break;
+    case 'users': loadUsers(); break;
+  }
+};
+
+// ==================== TIPTAP ====================
+const toolbarHTML = `
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="underline" title="Underline"><i class="bi bi-type-underline"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="strike" title="Strike"><i class="bi bi-type-strikethrough"></i></button>
+  <div class="vr"></div>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="h1" title="H1"><b style="font-size:11px">H1</b></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="h2" title="H2"><b style="font-size:11px">H2</b></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="h3" title="H3"><b style="font-size:11px">H3</b></button>
+  <div class="vr"></div>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="bulletList" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="orderedList" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="blockquote" title="Blockquote"><i class="bi bi-blockquote-left"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="codeBlock" title="Code Block"><i class="bi bi-code-slash"></i></button>
+  <div class="vr"></div>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="alignLeft" title="Align Left"><i class="bi bi-text-left"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="alignCenter" title="Center"><i class="bi bi-text-center"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="alignRight" title="Align Right"><i class="bi bi-text-right"></i></button>
+  <div class="vr"></div>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="link" title="Link"><i class="bi bi-link-45deg"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="image" title="Insert Image"><i class="bi bi-image"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="youtube" title="YouTube Embed"><i class="bi bi-youtube"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="video" title="Video from Library"><i class="bi bi-camera-video"></i></button>
+  <div class="vr"></div>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="undo" title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-cmd="redo" title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
+`;
+
+function initEditor(toolbarId, editorId, content = '') {
+  const toolbarEl = document.getElementById(toolbarId);
+  const editorEl = document.getElementById(editorId);
+  if (!toolbarEl || !editorEl) return null;
+
+  if (editorInstances[editorId]) { editorInstances[editorId].destroy(); delete editorInstances[editorId]; }
+
+  toolbarEl.innerHTML = toolbarHTML;
+
+  const editor = new Editor({
+    element: editorEl,
+    extensions: [
+      StarterKit,
+      Underline,
+      TiptapImage.configure({ allowBase64: false, inline: false }),
+      Link.configure({ openOnClick: false, autolink: true }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Youtube.configure({ controls: true, nocookie: true })
+    ],
+    content: content || '<p></p>',
+  });
+
+  editorInstances[editorId] = editor;
+
+  // Update toolbar active states on every cursor move / selection / content change
+  editor.on('transaction', () => updateToolbarState(toolbarEl, editor));
+
+  toolbarEl.addEventListener('mousedown', (e) => {
+    const btn = e.target.closest('[data-cmd]');
+    if (!btn) return;
+    e.preventDefault();
+    const cmd = btn.dataset.cmd;
+    switch (cmd) {
+      case 'bold': editor.chain().focus().toggleBold().run(); break;
+      case 'italic': editor.chain().focus().toggleItalic().run(); break;
+      case 'underline': editor.chain().focus().toggleUnderline().run(); break;
+      case 'strike': editor.chain().focus().toggleStrike().run(); break;
+      case 'h1': editor.chain().focus().toggleHeading({ level: 1 }).run(); break;
+      case 'h2': editor.chain().focus().toggleHeading({ level: 2 }).run(); break;
+      case 'h3': editor.chain().focus().toggleHeading({ level: 3 }).run(); break;
+      case 'bulletList': editor.chain().focus().toggleBulletList().run(); break;
+      case 'orderedList': editor.chain().focus().toggleOrderedList().run(); break;
+      case 'blockquote': editor.chain().focus().toggleBlockquote().run(); break;
+      case 'codeBlock': editor.chain().focus().toggleCodeBlock().run(); break;
+      case 'alignLeft': editor.chain().focus().setTextAlign('left').run(); break;
+      case 'alignCenter': editor.chain().focus().setTextAlign('center').run(); break;
+      case 'alignRight': editor.chain().focus().setTextAlign('right').run(); break;
+      case 'undo': editor.chain().focus().undo().run(); break;
+      case 'redo': editor.chain().focus().redo().run(); break;
+      case 'link': {
+        const cur = editor.getAttributes('link').href;
+        const url = prompt('Enter URL:', cur || 'https://');
+        if (url === null) break;
+        if (url === '') editor.chain().focus().unsetLink().run();
+        else editor.chain().focus().setLink({ href: url }).run();
+        break;
+      }
+      case 'image':
+        openMediaPicker('image', (url) => editor.chain().focus().setImage({ src: url }).run());
+        break;
+      case 'video':
+        openMediaPicker('video', (url) => {
+          editor.chain().focus().insertContent(`<video src="${url}" controls style="max-width:100%"></video>`).run();
+        });
+        break;
+      case 'youtube': {
+        const url = prompt('Paste YouTube URL:');
+        if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run();
+        break;
+      }
+    }
+  });
+
+  return editor;
+}
+
+function updateToolbarState(toolbar, editor) {
+  const map = {
+    bold:        () => editor.isActive('bold'),
+    italic:      () => editor.isActive('italic'),
+    underline:   () => editor.isActive('underline'),
+    strike:      () => editor.isActive('strike'),
+    h1:          () => editor.isActive('heading', { level: 1 }),
+    h2:          () => editor.isActive('heading', { level: 2 }),
+    h3:          () => editor.isActive('heading', { level: 3 }),
+    bulletList:  () => editor.isActive('bulletList'),
+    orderedList: () => editor.isActive('orderedList'),
+    blockquote:  () => editor.isActive('blockquote'),
+    codeBlock:   () => editor.isActive('codeBlock'),
+    alignLeft:   () => editor.isActive({ textAlign: 'left' }),
+    alignCenter: () => editor.isActive({ textAlign: 'center' }),
+    alignRight:  () => editor.isActive({ textAlign: 'right' }),
+    link:        () => editor.isActive('link'),
+  };
+  toolbar.querySelectorAll('[data-cmd]').forEach(btn => {
+    const check = map[btn.dataset.cmd];
+    if (check) btn.classList.toggle('is-active', check());
+  });
+}
+
+function getEditorHtml(editorId) {
+  const ed = editorInstances[editorId];
+  if (!ed) return '';
+  const html = ed.getHTML();
+  return html === '<p></p>' ? '' : html;
+}
+
+function destroyEditor(editorId) {
+  if (editorInstances[editorId]) { editorInstances[editorId].destroy(); delete editorInstances[editorId]; }
+}
+
+// ==================== DASHBOARD ====================
+async function loadDashboardStats() {
+  try {
+    const [don, con, sub] = await Promise.all([apiCall('/api/donations/stats'), apiCall('/api/contact/stats'), apiCall('/api/subscribers/stats')]);
+    if (don.success) { document.getElementById('stat-pending-donations').textContent = don.data.pending; document.getElementById('stat-total-raised').textContent = 'TZS ' + Number(don.data.totalAmount || 0).toLocaleString(); }
+    if (con.success) document.getElementById('stat-new-messages').textContent = con.data.new;
+    if (sub.success) document.getElementById('stat-subscribers').textContent = sub.data.confirmed;
+    loadRecentDonations(); loadRecentMessages();
+  } catch(e) { console.error(e); }
+}
+
+async function loadRecentDonations() {
+  const d = await apiCall('/api/donations?limit=5&status=pending');
+  if (d.success) {
+    document.querySelector('#recent-donations-table tbody').innerHTML = d.data.map(x =>
+      `<tr><td>${x.referenceNumber}</td><td>${x.donorName}</td><td>${x.currency} ${Number(x.amount).toLocaleString()}</td><td><span class="badge bg-warning text-dark">Pending</span></td></tr>`
+    ).join('') || '<tr><td colspan="4" class="text-center text-muted py-3">No pending donations</td></tr>';
+  }
+}
+
+async function loadRecentMessages() {
+  const d = await apiCall('/api/contact?limit=5&status=new');
+  if (d.success) {
+    document.querySelector('#recent-messages-table tbody').innerHTML = d.data.map(c =>
+      `<tr><td>${c.firstName} ${c.lastName}</td><td>${c.subject || '-'}</td><td><span class="badge bg-primary">New</span></td></tr>`
+    ).join('') || '<tr><td colspan="3" class="text-center text-muted py-3">No new messages</td></tr>';
+  }
+}
+
+// ==================== DONATIONS ====================
+async function loadDonations() {
+  const status = document.getElementById('donation-filter').value;
+  const d = await apiCall(`/api/donations?status=${status}`);
+  if (d.success) {
+    document.getElementById('donations-table').innerHTML = d.data.map(x =>
+      `<tr><td>${x.referenceNumber}</td><td>${x.donorName}<br><small class="text-muted">${x.donorEmail}</small></td><td>${x.currency} ${Number(x.amount).toLocaleString()}</td><td>${new Date(x.createdAt).toLocaleDateString()}</td><td><span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></td><td><button class="btn btn-sm btn-outline-primary" onclick="viewDonation('${x.id}')">View</button></td></tr>`
+    ).join('') || '<tr><td colspan="6" class="text-center text-muted py-3">No donations found</td></tr>';
+  }
+}
+
+window.viewDonation = async function(id) {
+  const d = await apiCall(`/api/donations/${id}`);
+  if (d.success) {
+    const x = d.data;
+    document.getElementById('donation-detail-content').innerHTML = `
+      <div class="row"><div class="col-md-6">
+        <p><b>Reference:</b> ${x.referenceNumber}</p><p><b>Donor:</b> ${x.donorName}</p><p><b>Email:</b> ${x.donorEmail}</p>
+        <p><b>Phone:</b> ${x.donorPhone||'N/A'}</p><p><b>Amount:</b> ${x.currency} ${Number(x.amount).toLocaleString()}</p>
+        <p><b>Method:</b> ${x.paymentMethod||'N/A'}</p><p><b>Txn Ref:</b> ${x.transactionReference||'N/A'}</p>
+        <p><b>Status:</b> <span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></p>
+      </div><div class="col-md-6">
+        ${x.receiptFile?`<p><b>Receipt:</b><br><img src="/uploads/receipts/${x.receiptFile}" class="img-fluid rounded" style="max-height:250px"></p>`:''}
+        ${x.message?`<p><b>Message:</b><br>${x.message}</p>`:''}
+      </div></div>`;
+    let acts = '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+    if (x.status === 'pending') acts += `<button class="btn btn-success ms-2" onclick="approveDonation('${x.id}')">Approve</button><button class="btn btn-danger ms-2" onclick="rejectDonation('${x.id}')">Reject</button>`;
+    document.getElementById('donation-actions').innerHTML = acts;
+    new bootstrap.Modal(document.getElementById('donationModal')).show();
+  }
+};
+
+window.approveDonation = async function(id) {
+  if (!confirm('Approve this donation?')) return;
+  const r = await apiCall(`/api/donations/${id}/approve`, 'POST');
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide(); loadDonations(); toast('Donation approved!'); }
+  else toast(r.message, 'danger');
+};
+
+window.rejectDonation = async function(id) {
+  const reason = prompt('Rejection reason (optional):');
+  const r = await apiCall(`/api/donations/${id}/reject`, 'POST', { reason });
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide(); loadDonations(); toast('Donation rejected.', 'warning'); }
+  else toast(r.message, 'danger');
+};
+
+// ==================== CONTACTS ====================
+async function loadContacts() {
+  const status = document.getElementById('contact-filter').value;
+  const d = await apiCall(`/api/contact?status=${status}`);
+  if (d.success) {
+    document.getElementById('contacts-table').innerHTML = d.data.map(c =>
+      `<tr><td>${c.firstName} ${c.lastName}<br><small class="text-muted">${c.email}</small></td><td>${c.subject||'-'}</td><td>${new Date(c.createdAt).toLocaleDateString()}</td><td><span class="badge bg-${c.status==='new'?'primary':c.status==='read'?'secondary':'success'}">${c.status}</span></td><td><button class="btn btn-sm btn-outline-primary" onclick="viewContact('${c.id}')">View</button></td></tr>`
+    ).join('') || '<tr><td colspan="5" class="text-center text-muted py-3">No messages</td></tr>';
+  }
+}
+
+window.viewContact = async function(id) {
+  const d = await apiCall(`/api/contact/${id}`);
+  if (d.success) {
+    const c = d.data; currentContactId = id;
+    document.getElementById('contact-detail-content').innerHTML = `
+      <p><b>From:</b> ${c.firstName} ${c.lastName}</p><p><b>Email:</b> <a href="mailto:${c.email}">${c.email}</a></p>
+      <p><b>Phone:</b> ${c.phone||'N/A'}</p><p><b>Subject:</b> ${c.subject||'N/A'}</p>
+      <p><b>Date:</b> ${new Date(c.createdAt).toLocaleString()}</p><hr>
+      <p><b>Message:</b></p><p>${c.message}</p>
+      ${c.replyMessage?`<hr><p><b>Your Reply:</b></p><p>${c.replyMessage}</p>`:''}
+      <div id="reply-form-area" class="d-none mt-3"><hr>
+        <label class="form-label fw-semibold">Your Reply</label>
+        <textarea id="reply-text" class="form-control mb-2" rows="4" placeholder="Type your reply..."></textarea>
+        <button class="btn btn-primary btn-sm" onclick="sendReply()">Send Reply</button>
+      </div>`;
+    document.getElementById('reply-btn').style.display = c.status === 'replied' ? 'none' : '';
+    new bootstrap.Modal(document.getElementById('contactModal')).show();
+  }
+};
+
+window.openReplyForm = function() { document.getElementById('reply-form-area').classList.toggle('d-none'); };
+
+window.sendReply = async function() {
+  const msg = document.getElementById('reply-text').value.trim();
+  if (!msg) return toast('Please enter a reply.', 'warning');
+  const r = await apiCall(`/api/contact/${currentContactId}`, 'PUT', { status: 'replied', replyMessage: msg });
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('contactModal')).hide(); loadContacts(); toast('Reply saved!'); }
+  else toast(r.message, 'danger');
+};
+
+// ==================== SUBSCRIBERS ====================
+async function loadSubscribers() {
+  const d = await apiCall('/api/subscribers');
+  if (d.success) {
+    document.getElementById('subscribers-table').innerHTML = d.data.map(s =>
+      `<tr><td>${s.email}</td><td>${s.name||'-'}</td><td><span class="badge bg-${s.status==='confirmed'?'success':s.status==='pending'?'warning text-dark':'secondary'}">${s.status}</span></td><td>${new Date(s.createdAt).toLocaleDateString()}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber('${s.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="5" class="text-center text-muted py-3">No subscribers</td></tr>';
+  }
+}
+
+window.deleteSubscriber = async function(id) {
+  if (!confirm('Delete subscriber?')) return;
+  await apiCall(`/api/subscribers/${id}`, 'DELETE');
+  loadSubscribers(); toast('Subscriber deleted.', 'warning');
+};
+
+// ==================== BLOGS ====================
+async function loadBlogs() {
+  const d = await apiCall('/api/blogs');
+  if (d.success) {
+    document.getElementById('blogs-table').innerHTML = d.data.map(b =>
+      `<tr><td>${b.title}</td><td>${b.category||'-'}</td><td><span class="badge bg-${b.status==='published'?'success':'secondary'}">${b.status}</span></td><td>${new Date(b.createdAt).toLocaleDateString()}</td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editBlog('${b.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteBlog('${b.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="5" class="text-center text-muted py-3">No posts yet</td></tr>';
+  }
+}
+
+window.openBlogModal = async function(data = null) {
+  document.getElementById('blog-modal-title').textContent = data ? 'Edit Blog Post' : 'New Blog Post';
+  document.getElementById('blog-id').value = data?.id || '';
+  document.getElementById('blog-title').value = data?.title || '';
+  await loadCategories();
+  populateCategorySelect('blog-category', blogCategories, data?.category || '');
+  document.getElementById('blog-status').value = data?.status || 'draft';
+  document.getElementById('blog-excerpt').value = data?.excerpt || '';
+  document.getElementById('blog-featuredImage').value = data?.featuredImage || '';
+  const preview = document.getElementById('blog-feat-preview');
+  preview.innerHTML = data?.featuredImage ? `<div class="feat-img-wrap"><img src="${imgUrl(data.featuredImage)}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('blog')">×</button></div>` : '';
+  const modal = new bootstrap.Modal(document.getElementById('blogModal'));
+  modal.show();
+  document.getElementById('blogModal').addEventListener('shown.bs.modal', () => {
+    initEditor('blog-content-toolbar', 'blog-content-editor', data?.content || '');
+  }, { once: true });
+  document.getElementById('blogModal').addEventListener('hidden.bs.modal', () => {
+    destroyEditor('blog-content-editor');
+  }, { once: true });
+};
+
+window.editBlog = async function(id) {
+  const d = await apiCall(`/api/blogs/${id}`);
+  if (d.success) window.openBlogModal(d.data);
+};
+
+window.saveBlog = async function() {
+  const id = document.getElementById('blog-id').value;
+  const payload = {
+    title: document.getElementById('blog-title').value,
+    category: document.getElementById('blog-category').value,
+    status: document.getElementById('blog-status').value,
+    excerpt: document.getElementById('blog-excerpt').value,
+    content: getEditorHtml('blog-content-editor'),
+    featuredImage: document.getElementById('blog-featuredImage').value
+  };
+  if (!payload.title) return toast('Title is required', 'danger');
+  if (!payload.content) return toast('Content is required', 'danger');
+  const r = await apiCall(id ? `/api/blogs/${id}` : '/api/blogs', id ? 'PUT' : 'POST', payload);
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('blogModal')).hide(); loadBlogs(); toast('Post saved!'); }
+  else toast(r.message || 'Error saving post', 'danger');
+};
+
+window.deleteBlog = async function(id) {
+  if (!confirm('Delete this post?')) return;
+  await apiCall(`/api/blogs/${id}`, 'DELETE');
+  loadBlogs(); toast('Post deleted.', 'warning');
+};
+
+// ==================== CAUSES ====================
+async function loadCauses() {
+  const d = await apiCall('/api/content/causes');
+  if (d.success) {
+    document.getElementById('causes-table').innerHTML = d.data.map(c =>
+      `<tr><td>${c.featuredImage?`<img src="${imgUrl(c.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${c.title}</td><td><span class="badge bg-secondary">${c.category}</span></td><td>TZS ${Number(c.goalAmount||0).toLocaleString()}</td><td>TZS ${Number(c.raisedAmount||0).toLocaleString()}</td><td><span class="badge bg-${c.status==='active'?'success':c.status==='completed'?'primary':'warning text-dark'}">${c.status}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editCause('${c.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCause('${c.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="7" class="text-center text-muted py-3">No programs yet</td></tr>';
+  }
+}
+
+window.openCauseModal = async function(data = null) {
+  document.getElementById('cause-modal-title').textContent = data ? 'Edit Program' : 'New Program';
+  document.getElementById('cause-id').value = data?.id || '';
+  document.getElementById('cause-title').value = data?.title || '';
+  await loadCategories();
+  populateCategorySelect('cause-category', causeCategories, data?.category || causeCategories[0] || '');
+  document.getElementById('cause-status').value = data?.status || 'active';
+  document.getElementById('cause-goalAmount').value = data?.goalAmount || '';
+  document.getElementById('cause-raisedAmount').value = data?.raisedAmount || '';
+  document.getElementById('cause-isFeatured').checked = data?.isFeatured || false;
+  document.getElementById('cause-isPublished').checked = data?.isPublished !== false;
+  document.getElementById('cause-description').value = data?.description || '';
+  document.getElementById('cause-featuredImage').value = data?.featuredImage || '';
+  const preview = document.getElementById('cause-feat-preview');
+  preview.innerHTML = data?.featuredImage ? `<div class="feat-img-wrap"><img src="${imgUrl(data.featuredImage)}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('cause')">×</button></div>` : '';
+  const modal = new bootstrap.Modal(document.getElementById('causeModal'));
+  modal.show();
+  document.getElementById('causeModal').addEventListener('shown.bs.modal', () => {
+    initEditor('cause-content-toolbar', 'cause-content-editor', data?.content || '');
+  }, { once: true });
+  document.getElementById('causeModal').addEventListener('hidden.bs.modal', () => {
+    destroyEditor('cause-content-editor');
+  }, { once: true });
+};
+
+window.editCause = async function(id) {
+  const d = await apiCall(`/api/content/causes/id/${id}`);
+  if (d.success) window.openCauseModal(d.data);
+};
+
+window.saveCause = async function() {
+  const id = document.getElementById('cause-id').value;
+  const payload = {
+    title: document.getElementById('cause-title').value,
+    category: document.getElementById('cause-category').value,
+    status: document.getElementById('cause-status').value,
+    goalAmount: document.getElementById('cause-goalAmount').value || 0,
+    raisedAmount: document.getElementById('cause-raisedAmount').value || 0,
+    isFeatured: document.getElementById('cause-isFeatured').checked,
+    isPublished: document.getElementById('cause-isPublished').checked,
+    description: document.getElementById('cause-description').value,
+    content: getEditorHtml('cause-content-editor'),
+    featuredImage: document.getElementById('cause-featuredImage').value
+  };
+  if (!payload.title) return toast('Title is required', 'danger');
+  const fd = new FormData();
+  Object.entries(payload).forEach(([k, v]) => fd.append(k, v));
+  const r = await apiCall(id ? `/api/content/causes/${id}` : '/api/content/causes', id ? 'PUT' : 'POST', fd);
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('causeModal')).hide(); loadCauses(); toast('Program saved!'); }
+  else toast(r.message || 'Error saving program', 'danger');
+};
+
+window.deleteCause = async function(id) {
+  if (!confirm('Delete this program?')) return;
+  await apiCall(`/api/content/causes/${id}`, 'DELETE');
+  loadCauses(); toast('Program deleted.', 'warning');
+};
+
+// ==================== EVENTS ====================
+async function loadEvents() {
+  const d = await apiCall('/api/content/events');
+  if (d.success) {
+    document.getElementById('events-table').innerHTML = d.data.map(e =>
+      `<tr><td>${e.featuredImage?`<img src="${imgUrl(e.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${e.title}</td><td>${new Date(e.eventDate).toLocaleDateString()}</td><td>${e.location||'-'}</td><td><span class="badge bg-${e.status==='upcoming'?'primary':e.status==='ongoing'?'success':e.status==='cancelled'?'danger':'secondary'}">${e.status}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent('${e.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteEvent('${e.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="6" class="text-center text-muted py-3">No events yet</td></tr>';
+  }
+}
+
+window.openEventModal = function(data = null) {
+  document.getElementById('event-modal-title').textContent = data ? 'Edit Event' : 'New Event';
+  document.getElementById('event-id').value = data?.id || '';
+  document.getElementById('event-title').value = data?.title || '';
+  document.getElementById('event-status').value = data?.status || 'upcoming';
+  document.getElementById('event-isPublished').checked = data?.isPublished !== false;
+  document.getElementById('event-eventDate').value = data?.eventDate ? data.eventDate.split('T')[0] : '';
+  document.getElementById('event-endDate').value = data?.endDate ? data.endDate.split('T')[0] : '';
+  document.getElementById('event-startTime').value = data?.startTime || '';
+  document.getElementById('event-endTime').value = data?.endTime || '';
+  document.getElementById('event-location').value = data?.location || '';
+  document.getElementById('event-venue').value = data?.venue || '';
+  document.getElementById('event-description').value = data?.description || '';
+  document.getElementById('event-featuredImage').value = data?.featuredImage || '';
+  const preview = document.getElementById('event-feat-preview');
+  preview.innerHTML = data?.featuredImage ? `<div class="feat-img-wrap"><img src="${imgUrl(data.featuredImage)}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('event')">×</button></div>` : '';
+  const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+  modal.show();
+  document.getElementById('eventModal').addEventListener('shown.bs.modal', () => {
+    initEditor('event-content-toolbar', 'event-content-editor', data?.content || '');
+  }, { once: true });
+  document.getElementById('eventModal').addEventListener('hidden.bs.modal', () => {
+    destroyEditor('event-content-editor');
+  }, { once: true });
+};
+
+window.editEvent = async function(id) {
+  const d = await apiCall(`/api/content/events/id/${id}`);
+  if (d.success) window.openEventModal(d.data);
+};
+
+window.saveEvent = async function() {
+  const id = document.getElementById('event-id').value;
+  const payload = {
+    title: document.getElementById('event-title').value,
+    status: document.getElementById('event-status').value,
+    isPublished: document.getElementById('event-isPublished').checked,
+    eventDate: document.getElementById('event-eventDate').value,
+    endDate: document.getElementById('event-endDate').value,
+    startTime: document.getElementById('event-startTime').value,
+    endTime: document.getElementById('event-endTime').value,
+    location: document.getElementById('event-location').value,
+    venue: document.getElementById('event-venue').value,
+    description: document.getElementById('event-description').value,
+    content: getEditorHtml('event-content-editor'),
+    featuredImage: document.getElementById('event-featuredImage').value
+  };
+  if (!payload.title) return toast('Title is required', 'danger');
+  if (!payload.eventDate) return toast('Event date is required', 'danger');
+  const fd = new FormData();
+  Object.entries(payload).forEach(([k, v]) => fd.append(k, v));
+  const r = await apiCall(id ? `/api/content/events/${id}` : '/api/content/events', id ? 'PUT' : 'POST', fd);
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide(); loadEvents(); toast('Event saved!'); }
+  else toast(r.message || 'Error saving event', 'danger');
+};
+
+window.deleteEvent = async function(id) {
+  if (!confirm('Delete this event?')) return;
+  await apiCall(`/api/content/events/${id}`, 'DELETE');
+  loadEvents(); toast('Event deleted.', 'warning');
+};
+
+// ==================== TEAM ====================
+async function loadTeam() {
+  const d = await apiCall('/api/content/team');
+  if (d.success) {
+    document.getElementById('team-table').innerHTML = d.data.map(t =>
+      `<tr><td>${t.photo?`<img src="${imgUrl(t.photo)}" height="40" width="40" class="rounded-circle object-fit-cover">`:'<span class="text-muted">-</span>'}</td><td>${t.name}</td><td>${t.position}</td><td>${t.displayOrder||0}</td><td><span class="badge bg-${t.isActive?'success':'secondary'}">${t.isActive?'Active':'Inactive'}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editTeamMember('${t.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteTeamMember('${t.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="6" class="text-center text-muted py-3">No team members</td></tr>';
+  }
+}
+
+window.openTeamModal = function(data = null) {
+  const form = document.getElementById('team-form');
+  form.reset();
+  document.getElementById('team-modal-title').textContent = data ? 'Edit Member' : 'Add Member';
+  document.getElementById('team-id').value = data?.id || '';
+  if (data) {
+    form.name.value = data.name || '';
+    form.position.value = data.position || '';
+    form.bio.value = data.bio || '';
+    form.email.value = data.email || '';
+    form.phone.value = data.phone || '';
+    form.linkedIn.value = data.linkedIn || '';
+    form.twitter.value = data.twitter || '';
+    form.displayOrder.value = data.displayOrder || 0;
+    document.getElementById('team-active').checked = data.isActive !== false;
+    document.getElementById('team-photo-preview').innerHTML = data.photo ? `<img src="${imgUrl(data.photo)}" style="height:60px;width:60px;object-fit:cover;border-radius:50%;border:2px solid #dee2e6">` : '';
+    document.getElementById('team-current-photo').value = data.photo || '';
+  }
+  new bootstrap.Modal(document.getElementById('teamModal')).show();
+};
+
+window.editTeamMember = async function(id) {
+  const d = await apiCall(`/api/content/team`);
+  if (d.success) { const m = d.data.find(x => x.id === id); if (m) window.openTeamModal(m); }
+};
+
+document.getElementById('team-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const fd = new FormData(this);
+  const id = fd.get('id'); fd.delete('id');
+  if (!fd.get('isActive')) fd.set('isActive', 'false');
+  const r = await apiCall(id ? `/api/content/team/${id}` : '/api/content/team', id ? 'PUT' : 'POST', fd);
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('teamModal')).hide(); loadTeam(); toast('Member saved!'); }
+  else toast(r.message || 'Error saving member', 'danger');
+});
+
+window.deleteTeamMember = async function(id) {
+  if (!confirm('Delete team member?')) return;
+  await apiCall(`/api/content/team/${id}`, 'DELETE');
+  loadTeam(); toast('Member deleted.', 'warning');
+};
+
+// ==================== PARTNERS ====================
+async function loadPartners() {
+  const d = await apiCall('/api/partners');
+  if (d.success) {
+    document.getElementById('partners-table').innerHTML = d.data.map(p =>
+      `<tr><td>${p.logo?`<img src="${imgUrl(p.logo)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${p.name}</td><td>${p.partnerType}</td><td><span class="badge bg-${p.isActive?'success':'secondary'}">${p.isActive?'Active':'Inactive'}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editPartner('${p.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deletePartner('${p.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="5" class="text-center text-muted py-3">No partners</td></tr>';
+  }
+}
+
+window.openPartnerModal = function() {
+  document.getElementById('partner-form').reset();
+  document.getElementById('partner-id').value = '';
+  document.getElementById('partner-modal-title').textContent = 'Add Partner';
+  new bootstrap.Modal(document.getElementById('partnerModal')).show();
+};
+
+window.editPartner = async function(id) {
+  const d = await apiCall(`/api/partners/${id}`);
+  if (d.success) {
+    const p = d.data; const form = document.getElementById('partner-form');
+    form.reset();
+    document.getElementById('partner-id').value = p.id;
+    document.getElementById('partner-modal-title').textContent = 'Edit Partner';
+    form.name.value = p.name;
+    form.website.value = p.website || '';
+    form.description.value = p.description || '';
+    form.partnerType.value = p.partnerType;
+    form.displayOrder.value = p.displayOrder || 0;
+    document.getElementById('partner-active').checked = p.isActive;
+    document.getElementById('partner-logo-preview').innerHTML = p.logo ? `<img src="${imgUrl(p.logo)}" style="max-height:60px;border-radius:4px;border:1px solid #dee2e6">` : '<span class="text-muted small">No logo</span>';
+    document.getElementById('partner-current-logo').value = p.logo || '';
+    new bootstrap.Modal(document.getElementById('partnerModal')).show();
+  }
+};
+
+document.getElementById('partner-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const fd = new FormData(this);
+  const id = fd.get('id'); fd.delete('id');
+  if (!fd.get('isActive')) fd.set('isActive', 'false');
+  const r = await apiCall(id ? `/api/partners/${id}` : '/api/partners', id ? 'PUT' : 'POST', fd);
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('partnerModal')).hide(); loadPartners(); toast('Partner saved!'); }
+  else toast(r.message || 'Error saving partner', 'danger');
+});
+
+window.deletePartner = async function(id) {
+  if (!confirm('Delete partner?')) return;
+  await apiCall(`/api/partners/${id}`, 'DELETE');
+  loadPartners(); toast('Partner deleted.', 'warning');
+};
+
+// ==================== HERO SLIDES ====================
+async function loadHeroSlides() {
+  const d = await apiCall('/api/content/site/hero_slides');
+  heroSlides = [];
+  if (d.success && d.data && d.data.value) {
+    try { heroSlides = JSON.parse(d.data.value); } catch(e) { heroSlides = []; }
+  }
+  renderHeroSlides();
+}
+
+function renderHeroSlides() {
+  const grid = document.getElementById('slides-grid');
+  if (!heroSlides.length) {
+    grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-card-image fs-1 d-block mb-2"></i>No slides. Add your first hero slide.</div>';
+    return;
+  }
+  grid.innerHTML = heroSlides.map((s, i) => `
+    <div class="col-md-4 mb-3">
+      <div class="slide-card">
+        ${s.image ? `<img src="${s.image}" class="w-100" style="height:130px;object-fit:cover">` : `<div class="slide-thumb"><i class="bi bi-image text-muted fs-2"></i></div>`}
+        <div class="p-3">
+          <h6 class="fw-bold mb-1">${s.title||'(No title)'}</h6>
+          <p class="small text-muted mb-2">${s.subtitle||''}</p>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="editSlide(${i})">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteSlide(${i})">Delete</button>
+            ${i > 0 ? `<button class="btn btn-sm btn-outline-secondary" onclick="moveSlide(${i},-1)"><i class="bi bi-arrow-left"></i></button>` : ''}
+            ${i < heroSlides.length-1 ? `<button class="btn btn-sm btn-outline-secondary" onclick="moveSlide(${i},1)"><i class="bi bi-arrow-right"></i></button>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+window.openSlideModal = function(idx = -1) {
+  const slide = idx >= 0 ? heroSlides[idx] : null;
+  document.getElementById('slide-modal-title').textContent = slide ? 'Edit Slide' : 'New Slide';
+  document.getElementById('slide-index').value = idx;
+  document.getElementById('slide-title').value = slide?.title || '';
+  document.getElementById('slide-subtitle').value = slide?.subtitle || '';
+  document.getElementById('slide-cta_text').value = slide?.cta_text || '';
+  document.getElementById('slide-cta_link').value = slide?.cta_link || '';
+  document.getElementById('slide-image').value = slide?.image || '';
+  const preview = document.getElementById('slide-img-preview');
+  preview.innerHTML = slide?.image ? `<img src="${slide.image}" class="feat-img-preview">` : '';
+  new bootstrap.Modal(document.getElementById('slideModal')).show();
+};
+
+window.editSlide = function(i) { window.openSlideModal(i); };
+
+window.saveSlide = async function() {
+  const idx = parseInt(document.getElementById('slide-index').value);
+  const slide = {
+    image: document.getElementById('slide-image').value,
+    title: document.getElementById('slide-title').value,
+    subtitle: document.getElementById('slide-subtitle').value,
+    cta_text: document.getElementById('slide-cta_text').value,
+    cta_link: document.getElementById('slide-cta_link').value
+  };
+  if (!slide.image) return toast('Please pick an image for this slide.', 'warning');
+  if (idx >= 0) heroSlides[idx] = slide;
+  else heroSlides.push(slide);
+  const r = await apiCall('/api/content/site', 'PUT', { key: 'hero_slides', value: JSON.stringify(heroSlides), type: 'json' });
+  if (r.success) { bootstrap.Modal.getInstance(document.getElementById('slideModal')).hide(); renderHeroSlides(); toast('Slide saved!'); }
+  else toast(r.message || 'Error saving slide', 'danger');
+};
+
+window.deleteSlide = async function(i) {
+  if (!confirm('Delete this slide?')) return;
+  heroSlides.splice(i, 1);
+  const r = await apiCall('/api/content/site', 'PUT', { key: 'hero_slides', value: JSON.stringify(heroSlides), type: 'json' });
+  if (r.success) { renderHeroSlides(); toast('Slide deleted.', 'warning'); }
+};
+
+window.moveSlide = async function(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= heroSlides.length) return;
+  [heroSlides[i], heroSlides[j]] = [heroSlides[j], heroSlides[i]];
+  await apiCall('/api/content/site', 'PUT', { key: 'hero_slides', value: JSON.stringify(heroSlides), type: 'json' });
+  renderHeroSlides();
+};
+
+// ==================== ABOUT PAGE ====================
+let aboutEditors = {};
+
+async function loadAboutContent() {
+  const d = await apiCall('/api/content/site');
+  const c = d.success ? d.data : {};
+  document.getElementById('about-short-input').value = c.about_short?.value || '';
+  setTimeout(() => {
+    aboutEditors['mission'] = initEditor('about-mission-toolbar', 'about-mission-editor', c.about_mission?.value || '');
+    aboutEditors['vision'] = initEditor('about-vision-toolbar', 'about-vision-editor', c.about_vision?.value || '');
+    aboutEditors['story'] = initEditor('about-story-toolbar', 'about-story-editor', c.about_story?.value || '');
+    aboutEditors['values'] = initEditor('about-values-toolbar', 'about-values-editor', c.about_values?.value || '');
+    aboutEditors['areas'] = initEditor('about-areas-toolbar', 'about-areas-editor', c.about_areas?.value || '');
+  }, 100);
+}
+
+window.saveAboutContent = async function() {
+  const items = [
+    { key: 'about_mission', value: getEditorHtml('about-mission-editor'), type: 'html' },
+    { key: 'about_vision', value: getEditorHtml('about-vision-editor'), type: 'html' },
+    { key: 'about_story', value: getEditorHtml('about-story-editor'), type: 'html' },
+    { key: 'about_short', value: document.getElementById('about-short-input').value, type: 'text' },
+    { key: 'about_values', value: getEditorHtml('about-values-editor'), type: 'html' },
+    { key: 'about_areas', value: getEditorHtml('about-areas-editor'), type: 'html' },
+  ];
+  const r = await apiCall('/api/content/site/bulk', 'PUT', { items });
+  if (r.success) toast('About content saved!');
+  else toast(r.message || 'Error saving', 'danger');
+};
+
+// ==================== HOME PAGE CONTENT ====================
+let homepageEditors = {};
+
+async function loadHomepageContent() {
+  const d = await apiCall('/api/content/site');
+  const c = d.success ? d.data : {};
+  document.getElementById('home-hero-title').value = c.hero_title?.value || '';
+  document.getElementById('home-hero-subtitle').value = c.hero_subtitle?.value || '';
+  document.getElementById('home-cta-text').value = c.cta_text?.value || '';
+  document.getElementById('home-about-short').value = c.about_short?.value || '';
+  setTimeout(() => {
+    homepageEditors['features'] = initEditor('home-features-toolbar', 'home-features-editor', c.home_features?.value || '');
+  }, 100);
+}
+
+window.saveHomepageContent = async function() {
+  const items = [
+    { key: 'hero_title', value: document.getElementById('home-hero-title').value, type: 'text' },
+    { key: 'hero_subtitle', value: document.getElementById('home-hero-subtitle').value, type: 'text' },
+    { key: 'cta_text', value: document.getElementById('home-cta-text').value, type: 'text' },
+    { key: 'about_short', value: document.getElementById('home-about-short').value, type: 'text' },
+    { key: 'home_features', value: getEditorHtml('home-features-editor'), type: 'html' },
+  ];
+  const r = await apiCall('/api/content/site/bulk', 'PUT', { items });
+  if (r.success) toast('Home page content saved!');
+  else toast(r.message || 'Error saving', 'danger');
+};
+
+// ==================== CONTACT PAGE CONTENT ====================
+let contactPageEditors = {};
+
+async function loadContactPageContent() {
+  const d = await apiCall('/api/content/site');
+  const c = d.success ? d.data : {};
+  document.getElementById('contact-map-url').value = c.contact_map_url?.value || '';
+  setTimeout(() => {
+    contactPageEditors['intro'] = initEditor('contact-intro-toolbar', 'contact-intro-editor', c.contact_intro?.value || '');
+    contactPageEditors['volunteer'] = initEditor('contact-volunteer-toolbar', 'contact-volunteer-editor', c.contact_volunteer?.value || '');
+  }, 100);
+}
+
+window.saveContactPageContent = async function() {
+  const items = [
+    { key: 'contact_intro', value: getEditorHtml('contact-intro-editor'), type: 'html' },
+    { key: 'contact_volunteer', value: getEditorHtml('contact-volunteer-editor'), type: 'html' },
+    { key: 'contact_map_url', value: document.getElementById('contact-map-url').value, type: 'text' },
+  ];
+  const r = await apiCall('/api/content/site/bulk', 'PUT', { items });
+  if (r.success) toast('Contact page content saved!');
+  else toast(r.message || 'Error saving', 'danger');
+};
+
+// ==================== MEDIA LIBRARY ====================
+async function loadMedia() {
+  const type = document.getElementById('media-type-filter').value;
+  const d = await apiCall(`/api/media?type=${type}`);
+  const grid = document.getElementById('media-grid');
+  const empty = document.getElementById('media-empty');
+  if (d.success) {
+    if (!d.data.length) { grid.innerHTML = ''; empty.classList.remove('d-none'); return; }
+    empty.classList.add('d-none');
+    grid.innerHTML = d.data.map(m => `
+      <div class="media-card" title="${m.originalName}">
+        ${m.type==='image'?`<img src="${m.url}" class="media-thumb" loading="lazy">`:`<div class="media-thumb-icon"><i class="bi bi-${m.type==='video'?'camera-video':'file-earmark-text'}"></i></div>`}
+        <div class="media-name">${m.originalName}</div>
+        <button class="btn btn-danger btn-sm media-del rounded" onclick="deleteMediaFile('${m.id}',event)" title="Delete"><i class="bi bi-trash"></i></button>
+      </div>`).join('');
+  }
+}
+
+window.uploadMediaFiles = async function(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const prog = document.getElementById('media-upload-progress');
+  prog.classList.remove('d-none');
+  for (const file of files) {
+    const fd = new FormData(); fd.append('file', file);
+    await apiCall('/api/media', 'POST', fd);
+  }
+  prog.classList.add('d-none');
+  input.value = '';
+  loadMedia(); toast(`${files.length} file(s) uploaded!`);
+};
+
+window.deleteMediaFile = async function(id, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this file?')) return;
+  const r = await apiCall(`/api/media/${id}`, 'DELETE');
+  if (r.success) { loadMedia(); toast('File deleted.', 'warning'); }
+  else toast(r.message, 'danger');
+};
+
+// ==================== MEDIA PICKER ====================
+window.openMediaPicker = function(type = 'image', callback = null) {
+  mediaPickerCallback = callback;
+  mediaPickerFilter = type;
+  document.getElementById('picker-type-filter').value = type;
+  loadPickerMedia();
+  new bootstrap.Modal(document.getElementById('mediaPickerModal')).show();
+};
+
+window.loadPickerMedia = async function() {
+  const type = document.getElementById('picker-type-filter').value;
+  const d = await apiCall(`/api/media?type=${type}`);
+  const grid = document.getElementById('picker-grid');
+  const empty = document.getElementById('picker-empty');
+  if (d.success) {
+    if (!d.data.length) { grid.innerHTML = ''; empty.classList.remove('d-none'); return; }
+    empty.classList.add('d-none');
+    grid.innerHTML = d.data.map(m => `
+      <div class="media-card" onclick="selectMedia('${m.url}')" title="${m.originalName}">
+        ${m.type==='image'?`<img src="${m.url}" class="media-thumb" loading="lazy">`:`<div class="media-thumb-icon"><i class="bi bi-${m.type==='video'?'camera-video':'file-earmark-text'} fs-2"></i></div>`}
+        <div class="media-name">${m.originalName}</div>
+      </div>`).join('');
+  }
+};
+
+window.selectMedia = function(url) {
+  if (mediaPickerCallback) { mediaPickerCallback(url); mediaPickerCallback = null; }
+  bootstrap.Modal.getInstance(document.getElementById('mediaPickerModal'))?.hide();
+};
+
+window.uploadFromPicker = async function(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  for (const file of files) {
+    const fd = new FormData(); fd.append('file', file);
+    await apiCall('/api/media', 'POST', fd);
+  }
+  input.value = '';
+  window.loadPickerMedia();
+};
+
+// ==================== FEATURED IMAGE HELPERS ====================
+let featuredImageTarget = null;
+
+window.pickFeaturedImage = function(target) {
+  featuredImageTarget = target;
+  window.openMediaPicker('image', (url) => {
+    document.getElementById(`${target}-featuredImage`).value = url;
+    const preview = document.getElementById(`${target}-feat-preview`);
+    preview.innerHTML = `<div class="feat-img-wrap"><img src="${url}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('${target}')">×</button></div>`;
+    if (target === 'slide') {
+      document.getElementById('slide-image').value = url;
+      document.getElementById('slide-img-preview').innerHTML = `<img src="${url}" class="feat-img-preview">`;
+    }
+  });
+};
+
+window.clearFeaturedImage = function(target) {
+  document.getElementById(`${target}-featuredImage`).value = '';
+  document.getElementById(`${target}-feat-preview`).innerHTML = '';
+};
+
+// ==================== SETTINGS ====================
+async function loadSettings() {
+  const d = await apiCall('/api/content/site');
+  if (d.success) {
+    const keys = ['site_name','site_tagline','cta_text','contact_email','contact_phone','contact_address','social_facebook','social_twitter','social_instagram','social_youtube','social_linkedin','admin_email','bank_name','bank_account','bank_account_name'];
+    keys.forEach(k => {
+      const el = document.getElementById('set-' + k);
+      if (el && d.data[k]) el.value = d.data[k].value || '';
+    });
+  }
+}
+
+window.saveSettings = async function() {
+  const keys = ['site_name','site_tagline','cta_text','contact_email','contact_phone','contact_address','social_facebook','social_twitter','social_instagram','social_youtube','social_linkedin','admin_email','bank_name','bank_account','bank_account_name'];
+  const items = keys.map(k => ({ key: k, value: document.getElementById('set-'+k)?.value || '', type: 'text' }));
+  const r = await apiCall('/api/content/site/bulk', 'PUT', { items });
+  if (r.success) toast('Settings saved!');
+  else toast(r.message || 'Error saving settings', 'danger');
+};
+
+// ==================== ADMIN USERS ====================
+let usersCache = [];
+
+async function loadUsers() {
+  const d = await apiCall('/api/auth/users');
+  const tbody = document.getElementById('users-table');
+  if (!d.success) { tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">${d.message || 'Error loading users'}</td></tr>`; return; }
+  usersCache = d.data;
+  if (!usersCache.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No users found.</td></tr>'; return; }
+  let myId = null;
+  try { myId = JSON.parse(atob(token.split('.')[1])).id; } catch(e) {}
+  tbody.innerHTML = usersCache.map(u => `
+    <tr>
+      <td class="fw-semibold">${escHtml(u.name)}</td>
+      <td>${escHtml(u.email)}</td>
+      <td><span class="badge ${u.role==='admin'?'bg-primary':'bg-secondary'}">${u.role}</span></td>
+      <td class="small text-muted">${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never'}</td>
+      <td><span class="badge ${u.isActive?'bg-success':'bg-danger'}">${u.isActive?'Active':'Inactive'}</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="openUserModal('${u.id}')"><i class="bi bi-pencil"></i></button>
+        ${u.id != myId ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="bi bi-trash"></i></button>` : '<span class="text-muted small">(you)</span>'}
+      </td>
+    </tr>`).join('');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+window.openUserModal = function(idOrNull = null) {
+  const data = idOrNull ? usersCache.find(u => String(u.id) === String(idOrNull)) : null;
+  document.getElementById('user-modal-title').textContent = data ? 'Edit User' : 'Add Admin User';
+  document.getElementById('user-id').value = data?.id || '';
+  document.getElementById('user-name').value = data?.name || '';
+  document.getElementById('user-email').value = data?.email || '';
+  document.getElementById('user-role').value = data?.role || 'editor';
+  document.getElementById('user-password').value = '';
+  document.getElementById('user-isActive').checked = data ? !!data.isActive : true;
+  document.getElementById('user-modal-error').classList.add('d-none');
+  document.getElementById('user-password-label').textContent = data ? 'New Password (leave blank to keep current)' : 'Password *';
+  document.getElementById('user-password-hint').textContent = data ? 'Leave blank to keep current password' : '';
+  // Reset eye icon
+  const pwd = document.getElementById('user-password');
+  pwd.type = 'password';
+  document.getElementById('user-pwd-eye').className = 'bi bi-eye';
+  new bootstrap.Modal(document.getElementById('userModal')).show();
+};
+
+window.saveUser = async function() {
+  const id = document.getElementById('user-id').value;
+  const name = document.getElementById('user-name').value.trim();
+  const email = document.getElementById('user-email').value.trim();
+  const role = document.getElementById('user-role').value;
+  const password = document.getElementById('user-password').value;
+  const isActive = document.getElementById('user-isActive').checked;
+  const errEl = document.getElementById('user-modal-error');
+
+  errEl.classList.add('d-none');
+
+  if (!name || !email) { errEl.textContent = 'Name and email are required.'; errEl.classList.remove('d-none'); return; }
+  if (!id && !password) { errEl.textContent = 'Password is required for new users.'; errEl.classList.remove('d-none'); return; }
+  if (password && password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.remove('d-none'); return; }
+
+  const body = { name, email, role, isActive };
+  if (!id) { body.password = password; }
+  else if (password) { body.newPassword = password; }
+
+  const r = await apiCall(id ? `/api/auth/users/${id}` : '/api/auth/users', id ? 'PUT' : 'POST', body);
+  if (r.success) {
+    bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+    loadUsers();
+    toast(id ? 'User updated!' : 'User created!');
+  } else {
+    errEl.textContent = r.message || 'Error saving user.';
+    errEl.classList.remove('d-none');
+  }
+};
+
+window.deleteUser = async function(id) {
+  if (!confirm('Delete this user? This cannot be undone.')) return;
+  const r = await apiCall(`/api/auth/users/${id}`, 'DELETE');
+  if (r.success) { loadUsers(); toast('User deleted.', 'warning'); }
+  else toast(r.message || 'Error deleting user.', 'danger');
+};
+
+window.toggleUserPasswordVisibility = function() {
+  const input = document.getElementById('user-password');
+  const icon = document.getElementById('user-pwd-eye');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'bi bi-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'bi bi-eye';
+  }
+};
+
+// ==================== DONATE PAGE ====================
+let paymentMethods = [];
+
+const DEFAULT_PAYMENT_METHODS = [
+  { id: 'bank', title: 'Bank Transfer', details: [
+      { label: 'Bank', value: 'CRDB Bank' },
+      { label: 'Account Name', value: 'Women Empowerment Initiatives' },
+      { label: 'Account Number', value: '0150XXXXXXXX' },
+      { label: 'Swift Code', value: 'CORUTZTZ' }
+  ]},
+  { id: 'mobile_money', title: 'Mobile Money (M-Pesa / Tigo Pesa / Airtel Money)', details: [
+      { label: 'Number', value: '+255 743 111 867' },
+      { label: 'Name', value: 'Women Empowerment Initiatives' }
+  ]},
+  { id: 'other', title: 'Other Payment Method', details: [
+      { label: 'Description', value: 'Western Union, MoneyGram, or other methods' }
+  ]}
+];
+
+async function loadDonatePage() {
+  const d = await apiCall('/api/content/site/payment_methods');
+  paymentMethods = (d.success && Array.isArray(d.data?.value) && d.data.value.length)
+    ? d.data.value
+    : JSON.parse(JSON.stringify(DEFAULT_PAYMENT_METHODS));
+  renderPaymentMethods();
+}
+
+function renderPaymentMethods() {
+  const container = document.getElementById('payment-methods-list');
+  if (!paymentMethods.length) {
+    container.innerHTML = '<div class="col-12"><p class="text-muted">No payment methods yet. Click "Add Method" to add one.</p></div>';
+    return;
+  }
+  container.innerHTML = paymentMethods.map((m, i) => `
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <span class="fw-semibold">${escHtml(m.title)}</span>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="openPaymentMethodModal(${i})" title="Edit"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deletePaymentMethod(${i})" title="Delete"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>
+        <div class="card-body py-2">
+          <p class="text-muted small mb-2">ID: <code>${escHtml(m.id)}</code></p>
+          ${m.details.map(d => `<p class="mb-1 small"><strong>${escHtml(d.label)}:</strong> ${escHtml(d.value)}</p>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function savePaymentMethods() {
+  const r = await apiCall('/api/content/site', 'PUT', { key: 'payment_methods', value: paymentMethods, type: 'json' });
+  if (r.success) toast('Payment methods saved!');
+  else toast(r.message || 'Error saving', 'danger');
+}
+
+window.openPaymentMethodModal = function(index = -1) {
+  document.getElementById('pm-index').value = index;
+  const m = index >= 0 ? paymentMethods[index] : null;
+  document.getElementById('pm-modal-title').textContent = m ? 'Edit Payment Method' : 'Add Payment Method';
+  document.getElementById('pm-id').value = m?.id || '';
+  document.getElementById('pm-title').value = m?.title || '';
+  // Render detail rows
+  const list = document.getElementById('pm-details-list');
+  const details = m?.details || [{ label: '', value: '' }];
+  list.innerHTML = details.map((d, i) => pmDetailRowHtml(d.label, d.value)).join('');
+  new bootstrap.Modal(document.getElementById('paymentMethodModal')).show();
+};
+
+function pmDetailRowHtml(label = '', value = '') {
+  return `<div class="d-flex gap-2 mb-2 pm-detail-row">
+    <input type="text" class="form-control form-control-sm pm-detail-label" placeholder="Label (e.g. Account Number)" value="${escHtml(label)}">
+    <input type="text" class="form-control form-control-sm pm-detail-value" placeholder="Value" value="${escHtml(value)}">
+    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.pm-detail-row').remove()"><i class="bi bi-x"></i></button>
+  </div>`;
+}
+
+window.addPmDetailRow = function() {
+  document.getElementById('pm-details-list').insertAdjacentHTML('beforeend', pmDetailRowHtml());
+};
+
+window.savePaymentMethod = function() {
+  const index = parseInt(document.getElementById('pm-index').value);
+  const id = document.getElementById('pm-id').value.trim().replace(/\s+/g, '_');
+  const title = document.getElementById('pm-title').value.trim();
+  if (!id) return toast('Method ID is required', 'danger');
+  if (!title) return toast('Title is required', 'danger');
+  // Check unique ID (except when editing same entry)
+  if (paymentMethods.some((m, i) => m.id === id && i !== index)) return toast('A method with this ID already exists', 'danger');
+  const details = [];
+  document.querySelectorAll('.pm-detail-row').forEach(row => {
+    const label = row.querySelector('.pm-detail-label').value.trim();
+    const value = row.querySelector('.pm-detail-value').value.trim();
+    if (label || value) details.push({ label, value });
+  });
+  const method = { id, title, details };
+  if (index >= 0) paymentMethods[index] = method;
+  else paymentMethods.push(method);
+  savePaymentMethods();
+  renderPaymentMethods();
+  bootstrap.Modal.getInstance(document.getElementById('paymentMethodModal')).hide();
+};
+
+window.deletePaymentMethod = function(index) {
+  if (!confirm('Remove this payment method?')) return;
+  paymentMethods.splice(index, 1);
+  savePaymentMethods();
+  renderPaymentMethods();
+};
+
+// ==================== CATEGORIES ====================
+let causeCategories = ['education', 'health', 'livelihood', 'advocacy', 'other'];
+let blogCategories = ['News', 'Stories', 'Updates'];
+
+async function loadCategories() {
+  try {
+    const [cr, br] = await Promise.all([
+      apiCall('/api/content/site/cause_categories'),
+      apiCall('/api/content/site/blog_categories')
+    ]);
+    if (cr.success && cr.data?.value) causeCategories = Array.isArray(cr.data.value) ? cr.data.value : causeCategories;
+    if (br.success && br.data?.value) blogCategories = Array.isArray(br.data.value) ? br.data.value : blogCategories;
+  } catch(e) {}
+}
+
+function populateCategorySelect(selectId, categories, selectedValue) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select —</option>' + categories.map(c =>
+    `<option value="${c}" ${c === selectedValue ? 'selected' : ''}>${c.charAt(0).toUpperCase() + c.slice(1)}</option>`
+  ).join('');
+  if (selectedValue) sel.value = selectedValue;
+}
+
+function renderCategoryLists() {
+  const causeEl = document.getElementById('cause-categories-list');
+  const blogEl = document.getElementById('blog-categories-list');
+  if (causeEl) {
+    causeEl.innerHTML = causeCategories.length
+      ? causeCategories.map((c, i) =>
+          `<div class="d-flex align-items-center mb-2 border-bottom pb-2">
+            <span class="flex-grow-1">${c.charAt(0).toUpperCase() + c.slice(1)}</span>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteCategoryItem('cause',${i})" title="Remove"><i class="bi bi-trash"></i></button>
+          </div>`
+        ).join('')
+      : '<p class="text-muted small">No categories yet.</p>';
+  }
+  if (blogEl) {
+    blogEl.innerHTML = blogCategories.length
+      ? blogCategories.map((c, i) =>
+          `<div class="d-flex align-items-center mb-2 border-bottom pb-2">
+            <span class="flex-grow-1">${c}</span>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteCategoryItem('blog',${i})" title="Remove"><i class="bi bi-trash"></i></button>
+          </div>`
+        ).join('')
+      : '<p class="text-muted small">No categories yet.</p>';
+  }
+}
+
+async function saveCategoryList(type) {
+  const key = type === 'cause' ? 'cause_categories' : 'blog_categories';
+  const value = type === 'cause' ? causeCategories : blogCategories;
+  const r = await apiCall('/api/content/site', 'PUT', { key, value, type: 'json' });
+  if (!r.success) toast(r.message || 'Error saving categories', 'danger');
+  else toast('Categories saved!');
+}
+
+async function loadCategoryPage() {
+  await loadCategories();
+  renderCategoryLists();
+}
+
+window.addCategoryItem = function(type) {
+  const name = prompt('Enter category name:');
+  if (!name || !name.trim()) return;
+  const trimmed = name.trim();
+  if (type === 'cause') {
+    if (causeCategories.some(c => c.toLowerCase() === trimmed.toLowerCase())) { alert('Category already exists'); return; }
+    causeCategories.push(trimmed.toLowerCase());
+  } else {
+    if (blogCategories.some(c => c.toLowerCase() === trimmed.toLowerCase())) { alert('Category already exists'); return; }
+    blogCategories.push(trimmed);
+  }
+  saveCategoryList(type);
+  renderCategoryLists();
+};
+
+window.deleteCategoryItem = function(type, index) {
+  if (!confirm('Remove this category?')) return;
+  if (type === 'cause') causeCategories.splice(index, 1);
+  else blogCategories.splice(index, 1);
+  saveCategoryList(type);
+  renderCategoryLists();
+};
+
+// ==================== INIT ====================
+if (token) checkAuth();
+window.loadDonations = loadDonations;
+window.loadContacts = loadContacts;
+window.loadMedia = loadMedia;
+</script>
+</body>
+</html>

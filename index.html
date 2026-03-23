@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Women Empowerment Initiatives (WEI) - Empowering Women, Transforming Communities</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Women Empowerment Initiatives (WEI) is a non-profit organization in Tanzania dedicated to empowering women through education, healthcare, and livelihood programs.">
+  <meta name="keywords" content="women empowerment, Tanzania, NGO, education, healthcare, livelihood, Dodoma">
+
+  <link href="https://fonts.googleapis.com/css2?family=Mansalva&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/wei.css">
+</head>
+
+<body>
+<div class="wei-wrap">
+
+  <!-- Mobile Menu Overlay -->
+  <div class="wei-overlay-bg"></div>
+
+  <!-- Mobile Nav -->
+  <nav class="wei-mobile-nav">
+    <button class="wei-mobile-nav-close"><i class="bi bi-x-lg"></i></button>
+    <ul>
+      <li class="active"><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="causes.html">Our Programs</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="wei-mobile-donate mt-3">
+      <a href="donate.html" class="btn-wei-donate d-block text-center">Donate Now</a>
+    </div>
+  </nav>
+
+  <!-- Navbar -->
+  <header class="wei-navbar">
+    <div class="container">
+      <div class="wei-logo mr-auto">
+        <a href="index.html">
+          <span class="wei-logo-main">WEI</span>
+          <span class="wei-logo-sub">Tanzania</span>
+        </a>
+      </div>
+      <ul class="wei-nav-menu wei-nav-desktop mb-0">
+        <li class="active"><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="causes.html">Our Programs</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="wei-header-actions wei-nav-desktop">
+        <a href="https://facebook.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-facebook"></i></a>
+        <a href="https://twitter.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-twitter-x"></i></a>
+        <a href="https://instagram.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-instagram"></i></a>
+        <a href="donate.html" class="btn-wei-donate ml-2">Donate Now</a>
+      </div>
+      <button class="wei-menu-toggle"><i class="bi bi-list"></i></button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="wei-hero">
+    <div class="wei-hero-slides">
+      <div class="wei-hero-slide" style="background-image: url('images/hero_1.jpg');"></div>
+      <div class="wei-hero-slide" style="background-image: url('images/hero_2.jpg');"></div>
+      <div class="wei-hero-slide" style="background-image: url('images/hero_3.jpg');"></div>
+    </div>
+    <div class="container">
+      <div class="wei-hero-content">
+        <h1 id="hero-title">Empowering Women, Building Stronger Communities</h1>
+        <p id="hero-subtitle">Join us in creating opportunities for women and youth in Tanzania through education, healthcare, and livelihood programs.</p>
+        <a href="donate.html" class="btn-wei-primary" id="hero-cta">Donate Now</a>
+      </div>
+    </div>
+    <div class="wei-hero-dots">
+      <button class="wei-hero-dot"></button>
+      <button class="wei-hero-dot"></button>
+      <button class="wei-hero-dot"></button>
+    </div>
+    <div class="wei-hero-flag-band"></div>
+  </section>
+
+  <!-- Program Tiles -->
+  <div class="container">
+    <div class="row wei-program-tiles">
+      <div class="col-md-4 mb-3 mb-md-0">
+        <a href="causes.html#education" class="wei-program-tile wei-program-tile-danger" style="background-image: url('images/img_3_gray.jpg');">
+          <div class="wei-program-tile-text">
+            <span>Program</span>
+            <h3>Education</h3>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4 mb-3 mb-md-0">
+        <a href="causes.html#health" class="wei-program-tile wei-program-tile-success" style="background-image: url('images/img_2_gray.jpg');">
+          <div class="wei-program-tile-text">
+            <span>Program</span>
+            <h3>Healthcare</h3>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="causes.html#livelihood" class="wei-program-tile wei-program-tile-warning" style="background-image: url('images/img_1_gray.jpg');">
+          <div class="wei-program-tile-text">
+            <span>Program</span>
+            <h3>Livelihood</h3>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Our Programs -->
+  <section class="wei-section">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-md-4">
+          <h2 class="wei-section-title wei-cursive">Our Programs</h2>
+        </div>
+        <div class="col-md-8">
+          <p>WEI operates sustainable programs benefiting women, youth, and children across Dodoma City Council, Chamwino District Council, and Bahi District Council in Tanzania.</p>
+        </div>
+      </div>
+      <div class="row" id="causes-container">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose WEI -->
+  <section class="wei-section wei-features-bg" style="background-image: url('images/hero_1.jpg');">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-md-7">
+          <h2 class="wei-section-title wei-cursive text-white mb-3">Why Choose WEI</h2>
+          <p style="color: rgba(255,255,255,0.8);">We are committed to creating lasting change in the lives of women and communities across Tanzania through sustainable, community-driven programs.</p>
+        </div>
+      </div>
+      <div class="row" id="home-features-container">
+        <div class="col-md-6">
+          <div class="wei-feature-item">
+            <div class="wei-feature-num">1</div>
+            <div class="wei-feature-text">
+              <h3>Community-Driven Approach</h3>
+              <p>We work directly with local communities to understand and address their specific needs.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="wei-feature-item">
+            <div class="wei-feature-num">2</div>
+            <div class="wei-feature-text">
+              <h3>Sustainable Programs</h3>
+              <p>Our programs focus on long-term impact through skills training, education support, and economic empowerment.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="wei-feature-item">
+            <div class="wei-feature-num">3</div>
+            <div class="wei-feature-text">
+              <h3>Strong Partnerships</h3>
+              <p>We collaborate with ACWW, ViiV Healthcare, and government entities to maximize our impact.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="wei-feature-item">
+            <div class="wei-feature-num">4</div>
+            <div class="wei-feature-text">
+              <h3>Holistic Development</h3>
+              <p>We address multiple aspects including health, education, economic opportunities, and leadership.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Events -->
+  <section class="wei-section">
+    <div class="container">
+      <h2 class="wei-section-title wei-cursive mb-5">Upcoming Events</h2>
+      <div class="row" id="events-container">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners -->
+  <section class="wei-section" style="background: #f8f9fa;">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="wei-section-title wei-cursive">Our Partners</h2>
+        <p class="wei-section-subtitle">We work with trusted organizations to maximize our impact</p>
+      </div>
+      <div class="row justify-content-center" id="partners-container">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Support / Donate -->
+  <section class="wei-section">
+    <div class="container">
+      <div class="row align-items-stretch">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <img src="images/img_1.jpg" alt="Donate to WEI" class="img-fluid shadow rounded h-100" style="object-fit: cover;">
+        </div>
+        <div class="col-md-6">
+          <div class="wei-donate-box h-100">
+            <h3 class="wei-cursive">Support Our Cause</h3>
+            <p>Your donation helps us empower women and transform communities across Tanzania.</p>
+            <a href="donate.html" class="btn-wei-primary d-block text-center mb-3">Donate Now</a>
+            <hr>
+            <h6>Bank Transfer Details:</h6>
+            <p class="small mb-1"><strong>Bank:</strong> CRDB Bank</p>
+            <p class="small mb-1"><strong>Account:</strong> Women Empowerment Initiatives</p>
+            <p class="small mb-1"><strong>Account No:</strong> 0150XXXXXXXX</p>
+            <p class="small mb-0"><strong>Swift:</strong> CORUTZTZ</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="wei-section-sm">
+    <div class="container">
+      <div class="wei-cta">
+        <h2 class="wei-cursive">Helping Women, Youth, and Children Build Better Futures</h2>
+        <a href="donate.html" class="btn-wei-primary">Donate Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="wei-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">About WEI</h3>
+          <p>Women Empowerment Initiatives (WEI) focuses on enhancing women's autonomy and capabilities through sustainable programs in education, healthcare, and economic development.</p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h3 class="wei-footer-heading">Quick Links</h3>
+          <ul class="wei-footer-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="causes.html">Our Programs</a></li>
+            <li><a href="donate.html">Donate</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">Contact Info</h3>
+          <div class="wei-footer-contact">
+            <p><i class="bi bi-geo-alt"></i> Dodoma - Makulu, Tanzania</p>
+            <p><i class="bi bi-telephone"></i> +255 743 111 867</p>
+            <p><i class="bi bi-envelope"></i> info@wei.or.tz</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <h3 class="wei-footer-heading">Newsletter</h3>
+          <p>Stay updated with our latest news and stories of impact.</p>
+          <form id="newsletter-form">
+            <!-- Honeypot: hidden from humans, bots fill it — server rejects if non-empty -->
+            <div style="position:absolute;left:-9999px;height:0;overflow:hidden;" aria-hidden="true">
+              <input type="text" name="website" id="newsletter-hp" tabindex="-1" autocomplete="off" value="">
+            </div>
+            <div class="input-group mb-2">
+              <input type="email" id="newsletter-email" class="form-control" placeholder="Enter your email" required>
+              <div class="input-group-append">
+                <button class="btn btn-primary text-white" type="submit">Subscribe</button>
+              </div>
+            </div>
+            <div id="newsletter-message" class="small"></div>
+          </form>
+          <h3 class="wei-footer-heading mt-4">Follow Us</h3>
+          <div class="wei-footer-social">
+            <a href="https://facebook.com/weitanzania" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://twitter.com/weitanzania" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://instagram.com/weitanzania" target="_blank"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wei-footer-bottom">
+      <div class="container d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
+        <p class="mb-0">Copyright &copy; <script>document.write(new Date().getFullYear());</script> Women Empowerment Initiatives (WEI). All rights reserved.</p>
+        <a href="admin/" style="color:#bbb;font-size:12px;text-decoration:none;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#bbb'"><i class="bi bi-shield-lock"></i> Admin</a>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- .wei-wrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/wei-main.js"></script>
+<script src="js/api.js"></script>
+
+<script>
+  function imgSrc(src, fallback) {
+    if (!src) return fallback || '';
+    if (src.startsWith('http') || src.startsWith('/') || src.startsWith('data:')) return src;
+    return '/uploads/images/' + src;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadHeroContent();
+    loadCauses();
+    loadEvents();
+    loadPartners();
+    loadHomepageFeatures();
+
+    document.getElementById('newsletter-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = document.getElementById('newsletter-email').value;
+      const website = document.getElementById('newsletter-hp').value;
+      const msgEl = document.getElementById('newsletter-message');
+      try {
+        const res = await fetch('/api/subscribers/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, website })
+        });
+        const data = await res.json();
+        msgEl.textContent = data.message;
+        msgEl.className = data.success ? 'small text-success' : 'small text-danger';
+        if (data.success) document.getElementById('newsletter-email').value = '';
+      } catch (err) {
+        msgEl.textContent = 'Error subscribing. Please try again.';
+        msgEl.className = 'small text-danger';
+      }
+    });
+  });
+
+  async function loadHeroContent() {
+    try {
+      const res = await fetch('/api/content/site');
+      const data = await res.json();
+      if (!data.success) return;
+      const c = data.data;
+      if (c.hero_title?.value)    document.getElementById('hero-title').textContent    = c.hero_title.value;
+      if (c.hero_subtitle?.value) document.getElementById('hero-subtitle').textContent = c.hero_subtitle.value;
+      if (c.cta_text?.value)      document.getElementById('hero-cta').textContent      = c.cta_text.value;
+    } catch (e) {}
+  }
+
+  async function loadCauses() {
+    try {
+      const res = await fetch('/api/content/causes?limit=3&featured=true');
+      const data = await res.json();
+      if (!data.success || !data.data.length) return;
+      const colors = ['danger', 'primary', 'warning'];
+      document.getElementById('causes-container').innerHTML = data.data.map((cause, idx) => {
+        const pct = Math.min(100, Math.round((cause.raisedAmount / cause.goalAmount) * 100));
+        const col = colors[idx % 3];
+        return `
+          <div class="col-md-4 mb-4">
+            <div class="wei-cause-card">
+              <img src="${imgSrc(cause.featuredImage, 'images/img_' + (idx + 1) + '.jpg')}" alt="${cause.title}">
+              <div class="wei-cause-progress-wrap">
+                <div class="wei-cause-progress-label">${pct}% complete</div>
+                <div class="wei-cause-progress-bar">
+                  <div class="wei-cause-progress-fill ${col}" style="width:${pct}%"></div>
+                </div>
+              </div>
+              <div class="wei-cause-body">
+                <span class="wei-badge wei-badge-${col}">${cause.category}</span>
+                <h5>${cause.title}</h5>
+                <div class="wei-cause-raised">
+                  <span>Raised</span>
+                  <strong class="text-primary">TZS ${Number(cause.raisedAmount).toLocaleString()}</strong>
+                </div>
+                <p class="small text-muted mb-0">${cause.description ? cause.description.substring(0, 100) + '...' : ''}</p>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (e) {}
+  }
+
+  async function loadEvents() {
+    try {
+      const res = await fetch('/api/content/events?limit=2&upcoming=true');
+      const data = await res.json();
+      const container = document.getElementById('events-container');
+      if (data.success && data.data.length > 0) {
+        container.innerHTML = data.data.map(ev => {
+          const d = new Date(ev.eventDate);
+          return `
+            <div class="col-md-6">
+              <div class="wei-event-card">
+                <img src="${imgSrc(ev.featuredImage, 'images/img_1.jpg')}" alt="${ev.title}">
+                <div class="wei-event-meta">
+                  <div class="wei-event-date">
+                    <span class="wei-event-date-day">${d.getDate()}</span>
+                    <span class="wei-event-date-month">${d.toLocaleString('default',{month:'short'})} ${d.getFullYear()}</span>
+                  </div>
+                  <div class="wei-event-details">
+                    <div class="wei-event-info"><i class="bi bi-clock"></i>${ev.startTime || 'TBA'} &nbsp;<i class="bi bi-geo-alt"></i>${ev.location || 'Dodoma, Tanzania'}</div>
+                    <h4><a href="#">${ev.title}</a></h4>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+      } else {
+        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No upcoming events at the moment. Check back soon!</p></div>';
+      }
+    } catch (e) {}
+  }
+
+  async function loadPartners() {
+    try {
+      const res = await fetch('/api/partners');
+      const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        document.getElementById('partners-container').innerHTML = data.data.map(p => `
+          <div class="col-md-2 col-4 mb-4">
+            <div class="wei-partner-item">
+              <a href="${p.website || '#'}" target="_blank" title="${p.name}">
+                ${p.logo
+                  ? `<img src="${imgSrc(p.logo)}" alt="${p.name}">`
+                  : `<div class="bg-secondary text-white p-3 rounded text-center"><small>${p.name}</small></div>`
+                }
+              </a>
+            </div>
+          </div>`).join('');
+      }
+    } catch (e) {}
+  }
+
+  async function loadHomepageFeatures() {
+    try {
+      const res = await fetch('/api/content/site');
+      const data = await res.json();
+      if (!data.success) return;
+      const c = data.data;
+      if (c.home_features?.value) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(c.home_features.value, 'text/html');
+        const headings = doc.querySelectorAll('h3');
+        if (headings.length > 0) {
+          document.getElementById('home-features-container').innerHTML = Array.from(headings).map((h, i) => {
+            const next = h.nextElementSibling;
+            const text = (next && next.tagName === 'P') ? next.textContent : '';
+            return `<div class="col-md-6">
+              <div class="wei-feature-item">
+                <div class="wei-feature-num">${i + 1}</div>
+                <div class="wei-feature-text"><h3>${h.textContent}</h3><p>${text}</p></div>
+              </div>
+            </div>`;
+          }).join('');
+        }
+      }
+    } catch (e) {}
+  }
+</script>
+
+</body>
+</html>
