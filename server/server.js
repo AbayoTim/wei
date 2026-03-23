@@ -57,7 +57,6 @@ app.use(helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 
-// CORS configuration — never fall back to wildcard '*'
 const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(s => s.trim())
   : [];
@@ -66,6 +65,8 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow same-origin requests (no Origin header) and server-to-server
     if (!origin) return callback(null, true);
+    // If no FRONTEND_URL configured, allow all origins
+    if (allowedOrigins.length === 0) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error(`CORS: origin '${origin}' not allowed`));
   },
@@ -201,7 +202,7 @@ const startServer = async () => {
     // Seed initial data
     await seedDatabase();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
