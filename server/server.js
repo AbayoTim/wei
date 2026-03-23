@@ -203,6 +203,8 @@ const startServer = async () => {
     await seedDatabase();
 
     app.listen(PORT, '0.0.0.0', () => {
+      const adminEmail    = process.env.ADMIN_EMAIL    || 'admin@wei.or.tz';
+      const adminPassword = process.env.ADMIN_PASSWORD || 'WeiAdmin2024!';
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
@@ -211,9 +213,13 @@ const startServer = async () => {
 ║   Server running on port ${PORT}                              ║
 ║   Environment: ${process.env.NODE_ENV || 'development'}                            ║
 ║                                                            ║
-║   API: http://localhost:${PORT}/api                           ║
+║   API:     http://localhost:${PORT}/api                       ║
 ║   Website: http://localhost:${PORT}                           ║
-║   Admin: http://localhost:${PORT}/admin                       ║
+║   Admin:   http://localhost:${PORT}/admin                     ║
+║                                                            ║
+║   Admin login                                              ║
+║   Email:    ${adminEmail.padEnd(44)}║
+║   Password: ${adminPassword.padEnd(44)}║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
       `);
