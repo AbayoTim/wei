@@ -247,9 +247,18 @@ exports.getStats = async (req, res) => {
     const approved = await Donation.count({ where: { status: 'approved' } });
     const rejected = await Donation.count({ where: { status: 'rejected' } });
 
-    const totalAmount = await Donation.sum('amount', {
-      where: { status: 'approved' }
-    }) || 0;
+    const amountsByCurrency = await Donation.findAll({
+      where: { status: 'approved' },
+      attributes: ['currency', [fn('SUM', col('amount')), 'total']],
+      group: ['currency'],
+      raw: true
+    });
+
+    // Build a map: { TZS: 150000, USD: 200, ... }
+    const totalsByCurrency = {};
+    amountsByCurrency.forEach(row => {
+      totalsByCurrency[row.currency] = parseFloat(row.total) || 0;
+    });
 
     res.json({
       success: true,
@@ -258,7 +267,7 @@ exports.getStats = async (req, res) => {
         pending,
         approved,
         rejected,
-        totalAmount
+        totalsByCurrency
       }
     });
   } catch (error) {

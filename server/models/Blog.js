@@ -51,6 +51,16 @@ const Blog = sequelize.define('Blog', {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
+  gallery: {
+    type: DataTypes.TEXT,
+    get() {
+      const v = this.getDataValue('gallery');
+      return v ? JSON.parse(v) : [];
+    },
+    set(value) {
+      this.setDataValue('gallery', JSON.stringify(value || []));
+    }
+  },
   authorId: {
     type: DataTypes.UUID,
     allowNull: false

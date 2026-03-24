@@ -49,10 +49,11 @@ app.use(helmet({
       scriptSrc:     ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "https://esm.sh"],
       scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc:      ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
-      imgSrc:        ["'self'", "data:", "blob:"],
+      imgSrc:        ["'self'", "data:", "blob:", "https:", "http:"],
       fontSrc:       ["'self'", "cdn.jsdelivr.net"],
       connectSrc:    ["'self'", "https://esm.sh", "cdn.jsdelivr.net"],
       objectSrc:     ["'none'"],
+      frameSrc:      ["'self'", "https://www.youtube.com", "https://player.vimeo.com"],
       baseUri:       ["'self'"],
       formAction:    ["'self'"],
       frameAncestors: ["'none'"]

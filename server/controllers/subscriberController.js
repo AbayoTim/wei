@@ -18,54 +18,43 @@ exports.subscribe = async (req, res) => {
         });
       }
 
-      // Resend confirmation for pending
-      if (subscriber.status === 'pending') {
-        const confirmUrl = `${process.env.FRONTEND_URL}/api/subscribers/confirm/${subscriber.confirmationToken}`;
-        await sendEmail(email, 'subscriptionConfirmation', [name, confirmUrl]);
+      // Reactivate pending or unsubscribed
+      await subscriber.update({
+        status: 'confirmed',
+        confirmedAt: new Date(),
+        unsubscribedAt: null,
+        name: name || subscriber.name
+      });
 
-        return res.json({
-          success: true,
-          message: 'Confirmation email resent. Please check your inbox.'
-        });
-      }
+      const unsubUrl = `${process.env.FRONTEND_URL}/api/subscribers/unsubscribe/${subscriber.confirmationToken}`;
+      await sendEmail(subscriber.email, 'subscriptionConfirmed', [subscriber.name, unsubUrl]);
 
-      // Resubscribe unsubscribed user
-      if (subscriber.status === 'unsubscribed') {
-        await subscriber.update({
-          status: 'pending',
-          unsubscribedAt: null
-        });
-
-        const confirmUrl = `${process.env.FRONTEND_URL}/api/subscribers/confirm/${subscriber.confirmationToken}`;
-        await sendEmail(email, 'subscriptionConfirmation', [name, confirmUrl]);
-
-        return res.json({
-          success: true,
-          message: 'Please check your email to confirm your subscription.'
-        });
-      }
+      return res.json({
+        success: true,
+        message: 'You have been subscribed successfully!'
+      });
     }
 
-    // Create new subscriber
+    // Create new subscriber — immediately active
     subscriber = await Subscriber.create({
       email,
-      name
+      name,
+      status: 'confirmed',
+      confirmedAt: new Date()
     });
 
-    // Send confirmation email
-    const confirmUrl = `${process.env.FRONTEND_URL}/api/subscribers/confirm/${subscriber.confirmationToken}`;
-    await sendEmail(email, 'subscriptionConfirmation', [name, confirmUrl]);
+    const unsubUrl = `${process.env.FRONTEND_URL}/api/subscribers/unsubscribe/${subscriber.confirmationToken}`;
+    await sendEmail(email, 'subscriptionConfirmed', [name, unsubUrl]);
 
-    // Notify admin
     await notifyAdmin('Newsletter Subscription', {
       Email: email,
       Name: name || 'Not provided',
-      Status: 'Pending Confirmation'
+      Status: 'Subscribed'
     });
 
     res.status(201).json({
       success: true,
-      message: 'Please check your email to confirm your subscription.'
+      message: 'You have been subscribed successfully!'
     });
   } catch (error) {
     console.error('Subscribe error:', error);
@@ -99,7 +88,8 @@ exports.confirmSubscription = async (req, res) => {
     });
 
     // Send welcome email
-    await sendEmail(subscriber.email, 'subscriptionConfirmed', [subscriber.name]);
+    const unsubUrl = `${process.env.FRONTEND_URL}/api/subscribers/unsubscribe/${subscriber.confirmationToken}`;
+    await sendEmail(subscriber.email, 'subscriptionConfirmed', [subscriber.name, unsubUrl]);
 
     res.redirect(`${process.env.FRONTEND_URL}/subscription-confirmed.html`);
   } catch (error) {
@@ -118,7 +108,7 @@ exports.unsubscribe = async (req, res) => {
     });
 
     if (!subscriber) {
-      return res.redirect(`${process.env.FRONTEND_URL}/unsubscribe-error.html`);
+      return res.redirect(`${process.env.FRONTEND_URL}/subscription-error.html`);
     }
 
     await subscriber.update({
@@ -137,7 +127,7 @@ exports.getSubscribers = async (req, res) => {
   try {
     const { page = 1, limit = 20, status } = req.query;
 
-    const where = {};
+    const where = { status: 'confirmed' };
     if (status) {
       where.status = status;
     }
@@ -163,18 +153,15 @@ exports.getSubscribers = async (req, res) => {
 // Get subscriber stats (admin)
 exports.getStats = async (req, res) => {
   try {
-    const total = await Subscriber.count();
     const confirmed = await Subscriber.count({ where: { status: 'confirmed' } });
-    const pending = await Subscriber.count({ where: { status: 'pending' } });
     const unsubscribed = await Subscriber.count({ where: { status: 'unsubscribed' } });
 
     res.json({
       success: true,
       data: {
-        total,
         confirmed,
-        pending,
-        unsubscribed
+        unsubscribed,
+        total: confirmed + unsubscribed
       }
     });
   } catch (error) {

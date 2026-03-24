@@ -334,6 +334,10 @@ exports.createEvent = async (req, res) => {
       eventData.featuredImage = req.file.filename;
     }
 
+    if (typeof eventData.gallery === 'string') {
+      eventData.gallery = JSON.parse(eventData.gallery || '[]');
+    }
+
     const event = await Event.create(eventData);
 
     res.status(201).json({
@@ -370,6 +374,10 @@ exports.updateEvent = async (req, res) => {
 
     if (req.file) {
       updateData.featuredImage = req.file.filename;
+    }
+
+    if (typeof updateData.gallery === 'string') {
+      updateData.gallery = JSON.parse(updateData.gallery || '[]');
     }
 
     await event.update(updateData);
@@ -502,6 +510,10 @@ exports.createCause = async (req, res) => {
       causeData.featuredImage = req.file.filename;
     }
 
+    if (typeof causeData.gallery === 'string') {
+      causeData.gallery = JSON.parse(causeData.gallery || '[]');
+    }
+
     const cause = await Cause.create(causeData);
 
     res.status(201).json({
@@ -538,6 +550,10 @@ exports.updateCause = async (req, res) => {
 
     if (req.file) {
       updateData.featuredImage = req.file.filename;
+    }
+
+    if (typeof updateData.gallery === 'string') {
+      updateData.gallery = JSON.parse(updateData.gallery || '[]');
     }
 
     await cause.update(updateData);

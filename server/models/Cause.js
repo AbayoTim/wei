@@ -58,6 +58,16 @@ const Cause = sequelize.define('Cause', {
   isPublished: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  gallery: {
+    type: DataTypes.TEXT,
+    get() {
+      const v = this.getDataValue('gallery');
+      return v ? JSON.parse(v) : [];
+    },
+    set(value) {
+      this.setDataValue('gallery', JSON.stringify(value || []));
+    }
   }
 });
 

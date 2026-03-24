@@ -21,7 +21,7 @@ const Subscriber = sequelize.define('Subscriber', {
   },
   status: {
     type: DataTypes.ENUM('pending', 'confirmed', 'unsubscribed'),
-    defaultValue: 'pending'
+    defaultValue: 'confirmed'
   },
   confirmationToken: {
     type: DataTypes.STRING

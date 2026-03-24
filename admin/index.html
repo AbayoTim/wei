@@ -93,6 +93,14 @@
 
     .table th { font-weight: 600; background: #f8f9fa; font-size: 12.5px; text-transform: uppercase; letter-spacing: .3px; }
     .badge { font-weight: 500; }
+
+    /* Media Gallery Builder */
+    .gallery-item { background: #fff; transition: box-shadow .15s; }
+    .gallery-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    .gallery-thumb { width: 64px; height: 48px; flex-shrink: 0; border-radius: 4px; overflow: hidden; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-thumb .thumb-icon { font-size: 1.5rem; }
+    .gallery-src-label { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #6c757d; }
   </style>
 </head>
 <body>
@@ -178,7 +186,7 @@
       <h4 class="fw-bold mb-4">Dashboard</h4>
       <div class="row mb-4">
         <div class="col-6 col-md-3 mb-3"><div class="card stat-card primary"><div class="card-body"><h6 class="text-muted small mb-1">Pending Donations</h6><h3 class="mb-0" id="stat-pending-donations">0</h3></div></div></div>
-        <div class="col-6 col-md-3 mb-3"><div class="card stat-card success"><div class="card-body"><h6 class="text-muted small mb-1">Total Raised</h6><h3 class="mb-0 fs-5" id="stat-total-raised">TZS 0</h3></div></div></div>
+        <div class="col-6 col-md-3 mb-3"><div class="card stat-card success"><div class="card-body"><h6 class="text-muted small mb-1">Total Raised</h6><div id="stat-total-raised" class="mt-1"></div></div></div></div>
         <div class="col-6 col-md-3 mb-3"><div class="card stat-card warning"><div class="card-body"><h6 class="text-muted small mb-1">New Messages</h6><h3 class="mb-0" id="stat-new-messages">0</h3></div></div></div>
         <div class="col-6 col-md-3 mb-3"><div class="card stat-card danger"><div class="card-body"><h6 class="text-muted small mb-1">Subscribers</h6><h3 class="mb-0" id="stat-subscribers">0</h3></div></div></div>
       </div>
@@ -216,7 +224,7 @@
         <h4 class="fw-bold mb-0">Subscribers</h4>
         <a href="/api/subscribers/export" class="btn btn-success btn-sm" target="_blank"><i class="bi bi-download"></i> Export CSV</a>
       </div>
-      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Email</th><th>Name</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="subscribers-table"></tbody></table></div></div></div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Email</th><th>Name</th><th>Subscribed</th><th>Actions</th></tr></thead><tbody id="subscribers-table"></tbody></table></div></div></div>
     </div>
 
     <!-- Blogs -->
@@ -588,6 +596,18 @@
         <div class="tiptap-body" id="blog-content-editor"></div>
       </div>
     </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Media Gallery <small class="text-muted fw-normal">(images, videos, PDFs — arranged in order between content)</small></label>
+      <div id="blog-gallery-list" class="mb-2"></div>
+      <div class="border rounded p-3 bg-light">
+        <div class="row g-2 align-items-end">
+          <div class="col-auto"><select id="blog-add-type" class="form-select form-select-sm" style="width:100px"><option value="image">Image</option><option value="video">Video</option><option value="pdf">PDF</option></select></div>
+          <div class="col"><input type="url" id="blog-add-src" class="form-control form-control-sm" placeholder="Paste URL (YouTube, Instagram, image link, etc.)"></div>
+          <div class="col-md-3"><input type="text" id="blog-add-caption" class="form-control form-control-sm" placeholder="Caption (optional)"></div>
+          <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-primary" onclick="addGalleryItem('blog')"><i class="bi bi-plus-lg"></i> Add</button></div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="saveBlog()">Save Post</button></div>
 </div></div></div>
@@ -628,6 +648,18 @@
       <div class="tiptap-wrapper">
         <div class="tiptap-toolbar" id="cause-content-toolbar"></div>
         <div class="tiptap-body" id="cause-content-editor"></div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Media Gallery <small class="text-muted fw-normal">(images, videos, PDFs — arranged in order between content)</small></label>
+      <div id="cause-gallery-list" class="mb-2"></div>
+      <div class="border rounded p-3 bg-light">
+        <div class="row g-2 align-items-end">
+          <div class="col-auto"><select id="cause-add-type" class="form-select form-select-sm" style="width:100px"><option value="image">Image</option><option value="video">Video</option><option value="pdf">PDF</option></select></div>
+          <div class="col"><input type="url" id="cause-add-src" class="form-control form-control-sm" placeholder="Paste URL (YouTube, Facebook, image link, etc.)"></div>
+          <div class="col-md-3"><input type="text" id="cause-add-caption" class="form-control form-control-sm" placeholder="Caption (optional)"></div>
+          <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-primary" onclick="addGalleryItem('cause')"><i class="bi bi-plus-lg"></i> Add</button></div>
+        </div>
       </div>
     </div>
   </div>
@@ -672,6 +704,18 @@
       <div class="tiptap-wrapper">
         <div class="tiptap-toolbar" id="event-content-toolbar"></div>
         <div class="tiptap-body" id="event-content-editor"></div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Media Gallery <small class="text-muted fw-normal">(images, videos, PDFs — arranged in order between content)</small></label>
+      <div id="event-gallery-list" class="mb-2"></div>
+      <div class="border rounded p-3 bg-light">
+        <div class="row g-2 align-items-end">
+          <div class="col-auto"><select id="event-add-type" class="form-select form-select-sm" style="width:100px"><option value="image">Image</option><option value="video">Video</option><option value="pdf">PDF</option></select></div>
+          <div class="col"><input type="url" id="event-add-src" class="form-control form-control-sm" placeholder="Paste URL (YouTube, Facebook, image link, etc.)"></div>
+          <div class="col-md-3"><input type="text" id="event-add-caption" class="form-control form-control-sm" placeholder="Caption (optional)"></div>
+          <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-primary" onclick="addGalleryItem('event')"><i class="bi bi-plus-lg"></i> Add</button></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1117,7 +1161,14 @@ function destroyEditor(editorId) {
 async function loadDashboardStats() {
   try {
     const [don, con, sub] = await Promise.all([apiCall('/api/donations/stats'), apiCall('/api/contact/stats'), apiCall('/api/subscribers/stats')]);
-    if (don.success) { document.getElementById('stat-pending-donations').textContent = don.data.pending; document.getElementById('stat-total-raised').textContent = 'TZS ' + Number(don.data.totalAmount || 0).toLocaleString(); }
+    if (don.success) {
+      document.getElementById('stat-pending-donations').textContent = don.data.pending;
+      const totals = don.data.totalsByCurrency || {};
+      const entries = Object.entries(totals);
+      document.getElementById('stat-total-raised').innerHTML = entries.length
+        ? entries.map(([cur, amt]) => `<div class="fw-bold fs-6">${cur} ${Number(amt).toLocaleString()}</div>`).join('')
+        : '<div class="fw-bold fs-6">—</div>';
+    }
     if (con.success) document.getElementById('stat-new-messages').textContent = con.data.new;
     if (sub.success) document.getElementById('stat-subscribers').textContent = sub.data.confirmed;
     loadRecentDonations(); loadRecentMessages();
@@ -1236,8 +1287,8 @@ async function loadSubscribers() {
   const d = await apiCall('/api/subscribers');
   if (d.success) {
     document.getElementById('subscribers-table').innerHTML = d.data.map(s =>
-      `<tr><td>${s.email}</td><td>${s.name||'-'}</td><td><span class="badge bg-${s.status==='confirmed'?'success':s.status==='pending'?'warning text-dark':'secondary'}">${s.status}</span></td><td>${new Date(s.createdAt).toLocaleDateString()}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber('${s.id}')">Delete</button></td></tr>`
-    ).join('') || '<tr><td colspan="5" class="text-center text-muted py-3">No subscribers</td></tr>';
+      `<tr><td>${s.email}</td><td>${s.name||'-'}</td><td>${new Date(s.confirmedAt||s.createdAt).toLocaleDateString()}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber('${s.id}')">Delete</button></td></tr>`
+    ).join('') || '<tr><td colspan="4" class="text-center text-muted py-3">No subscribers</td></tr>';
   }
 }
 
@@ -1268,6 +1319,7 @@ window.openBlogModal = async function(data = null) {
   document.getElementById('blog-featuredImage').value = data?.featuredImage || '';
   const preview = document.getElementById('blog-feat-preview');
   preview.innerHTML = data?.featuredImage ? `<div class="feat-img-wrap"><img src="${imgUrl(data.featuredImage)}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('blog')">×</button></div>` : '';
+  renderGalleryList('blog', data?.gallery || []);
   const modal = new bootstrap.Modal(document.getElementById('blogModal'));
   modal.show();
   document.getElementById('blogModal').addEventListener('shown.bs.modal', () => {
@@ -1291,7 +1343,8 @@ window.saveBlog = async function() {
     status: document.getElementById('blog-status').value,
     excerpt: document.getElementById('blog-excerpt').value,
     content: getEditorHtml('blog-content-editor'),
-    featuredImage: document.getElementById('blog-featuredImage').value
+    featuredImage: document.getElementById('blog-featuredImage').value,
+    gallery: JSON.stringify(getGalleryData('blog'))
   };
   if (!payload.title) return toast('Title is required', 'danger');
   if (!payload.content) return toast('Content is required', 'danger');
@@ -1331,6 +1384,7 @@ window.openCauseModal = async function(data = null) {
   document.getElementById('cause-featuredImage').value = data?.featuredImage || '';
   const preview = document.getElementById('cause-feat-preview');
   preview.innerHTML = data?.featuredImage ? `<div class="feat-img-wrap"><img src="${imgUrl(data.featuredImage)}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('cause')">×</button></div>` : '';
+  renderGalleryList('cause', data?.gallery || []);
   const modal = new bootstrap.Modal(document.getElementById('causeModal'));
   modal.show();
   document.getElementById('causeModal').addEventListener('shown.bs.modal', () => {
@@ -1358,7 +1412,8 @@ window.saveCause = async function() {
     isPublished: document.getElementById('cause-isPublished').checked,
     description: document.getElementById('cause-description').value,
     content: getEditorHtml('cause-content-editor'),
-    featuredImage: document.getElementById('cause-featuredImage').value
+    featuredImage: document.getElementById('cause-featuredImage').value,
+    gallery: JSON.stringify(getGalleryData('cause'))
   };
   if (!payload.title) return toast('Title is required', 'danger');
   const fd = new FormData();
@@ -1400,6 +1455,7 @@ window.openEventModal = function(data = null) {
   document.getElementById('event-featuredImage').value = data?.featuredImage || '';
   const preview = document.getElementById('event-feat-preview');
   preview.innerHTML = data?.featuredImage ? `<div class="feat-img-wrap"><img src="${imgUrl(data.featuredImage)}" class="feat-img-preview"><button type="button" class="btn btn-sm btn-danger rounded-circle remove-feat" onclick="clearFeaturedImage('event')">×</button></div>` : '';
+  renderGalleryList('event', data?.gallery || []);
   const modal = new bootstrap.Modal(document.getElementById('eventModal'));
   modal.show();
   document.getElementById('eventModal').addEventListener('shown.bs.modal', () => {
@@ -1429,7 +1485,8 @@ window.saveEvent = async function() {
     venue: document.getElementById('event-venue').value,
     description: document.getElementById('event-description').value,
     content: getEditorHtml('event-content-editor'),
-    featuredImage: document.getElementById('event-featuredImage').value
+    featuredImage: document.getElementById('event-featuredImage').value,
+    gallery: JSON.stringify(getGalleryData('event'))
   };
   if (!payload.title) return toast('Title is required', 'danger');
   if (!payload.eventDate) return toast('Event date is required', 'danger');
@@ -2134,6 +2191,89 @@ if (token) checkAuth();
 window.loadDonations = loadDonations;
 window.loadContacts = loadContacts;
 window.loadMedia = loadMedia;
+
+// ==================== MEDIA GALLERY BUILDER ====================
+
+function getYouTubeId(url) {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function getVimeoId(url) {
+  const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  return m ? m[1] : null;
+}
+
+function galleryThumbHtml(item) {
+  if (item.type === 'video') {
+    const ytId = getYouTubeId(item.src);
+    if (ytId) return `<img src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;">`;
+    return `<span class="thumb-icon text-primary"><i class="bi bi-play-circle-fill"></i></span>`;
+  }
+  if (item.type === 'pdf') return `<span class="thumb-icon text-danger"><i class="bi bi-file-earmark-pdf-fill"></i></span>`;
+  // image
+  if (item.src) return `<img src="${escHtml(item.src)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="thumb-icon" style="display:none"><i class="bi bi-image"></i></span>`;
+  return `<span class="thumb-icon"><i class="bi bi-image"></i></span>`;
+}
+
+function appendGalleryItem(prefix, item) {
+  const list = document.getElementById(`${prefix}-gallery-list`);
+  const div = document.createElement('div');
+  div.className = 'gallery-item border rounded p-2 mb-2 d-flex align-items-center gap-2';
+  div.dataset.gid = item.id || crypto.randomUUID();
+  div.innerHTML = `
+    <div class="gallery-thumb">${galleryThumbHtml(item)}</div>
+    <div class="flex-grow-1 small">
+      <span class="badge bg-secondary me-1">${item.type}</span>
+      <span class="gallery-src-label" title="${escHtml(item.src)}">${escHtml(item.src)}</span>
+      <input type="text" class="form-control form-control-sm mt-1 gallery-caption" placeholder="Caption (optional)" value="${escHtml(item.caption||'')}">
+    </div>
+    <div class="d-flex flex-column gap-1">
+      <button type="button" class="btn btn-sm btn-outline-secondary py-0 lh-1" onclick="moveGalleryItem(this,-1)" title="Move up"><i class="bi bi-arrow-up"></i></button>
+      <button type="button" class="btn btn-sm btn-outline-secondary py-0 lh-1" onclick="moveGalleryItem(this,1)" title="Move down"><i class="bi bi-arrow-down"></i></button>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.gallery-item').remove()" title="Remove"><i class="bi bi-trash"></i></button>
+    <input type="hidden" class="gallery-type" value="${item.type}">
+    <input type="hidden" class="gallery-src" value="${escHtml(item.src)}">
+    <input type="hidden" class="gallery-external" value="${item.isExternal ? '1' : '0'}">
+  `;
+  list.appendChild(div);
+}
+
+window.addGalleryItem = function(prefix) {
+  const src = document.getElementById(`${prefix}-add-src`).value.trim();
+  const type = document.getElementById(`${prefix}-add-type`).value;
+  const caption = document.getElementById(`${prefix}-add-caption`).value.trim();
+  if (!src) return toast('Please enter a URL', 'danger');
+  appendGalleryItem(prefix, { id: crypto.randomUUID(), type, src, caption, isExternal: true });
+  document.getElementById(`${prefix}-add-src`).value = '';
+  document.getElementById(`${prefix}-add-caption`).value = '';
+};
+
+window.moveGalleryItem = function(btn, dir) {
+  const item = btn.closest('.gallery-item');
+  const list = item.parentElement;
+  if (dir === -1 && item.previousElementSibling) {
+    list.insertBefore(item, item.previousElementSibling);
+  } else if (dir === 1 && item.nextElementSibling) {
+    list.insertBefore(item.nextElementSibling, item);
+  }
+};
+
+function getGalleryData(prefix) {
+  return Array.from(document.querySelectorAll(`#${prefix}-gallery-list .gallery-item`)).map(el => ({
+    id: el.dataset.gid,
+    type: el.querySelector('.gallery-type').value,
+    src: el.querySelector('.gallery-src').value,
+    caption: el.querySelector('.gallery-caption').value.trim(),
+    isExternal: el.querySelector('.gallery-external').value === '1'
+  }));
+}
+
+function renderGalleryList(prefix, items) {
+  document.getElementById(`${prefix}-gallery-list`).innerHTML = '';
+  (items || []).forEach(item => appendGalleryItem(prefix, item));
+}
 </script>
 </body>
 </html>

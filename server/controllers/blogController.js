@@ -99,7 +99,7 @@ exports.getBlog = async (req, res) => {
 // Create blog
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content, excerpt, category, tags, status, featuredImage } = req.body;
+    const { title, content, excerpt, category, tags, status, featuredImage, gallery } = req.body;
 
     let slug = generateSlug(title);
 
@@ -108,6 +108,8 @@ exports.createBlog = async (req, res) => {
     if (existingBlog) {
       slug = `${slug}-${Date.now()}`;
     }
+
+    const parsedGallery = typeof gallery === 'string' ? JSON.parse(gallery || '[]') : (gallery || []);
 
     const blog = await Blog.create({
       title,
@@ -118,6 +120,7 @@ exports.createBlog = async (req, res) => {
       tags,
       status,
       featuredImage,
+      gallery: parsedGallery,
       authorId: req.userId
     });
 
@@ -139,7 +142,7 @@ exports.createBlog = async (req, res) => {
 exports.updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, excerpt, category, tags, status, featuredImage } = req.body;
+    const { title, content, excerpt, category, tags, status, featuredImage, gallery } = req.body;
 
     const blog = await Blog.findByPk(id);
 
@@ -162,6 +165,8 @@ exports.updateBlog = async (req, res) => {
       }
     }
 
+    const parsedGallery = typeof gallery === 'string' ? JSON.parse(gallery || '[]') : (gallery || blog.gallery);
+
     await blog.update({
       title,
       slug,
@@ -170,7 +175,8 @@ exports.updateBlog = async (req, res) => {
       category,
       tags,
       status,
-      featuredImage
+      featuredImage,
+      gallery: parsedGallery
     });
 
     res.json({
