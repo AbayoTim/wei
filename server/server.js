@@ -127,8 +127,13 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-  setHeaders: (res) => {
+  setHeaders: (res, filePath) => {
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    // PDFs need frame-ancestors 'self' so the admin panel can embed them in an iframe.
+    // Helmet sets frame-ancestors 'none' globally; override it here for PDF files only.
+    if (filePath.endsWith('.pdf')) {
+      res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
+    }
   }
 }));
 app.use(express.static(path.join(__dirname, '../')));
