@@ -51,7 +51,7 @@ app.use(helmet({
       styleSrc:      ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
       imgSrc:        ["'self'", "data:", "blob:"],
       fontSrc:       ["'self'", "cdn.jsdelivr.net"],
-      connectSrc:    ["'self'", "https://esm.sh"],
+      connectSrc:    ["'self'", "https://esm.sh", "cdn.jsdelivr.net"],
       objectSrc:     ["'none'"],
       baseUri:       ["'self'"],
       formAction:    ["'self'"],
@@ -96,12 +96,13 @@ const authLimiter = rateLimit({
   message: { success: false, message: 'Too many login attempts, please try again later.' }
 });
 
-// Stricter limits for public form submission endpoints
+// Stricter limits for public form submission endpoints (skip for authenticated admin requests)
 const formLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => !!req.headers.authorization,
   message: { success: false, message: 'Too many submissions, please try again later.' }
 });
 

@@ -1164,7 +1164,9 @@ window.viewDonation = async function(id) {
         <p><b>Method:</b> ${x.paymentMethod||'N/A'}</p><p><b>Txn Ref:</b> ${x.transactionReference||'N/A'}</p>
         <p><b>Status:</b> <span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></p>
       </div><div class="col-md-6">
-        ${x.receiptFile?`<p><b>Receipt:</b><br><img src="/uploads/receipts/${x.receiptFile}" class="img-fluid rounded" style="max-height:250px"></p>`:''}
+        ${x.receiptFile ? (x.receiptFile.toLowerCase().endsWith('.pdf')
+          ? `<p><b>Receipt (PDF):</b><br><iframe src="/uploads/receipts/${x.receiptFile}" width="100%" height="350" style="border:1px solid #dee2e6;border-radius:4px;" title="Donation receipt"></iframe><br><a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-primary mt-2"><i class="bi bi-file-pdf"></i> Open PDF in new tab</a></p>`
+          : `<p><b>Receipt:</b><br><img src="/uploads/receipts/${x.receiptFile}" class="img-fluid rounded" style="max-height:300px;display:block;"><br><a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2"><i class="bi bi-box-arrow-up-right"></i> View full size</a></p>`) : ''}
         ${x.message?`<p><b>Message:</b><br>${x.message}</p>`:''}
       </div></div>`;
     let acts = '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
