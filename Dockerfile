@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libwebp-dev \
     libzip-dev \
+    libonig-dev \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
