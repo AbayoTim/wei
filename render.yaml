@@ -1,9 +1,8 @@
 services:
   - type: web
     name: wei-backend
-    env: php
-    buildCommand: echo "No build step required"
-    startCommand: cd php && php -S 0.0.0.0:$PORT
+    env: docker
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
     envVars:
       - key: APP_ENV
