@@ -1,0 +1,660 @@
+================================================================================
+  WEI TANZANIA — DEPLOYMENT GUIDE
+  Target: Route Africa (routeafrica.com) — Shared Hosting or VPS
+  Backend: PHP 8.1+  |  Database: MySQL (or SQLite)  |  Server: Apache
+================================================================================
+
+This guide covers three paths:
+  [A] Route Africa Shared Hosting (cPanel) — recommended for most users
+  [B] Route Africa VPS / Dedicated Server (SSH + Apache)
+  [C] Docker (any server that supports containers)
+
+CI/CD is handled automatically via .github/workflows/deploy.yml once configured.
+
+────────────────────────────────────────────────────────────────────────────────
+  PREREQUISITES
+────────────────────────────────────────────────────────────────────────────────
+
+Before you start, have these ready:
+
+  1. Route Africa account with an active hosting plan
+     → https://routeafrica.com  (or your Route Africa control panel URL)
+
+  2. Your domain (e.g. wei.or.tz) pointed to Route Africa nameservers
+       NS1: (Route Africa nameserver 1)
+       NS2: (Route Africa nameserver 2)
+     — DNS propagation takes up to 48 hours
+
+  3. Route Africa email accounts created for the domain
+     → cPanel → Email → Email Accounts
+     → Create: info@wei.or.tz and admin@wei.or.tz
+     → Note the email password — you need it for the .env file
+ Note: The exact SMTP hostname Route Africa assigns can vary by server. After creating  
+ the email account in cPanel, go to Email Accounts → Connect Devices to see the exact   
+ hostname (e.g. server123.routeafrica.com). Use that if mail.wei.or.tz doesn't work.
+ 
+  4. Git repository on GitHub (e.g. github.com/your-org/wei)
+
+  5. PHP version must be 8.1 or higher (set in cPanel → PHP Version)
+
+================================================================================
+  PATH A — ROUTE AFRICA SHARED HOSTING (cPanel)
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 1 — Log in to cPanel
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Log in to your Route Africa client area
+  2. Go to Hosting → Manage → cPanel
+  3. You are now in the cPanel dashboard
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 2 — Set PHP Version to 8.2
+────────────────────────────────────────────────────────────────────────────────
+
+  In cPanel:
+    Software → Select PHP Version
+    → Choose PHP 8.2 (or 8.1 minimum)
+    → Enable these extensions (tick the checkboxes):
+        pdo          pdo_sqlite    pdo_mysql
+        fileinfo     mbstring      gd
+        openssl      json          zip
+
+  Click "Apply" / "Save"
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 3 — Create MySQL Database (recommended over SQLite for production)
+────────────────────────────────────────────────────────────────────────────────
+
+  In cPanel:
+    Databases → MySQL Databases
+
+  a) Create database:
+       Database name: wei_db
+       → Click "Create Database"
+
+  b) Create database user:
+       Username: wei_user
+       Password: [use a strong password — save it!]
+       → Click "Create User"
+
+  c) Add user to database:
+       Select user: wei_user
+       Select database: wei_db
+       Privileges: tick "ALL PRIVILEGES"
+       → Click "Add"
+
+  Write these down — you need them for the .env file:
+    DB_HOST     = localhost
+    DB_NAME     = cpanelusername_wei_db   (cPanel prefixes the name with your username)
+    DB_USER     = cpanelusername_wei_user
+    DB_PASS     = [the password you set]
+
+  NOTE: cPanel prefixes database/user names with your cPanel username (e.g. "abc123_wei_db").
+        Check the exact names shown in cPanel after creation.
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 4 — Upload Files
+────────────────────────────────────────────────────────────────────────────────
+
+  OPTION A: File Manager (browser, easiest)
+  ------------------------------------------
+  cPanel → Files → File Manager → public_html
+
+    1. Click "Upload" and upload a ZIP of the project
+    2. Right-click the ZIP → Extract → extract to public_html
+    3. Make sure the structure inside public_html looks like:
+         public_html/
+         ├── .htaccess          ← root routing file
+         ├── index.html
+         ├── about.html
+         ├── css/
+         ├── js/
+         ├── images/
+         ├── admin/
+         ├── fonts/
+         ├── favicon.svg
+         ├── sitemap.xml
+         ├── robots.txt
+         └── php/
+             ├── index.php
+             ├── .htaccess
+             ├── config/
+             ├── src/
+             ├── controllers/
+             ├── models/
+             ├── middleware/
+             ├── uploads/
+             └── data/
+
+    IMPORTANT: Do NOT upload the php/.env file through File Manager.
+               You will create it securely in Step 5.
+
+  OPTION B: FTP (FileZilla or similar)
+  --------------------------------------
+    Host:     ftp.wei.or.tz  (or your domain)
+    Username: [cPanel username]
+    Password: [cPanel password]
+    Port:     21 (FTP) or 22 (SFTP — more secure, use if available)
+
+    Upload all files to /public_html/
+    Exclude: php/.env  php/data/wei.db  .git/  .github/  render.yaml
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 5 — Create the .env File
+────────────────────────────────────────────────────────────────────────────────
+
+  In cPanel → File Manager → navigate to public_html/php/
+
+  Click "+ File" → name it ".env" → Edit
+
+  Paste the following and fill in your values:
+
+  ┌──────────────────────────────────────────────────────────┐
+  │ APP_ENV=production                                        │
+  │ JWT_SECRET=[run: php -r "echo bin2hex(random_bytes(32))"│
+  │                  in cPanel Terminal or generate online]  │
+  │                                                           │
+  │ SMTP_HOST=mail.wei.or.tz                                  │
+  │ SMTP_PORT=587                                             │
+  │ SMTP_USER=info@wei.or.tz                                  │
+  │ SMTP_PASS=your-email-account-password                     │
+  │ EMAIL_FROM=info@wei.or.tz                                 │
+  │ ADMIN_EMAIL=admin@wei.or.tz                               │
+  │ ADMIN_PASSWORD=ChangeThisToSomethingStrong!               │
+  │                                                           │
+  │ FRONTEND_URL=https://wei.or.tz                            │
+  │                                                           │
+  │ DB_DRIVER=mysql                                           │
+  │ DB_HOST=localhost                                         │
+  │ DB_PORT=3306                                              │
+  │ DB_NAME=cpanelusername_wei_db                             │
+  │ DB_USER=cpanelusername_wei_user                           │
+  │ DB_PASS=your-db-password                                  │
+  └──────────────────────────────────────────────────────────┘
+
+  Save and close.
+
+  Then set permissions: right-click .env → Change Permissions → 600
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 6 — Set Folder Permissions
+────────────────────────────────────────────────────────────────────────────────
+
+  In File Manager, right-click each folder and set permissions:
+
+    php/uploads/       → 755  (PHP needs to write here)
+    php/uploads/images → 755
+    php/uploads/receipts → 755
+    php/uploads/videos → 755
+    php/uploads/docs   → 755
+    php/data/          → 755  (only if using SQLite)
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 7 — Enable SSL (HTTPS)
+────────────────────────────────────────────────────────────────────────────────
+
+  cPanel → Security → SSL/TLS
+    → "Run AutoSSL" for your domain
+    OR
+    → cPanel → Security → Let's Encrypt SSL → Issue Certificate
+
+  After SSL is active, force HTTPS by adding to the TOP of public_html/.htaccess:
+
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 8 — Test the Deployment
+────────────────────────────────────────────────────────────────────────────────
+
+  Open your browser and test these URLs:
+
+    https://wei.or.tz/                     → Homepage
+    https://wei.or.tz/about                → About page (clean URL)
+    https://wei.or.tz/contact.html         → Should 301 redirect to /contact
+    https://wei.or.tz/api/health           → Should return JSON: {"success":true,...}
+    https://wei.or.tz/admin               → Admin login page
+
+  Test admin login:
+    Email:    admin@wei.or.tz
+    Password: [what you set in ADMIN_PASSWORD]
+
+  Change the admin password immediately after first login via:
+    Admin Panel → Config → Admin Users → Edit
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 9 — Update sitemap.xml
+────────────────────────────────────────────────────────────────────────────────
+
+  Edit sitemap.xml and replace all "https://wei.or.tz" with your actual domain
+  if it is different. Then submit the sitemap:
+
+    Google Search Console → https://search.google.com/search-console
+    → Add property → enter https://wei.or.tz
+    → Sitemaps → Enter: sitemap.xml → Submit
+
+================================================================================
+  PATH B — ROUTE AFRICA VPS (SSH + Apache + Ubuntu)
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 1 — Connect and update server
+────────────────────────────────────────────────────────────────────────────────
+
+  ssh root@YOUR_SERVER_IP
+
+  apt update && apt upgrade -y
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 2 — Install Apache, PHP, MySQL
+────────────────────────────────────────────────────────────────────────────────
+
+  # Apache
+  apt install -y apache2
+  a2enmod rewrite headers ssl
+  systemctl enable apache2
+
+  # PHP 8.2
+  apt install -y software-properties-common
+  add-apt-repository ppa:ondrej/php -y
+  apt update
+  apt install -y php8.2 php8.2-pdo php8.2-sqlite3 php8.2-mysql \
+                 php8.2-mbstring php8.2-gd php8.2-fileinfo \
+                 php8.2-zip php8.2-curl libapache2-mod-php8.2
+
+  # MySQL
+  apt install -y mysql-server
+  mysql_secure_installation
+
+  # Create database and user
+  mysql -u root -p <<SQL
+  CREATE DATABASE wei CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  CREATE USER 'wei_user'@'localhost' IDENTIFIED BY 'StrongPasswordHere!';
+  GRANT ALL PRIVILEGES ON wei.* TO 'wei_user'@'localhost';
+  FLUSH PRIVILEGES;
+  SQL
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 3 — Deploy application files
+────────────────────────────────────────────────────────────────────────────────
+
+  # Create web directory
+  mkdir -p /var/www/wei
+  cd /var/www/wei
+
+  # Clone from GitHub (replace with your repo URL)
+  git clone https://github.com/YOUR_ORG/wei.git .
+
+  # OR upload via rsync from your local machine:
+  # rsync -avz --exclude='.git' --exclude='php/.env' --exclude='php/data' \
+  #   ./ root@YOUR_SERVER_IP:/var/www/wei/
+
+  # Set permissions
+  chown -R www-data:www-data /var/www/wei/php/uploads /var/www/wei/php/data
+  chmod -R 755 /var/www/wei/php/uploads /var/www/wei/php/data
+  find /var/www/wei -type f -name "*.php" -exec chmod 644 {} \;
+  find /var/www/wei -type d -exec chmod 755 {} \;
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 4 — Create .env
+────────────────────────────────────────────────────────────────────────────────
+
+  nano /var/www/wei/php/.env
+
+  Paste and fill in:
+
+    APP_ENV=production
+    JWT_SECRET=$(php -r "echo bin2hex(random_bytes(32));")
+    SMTP_HOST=mail.wei.or.tz
+    SMTP_PORT=587
+    SMTP_USER=info@wei.or.tz
+    SMTP_PASS=your-email-account-password
+    EMAIL_FROM=info@wei.or.tz
+    ADMIN_EMAIL=admin@wei.or.tz
+    ADMIN_PASSWORD=ChangeThisToSomethingStrong!
+    FRONTEND_URL=https://wei.or.tz
+    DB_DRIVER=mysql
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_NAME=wei
+    DB_USER=wei_user
+    DB_PASS=StrongPasswordHere!
+
+  chmod 600 /var/www/wei/php/.env
+  chown www-data:www-data /var/www/wei/php/.env
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 5 — Configure Apache Virtual Host
+────────────────────────────────────────────────────────────────────────────────
+
+  nano /etc/apache2/sites-available/wei.conf
+
+  Paste:
+
+  <VirtualHost *:80>
+      ServerName wei.or.tz
+      ServerAlias www.wei.or.tz
+      DocumentRoot /var/www/wei
+      ErrorLog ${APACHE_LOG_DIR}/wei_error.log
+      CustomLog ${APACHE_LOG_DIR}/wei_access.log combined
+
+      <Directory /var/www/wei>
+          Options -Indexes +FollowSymLinks
+          AllowOverride All
+          Require all granted
+      </Directory>
+
+      # Deny access to PHP internals
+      <DirectoryMatch "/var/www/wei/php/(config|src|middleware|models|controllers|data)">
+          Require all denied
+      </DirectoryMatch>
+  </VirtualHost>
+
+  # Enable site and disable default
+  a2ensite wei.conf
+  a2dissite 000-default.conf
+  systemctl reload apache2
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 6 — SSL with Let's Encrypt
+────────────────────────────────────────────────────────────────────────────────
+
+  apt install -y certbot python3-certbot-apache
+  certbot --apache -d wei.or.tz -d www.wei.or.tz
+
+  # Test auto-renewal
+  certbot renew --dry-run
+
+  # Certbot adds a cron job automatically. Verify:
+  systemctl status certbot.timer
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 7 — Auto-deploy with Git (optional, simpler than CI/CD for VPS)
+────────────────────────────────────────────────────────────────────────────────
+
+  # On the server, create a deploy script
+  cat > /usr/local/bin/wei-deploy.sh <<'SCRIPT'
+  #!/bin/bash
+  set -e
+  cd /var/www/wei
+  git pull origin main
+  chown -R www-data:www-data php/uploads php/data
+  echo "Deploy complete: $(date)"
+  SCRIPT
+
+  chmod +x /usr/local/bin/wei-deploy.sh
+
+  # Run manually anytime:
+  /usr/local/bin/wei-deploy.sh
+
+  # OR wire it to the CI/CD SSH job in .github/workflows/deploy.yml
+
+================================================================================
+  PATH C — DOCKER
+================================================================================
+
+  Requires: Docker and Docker Compose installed on the server.
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 1 — Copy files to server
+────────────────────────────────────────────────────────────────────────────────
+
+  scp -r . user@SERVER_IP:/opt/wei
+  # OR: git clone https://github.com/YOUR_ORG/wei.git /opt/wei
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 2 — Create .env for Docker Compose
+────────────────────────────────────────────────────────────────────────────────
+
+  nano /opt/wei/.env.docker
+
+  JWT_SECRET=<generate with: php -r "echo bin2hex(random_bytes(32));">
+  SMTP_USER=info@wei.or.tz
+  SMTP_PASS=your-email-account-password
+  ADMIN_PASSWORD=ChangeThisToSomethingStrong!
+  FRONTEND_URL=https://wei.or.tz
+  DB_DRIVER=mysql
+  DB_NAME=wei
+  DB_USER=wei
+  DB_PASS=StrongMySQLPass!
+  MYSQL_ROOT_PASSWORD=StrongRootPass!
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 3 — Build and start
+────────────────────────────────────────────────────────────────────────────────
+
+  cd /opt/wei
+
+  # SQLite (zero-config):
+  docker compose --env-file .env.docker up -d --build
+
+  # MySQL:
+  docker compose --env-file .env.docker --profile mysql up -d --build
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 4 — Reverse proxy with Nginx (for SSL on port 443)
+────────────────────────────────────────────────────────────────────────────────
+
+  Install Nginx and Certbot:
+    apt install -y nginx certbot python3-certbot-nginx
+
+  Create /etc/nginx/sites-available/wei:
+
+    server {
+        listen 80;
+        server_name wei.or.tz www.wei.or.tz;
+
+        location / {
+            proxy_pass http://localhost:80;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+  ln -s /etc/nginx/sites-available/wei /etc/nginx/sites-enabled/
+  nginx -t && systemctl reload nginx
+  certbot --nginx -d wei.or.tz -d www.wei.or.tz
+
+================================================================================
+  CI/CD — GITHUB ACTIONS SETUP
+================================================================================
+
+  The workflow file is at: .github/workflows/deploy.yml
+  It automatically deploys to Route Africa on every push to the main branch.
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 1 — Push code to GitHub
+────────────────────────────────────────────────────────────────────────────────
+
+  git remote add origin https://github.com/YOUR_ORG/wei.git
+  git add .
+  git commit -m "initial deployment"
+  git push -u origin main
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 2 — Add GitHub Secrets
+────────────────────────────────────────────────────────────────────────────────
+
+  Go to: GitHub → Your Repo → Settings → Secrets and variables → Actions
+  Click "New repository secret" and add each of these:
+
+  FOR SHARED HOSTING (FTP):
+  ┌───────────────────┬────────────────────────────────────────────┐
+  │ Secret Name       │ Value                                      │
+  ├───────────────────┼────────────────────────────────────────────┤
+  │ FTP_HOST          │ ftp.wei.or.tz  (or your FTP hostname)     │
+  │ FTP_USER          │ your cPanel FTP username                   │
+  │ FTP_PASS          │ your cPanel FTP password                   │
+  │ FTP_REMOTE_DIR    │ /public_html                               │
+  │ JWT_SECRET        │ (generate: openssl rand -hex 32)           │
+  │ SMTP_USER         │ info@wei.or.tz                             │
+  │ SMTP_PASS         │ Route Africa email account password        │
+  │ ADMIN_PASSWORD    │ your admin panel password                  │
+  │ FRONTEND_URL      │ https://wei.or.tz                          │
+  │ DB_DRIVER         │ mysql                                      │
+  │ DB_HOST           │ localhost                                   │
+  │ DB_NAME           │ cpaneluser_wei_db                          │
+  │ DB_USER           │ cpaneluser_wei_user                        │
+  │ DB_PASS           │ your MySQL password                        │
+  └───────────────────┴────────────────────────────────────────────┘
+
+  FOR VPS (SSH) — also uncomment the deploy-vps job in deploy.yml:
+  ┌───────────────────┬────────────────────────────────────────────┐
+  │ SSH_HOST          │ your server IP or hostname                 │
+  │ SSH_USER          │ ubuntu  (or root, or your user)            │
+  │ SSH_KEY           │ paste entire private key contents          │
+  │ SSH_PORT          │ 22                                         │
+  │ DEPLOY_PATH       │ /var/www/wei                               │
+  └───────────────────┴────────────────────────────────────────────┘
+
+  Also add repository variable (not secret):
+    Settings → Secrets and variables → Actions → Variables tab
+    DEPLOY_METHOD = sftp   (or: ssh)
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 3 — Trigger deployment
+────────────────────────────────────────────────────────────────────────────────
+
+  Any push to the main branch triggers automatic deployment.
+
+  To trigger manually:
+    GitHub → Actions → "Deploy to Route Africa" → "Run workflow"
+
+  To watch the deployment:
+    GitHub → Actions → latest run → click to see live logs
+
+────────────────────────────────────────────────────────────────────────────────
+  STEP 4 — Generate SSH key for deployments (VPS only)
+────────────────────────────────────────────────────────────────────────────────
+
+  On your LOCAL machine:
+
+    ssh-keygen -t ed25519 -C "wei-deploy" -f ~/.ssh/wei_deploy
+    # Do NOT set a passphrase (press Enter twice)
+
+  Copy public key to server:
+
+    ssh-copy-id -i ~/.ssh/wei_deploy.pub user@YOUR_SERVER_IP
+
+  Copy private key to GitHub Secret:
+
+    cat ~/.ssh/wei_deploy   # paste the ENTIRE output as the SSH_KEY secret
+
+================================================================================
+  POST-DEPLOYMENT CHECKLIST
+================================================================================
+
+  □ Homepage loads at https://wei.or.tz
+  □ /api/health returns { "success": true }
+  □ Admin login works at https://wei.or.tz/admin
+  □ Admin password changed from default
+  □ Contact form submits and sends email
+  □ Donation form submits correctly
+  □ Newsletter subscribe sends confirmation email
+  □ /about, /causes, /donate, /blog all load
+  □ /contact.html redirects to /contact (301)
+  □ HTTPS padlock shows in browser (no mixed content warnings)
+  □ Sitemap submitted to Google Search Console
+  □ Upload an image via Admin → Media Library
+  □ Create a test blog post (draft → publish)
+
+================================================================================
+  TROUBLESHOOTING
+================================================================================
+
+  PROBLEM: 500 Internal Server Error
+  FIX: Check PHP error log in cPanel → Logs → Error Log
+       Most common cause: wrong PHP version or missing extension
+
+  PROBLEM: .htaccess not working / clean URLs show 404
+  FIX: cPanel → Software → Select PHP Version → ensure mod_rewrite is enabled
+       Also confirm: AllowOverride All is set in Apache config
+
+  PROBLEM: Cannot write to uploads folder
+  FIX: Set php/uploads/ permissions to 755 in File Manager
+       cPanel terminal: chmod -R 755 public_html/php/uploads
+
+  PROBLEM: Emails not sending
+  FIX: Verify the email account exists in cPanel → Email → Email Accounts
+       Confirm SMTP_HOST matches your Route Africa server hostname
+         (find it in cPanel → Email → Email Accounts → Connect Devices)
+       Common hosts: mail.wei.or.tz  or  the server hostname (e.g. server123.routeafrica.com)
+       Try port 465 (SSL) if port 587 (STARTTLS) fails — update SMTP_PORT in .env
+       Check PHP error log for "SMTP AUTH failed" messages
+
+  PROBLEM: Database connection failed (MySQL)
+  FIX: Verify DB_NAME and DB_USER have the cPanel username prefix
+       e.g. if cPanel username is "abc123" then:
+         DB_NAME=abc123_wei_db
+         DB_USER=abc123_wei_user
+
+  PROBLEM: "Permission denied" on php/data/
+  FIX: chmod 755 public_html/php/data
+       If using SQLite: the directory must be writable by PHP/Apache user
+
+  PROBLEM: CSS/JS not loading (404)
+  FIX: Confirm root .htaccess is in public_html/ (not inside php/)
+       The root .htaccess serves static files directly before routing to PHP
+
+================================================================================
+  MAINTENANCE
+================================================================================
+
+  Backups (set up in cPanel → Backup Wizard):
+    - Schedule daily backups of public_html
+    - Schedule daily MySQL backup
+    - Download copies to local machine weekly
+
+  Updates (after code changes):
+    - git push → CI/CD deploys automatically (if configured)
+    - OR: FTP upload changed files manually
+    - Database schema updates: tables are auto-created, no migrations needed
+
+  Monitoring:
+    - cPanel → Metrics → Visitors / Bandwidth
+    - Check /api/health monthly
+    - Route Africa control panel → uptime monitoring
+
+================================================================================
+  IMPORTANT SECURITY NOTES
+================================================================================
+
+  1. php/.env is NEVER committed to git (.gitignore handles this)
+     The CI/CD workflow writes it fresh on every deploy from GitHub Secrets.
+
+  2. php/data/ (SQLite) is protected by .htaccess — direct web access is blocked.
+
+  3. Admin panel (/admin) is protected by JWT authentication.
+     Use a strong ADMIN_PASSWORD (16+ chars, mixed case, numbers, symbols).
+
+  4. JWT_SECRET must be random and at least 32 characters. Generate with:
+       php -r "echo bin2hex(random_bytes(32));"
+     or: openssl rand -hex 32
+
+  5. Change the admin password immediately after first deployment.
+
+================================================================================
+  FILES REFERENCE
+================================================================================
+
+  .htaccess                    Root Apache routing (serves static files + routes to PHP)
+  php/.htaccess                PHP subdirectory routing + security headers
+  php/index.php                PHP front controller (all API + dynamic routing)
+  php/config/config.php        Environment variable loading and constants
+  php/config/database.php      SQLite / MySQL auto-migration and seeding
+  php/.env                     Environment variables (NOT in git, write manually)
+  php/uploads/                 User-uploaded files (images, receipts, videos, docs)
+  php/data/wei.db              SQLite database (only if DB_DRIVER=sqlite)
+  sitemap.xml                  Sitemap for search engines
+  robots.txt                   Crawl rules
+  Dockerfile                   Docker container definition
+  docker-compose.yml           Docker Compose (web + optional MySQL)
+  docker-entrypoint.sh         Writes .env from environment variables at container start
+  .github/workflows/deploy.yml CI/CD — auto-deploy on push to main
+
+================================================================================

@@ -1,0 +1,21 @@
+Options -Indexes
+RewriteEngine On
+
+# Allow direct access to actual files and directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route everything else through index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Security: deny access to sensitive files
+<FilesMatch "\.(env|db|sql|lock|md)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Deny access to data directory
+<DirectoryMatch "^.*/data/">
+    Order deny,allow
+    Deny from all
+</DirectoryMatch>

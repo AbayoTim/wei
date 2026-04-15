@@ -134,7 +134,7 @@
         <div id="login-error" class="alert alert-danger d-none py-2 small"></div>
         <button type="submit" class="btn btn-primary w-100 fw-semibold">Sign In</button>
       </form>
-      <div class="text-center mt-4"><a href="../index.html" class="text-muted small">← Back to Website</a></div>
+      <div class="text-center mt-4"><a href="/" class="text-muted small">← Back to Website</a></div>
     </div>
   </div>
 
@@ -174,7 +174,7 @@
       <a class="nav-link" href="#" onclick="showPage('settings',this)"><i class="bi bi-gear"></i> Settings</a>
       <a class="nav-link" href="#" onclick="showPage('users',this)"><i class="bi bi-people-fill"></i> Admin Users</a>
       <hr class="mx-3 border-secondary my-2">
-      <a class="nav-link" href="../index.html" target="_blank"><i class="bi bi-box-arrow-up-right"></i> View Website</a>
+      <a class="nav-link" href="/" target="_blank"><i class="bi bi-box-arrow-up-right"></i> View Website</a>
       <a class="nav-link text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Logout</a>
     </nav>
   </div>
@@ -800,7 +800,7 @@
     <div class="mb-3"><label class="form-label fw-semibold">Subheading</label><input type="text" id="slide-subtitle" class="form-control" placeholder="Join us in building..."></div>
     <div class="row">
       <div class="col-md-6 mb-3"><label class="form-label fw-semibold">CTA Button Text</label><input type="text" id="slide-cta_text" class="form-control" placeholder="Learn More"></div>
-      <div class="col-md-6 mb-3"><label class="form-label fw-semibold">CTA Link</label><input type="text" id="slide-cta_link" class="form-control" placeholder="/causes.html"></div>
+      <div class="col-md-6 mb-3"><label class="form-label fw-semibold">CTA Link</label><input type="text" id="slide-cta_link" class="form-control" placeholder="/causes"></div>
     </div>
   </div>
   <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="saveSlide()">Save Slide</button></div>
@@ -1300,7 +1300,7 @@ window.deleteSubscriber = async function(id) {
 
 // ==================== BLOGS ====================
 async function loadBlogs() {
-  const d = await apiCall('/api/blogs');
+  const d = await apiCall('/api/blogs/admin');
   if (d.success) {
     document.getElementById('blogs-table').innerHTML = d.data.map(b =>
       `<tr><td>${b.title}</td><td>${b.category||'-'}</td><td><span class="badge bg-${b.status==='published'?'success':'secondary'}">${b.status}</span></td><td>${new Date(b.createdAt).toLocaleDateString()}</td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editBlog('${b.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteBlog('${b.id}')">Delete</button></td></tr>`
@@ -1361,7 +1361,7 @@ window.deleteBlog = async function(id) {
 
 // ==================== CAUSES ====================
 async function loadCauses() {
-  const d = await apiCall('/api/content/causes');
+  const d = await apiCall('/api/content/causes/admin');
   if (d.success) {
     document.getElementById('causes-table').innerHTML = d.data.map(c =>
       `<tr><td>${c.featuredImage?`<img src="${imgUrl(c.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${c.title}</td><td><span class="badge bg-secondary">${c.category}</span></td><td>TZS ${Number(c.goalAmount||0).toLocaleString()}</td><td>TZS ${Number(c.raisedAmount||0).toLocaleString()}</td><td><span class="badge bg-${c.status==='active'?'success':c.status==='completed'?'primary':'warning text-dark'}">${c.status}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editCause('${c.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCause('${c.id}')">Delete</button></td></tr>`
@@ -1431,7 +1431,7 @@ window.deleteCause = async function(id) {
 
 // ==================== EVENTS ====================
 async function loadEvents() {
-  const d = await apiCall('/api/content/events');
+  const d = await apiCall('/api/content/events/admin');
   if (d.success) {
     document.getElementById('events-table').innerHTML = d.data.map(e =>
       `<tr><td>${e.featuredImage?`<img src="${imgUrl(e.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${e.title}</td><td>${new Date(e.eventDate).toLocaleDateString()}</td><td>${e.location||'-'}</td><td><span class="badge bg-${e.status==='upcoming'?'primary':e.status==='ongoing'?'success':e.status==='cancelled'?'danger':'secondary'}">${e.status}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent('${e.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteEvent('${e.id}')">Delete</button></td></tr>`

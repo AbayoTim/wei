@@ -10,6 +10,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="css/wei.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Women Empowerment Initiatives">
+  <meta property="og:title" content="Donate — Support Women Empowerment in Tanzania">
+  <meta property="og:description" content="Your donation empowers women through education, healthcare and economic programs. Support WEI's mission today.">
+  <meta property="og:url" content="https://wei.or.tz/donate">
+  <meta property="og:image" content="https://wei.or.tz/images/hero_1.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Donate — Support Women Empowerment in Tanzania">
+  <meta name="twitter:description" content="Your donation empowers women through education, healthcare and economic programs. Support WEI's mission today.">
+  <meta name="twitter:image" content="https://wei.or.tz/images/hero_1.jpg">
 </head>
 
 <body>
@@ -19,41 +30,41 @@
   <nav class="wei-mobile-nav">
     <button class="wei-mobile-nav-close"><i class="bi bi-x-lg"></i></button>
     <div class="wei-mobile-nav-logo">
-      <a href="index.html"><img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-mobile-logo-img"></a>
+      <a href="/"><img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-mobile-logo-img"></a>
     </div>
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html">About Us</a></li>
-      <li><a href="causes.html">Our Programs</a></li>
-      <li><a href="blog.html">Blog</a></li>
-      <li><a href="contact.html">Contact</a></li>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About Us</a></li>
+      <li><a href="/causes">Our Programs</a></li>
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/contact">Contact</a></li>
     </ul>
     <div class="wei-mobile-donate mt-3">
-      <a href="donate.html" class="btn-wei-donate d-block text-center">Donate Now</a>
+      <a href="/donate" class="btn-wei-donate d-block text-center">Donate Now</a>
     </div>
   </nav>
 
   <header class="wei-navbar scrolled">
     <div class="container">
       <div class="wei-logo mr-auto">
-        <a href="index.html">
+        <a href="/">
           <img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-logo-img">
           <div class="wei-logo-text"><span class="wei-logo-main">WEI</span>
           <span class="wei-logo-sub">Tanzania</span></div>
         </a>
       </div>
       <ul class="wei-nav-menu wei-nav-desktop mb-0">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="about.html">About Us</a></li>
-        <li><a href="causes.html">Our Programs</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/causes">Our Programs</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Contact</a></li>
       </ul>
       <div class="wei-header-actions wei-nav-desktop">
         <a href="https://facebook.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-facebook"></i></a>
         <a href="https://twitter.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-twitter-x"></i></a>
         <a href="https://instagram.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-instagram"></i></a>
-        <a href="donate.html" class="btn-wei-donate ml-2">Donate Now</a>
+        <a href="/donate" class="btn-wei-donate ml-2">Donate Now</a>
       </div>
       <button class="wei-menu-toggle"><i class="bi bi-list"></i></button>
     </div>
@@ -110,11 +121,8 @@
                 </div>
                 <div class="form-group">
                   <label><strong>Donation Purpose (Optional)</strong></label>
-                  <select name="cause" class="form-control wei-select">
+                  <select name="cause" id="cause-select" class="form-control wei-select">
                     <option value="">General Support</option>
-                    <option value="education">Women Education Initiative</option>
-                    <option value="health">Healthcare Access Program</option>
-                    <option value="livelihood">Economic Empowerment Project</option>
                   </select>
                 </div>
                 <button type="button" id="btn-step1-next" class="btn-wei-primary d-block w-100 text-center">Continue</button>
@@ -193,7 +201,7 @@
                 <strong>Reference Number:</strong> <span id="reference-number"></span>
               </div>
               <p>Our team will verify your payment and send a confirmation email shortly.</p>
-              <a href="index.html" class="btn-wei-primary">Return to Home</a>
+              <a href="/" class="btn-wei-primary">Return to Home</a>
             </div>
 
           </div>
@@ -238,10 +246,10 @@
         <div class="col-md-2 mb-4">
           <h3 class="wei-footer-heading">Quick Links</h3>
           <ul class="wei-footer-links">
-            <li><a href="about.html">About Us</a></li>
-            <li><a href="causes.html">Our Programs</a></li>
-            <li><a href="donate.html">Donate</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/causes">Our Programs</a></li>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="/contact">Contact Us</a></li>
           </ul>
         </div>
         <div class="col-md-3 mb-4">
@@ -353,6 +361,22 @@
     });
   }
   loadPaymentMethods();
+
+  async function loadCauseOptions() {
+    try {
+      const res = await fetch('/api/content/causes?limit=50');
+      const data = await res.json();
+      if (!data.success || !data.data.length) return;
+      const sel = document.getElementById('cause-select');
+      data.data.forEach(function(c) {
+        const opt = document.createElement('option');
+        opt.value = c.category;
+        opt.textContent = c.title;
+        sel.appendChild(opt);
+      });
+    } catch (e) {}
+  }
+  loadCauseOptions();
 
   function selectPayment(el, method) {
     document.querySelectorAll('.wei-payment-option').forEach(p => p.classList.remove('selected'));

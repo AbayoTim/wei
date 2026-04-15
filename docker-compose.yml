@@ -1,0 +1,75 @@
+version: "3.9"
+
+# ── WEI Tanzania — Docker Compose ─────────────────────────────────────────────
+# Usage:
+#   SQLite (default, zero-config):  docker compose up
+#   MySQL:                           DB_DRIVER=mysql docker compose --profile mysql up
+
+services:
+
+  # ── Web (PHP + Apache) ───────────────────────────────────────────────────────
+  web:
+    build: .
+    container_name: wei_web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      APP_ENV: production
+      JWT_SECRET: ${JWT_SECRET}
+      SMTP_HOST: ${SMTP_HOST:-mail.wei.or.tz}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      EMAIL_FROM: ${EMAIL_FROM:-info@wei.or.tz}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@wei.or.tz}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ChangeThisPassword123!}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      DB_DRIVER: ${DB_DRIVER:-sqlite}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-wei}
+      DB_USER: ${DB_USER:-wei}
+      DB_PASS: ${DB_PASS:-}
+    volumes:
+      # Persist uploads and SQLite database
+      - wei_uploads:/var/www/html/php/uploads
+      - wei_data:/var/www/html/php/data
+    depends_on:
+      mysql:
+        condition: service_healthy
+        required: false
+    networks:
+      - wei_net
+
+  # ── MySQL (optional — activate with --profile mysql) ─────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: wei_mysql
+    profiles: ["mysql"]
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootsecret}
+      MYSQL_DATABASE: ${DB_NAME:-wei}
+      MYSQL_USER: ${DB_USER:-wei}
+      MYSQL_PASSWORD: ${DB_PASS:-weisecret}
+    volumes:
+      - wei_mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootsecret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wei_net
+
+volumes:
+  wei_uploads:
+  wei_data:
+  wei_mysql:
+
+networks:
+  wei_net:
+    driver: bridge

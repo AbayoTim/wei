@@ -170,7 +170,6 @@ jQuery(document).ready(function($) {
 	    autoplay: true,
 	    pauseOnHover: true,
 	    onDragged: function(event) {
-	    	console.log('event : ',event.relatedTarget['_drag']['direction'])
 	    	if ( event.relatedTarget['_drag']['direction'] == 'left') {
 	    		$('.owl-1').trigger('next.owl.carousel');
 	    	} else {
@@ -190,7 +189,6 @@ jQuery(document).ready(function($) {
 	    autoplay: true,
 	    pauseOnHover: false,
 	    onDragged: function(event) {
-	    	console.log('event : ',event.relatedTarget['_drag']['direction'])
 	    	if ( event.relatedTarget['_drag']['direction'] == 'left') {
 	    		$('.slide-one-item-alt-text').trigger('next.owl.carousel');
 	    	} else {
@@ -200,7 +198,6 @@ jQuery(document).ready(function($) {
 		})
 
 		$( '.owl-dot' ).on( 'click', function() {
-		  console.log(owl2.trigger('to.owl.carousel', $(this).index()));
 		})
 
 
@@ -254,7 +251,6 @@ jQuery(document).ready(function($) {
 	    autoplay: true,
 	    pauseOnHover: true,
 	    onDragged: function(event) {
-	    	console.log('event : ',event.relatedTarget['_drag']['direction'])
 	    	if ( event.relatedTarget['_drag']['direction'] == 'left') {
 	    		$('.slide-one-item-alt-text').trigger('next.owl.carousel');
 	    	} else {

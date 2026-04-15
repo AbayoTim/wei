@@ -1,0 +1,204 @@
+name: Deploy to Route Africa
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # allow manual trigger from GitHub UI
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false   # never cancel a deploy mid-flight
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Required GitHub Secrets (Settings → Secrets → Actions → New repository secret)
+#
+#   SHARED HOSTING (FTP/SFTP):
+#     FTP_HOST        — e.g. ftp.wei.or.tz  or  wei.or.tz
+#     FTP_USER        — cPanel FTP username
+#     FTP_PASS        — cPanel FTP password
+#     FTP_REMOTE_DIR  — remote path, e.g. /public_html  or  /public_html/wei
+#
+#   VPS (SSH) — uncomment VPS job below if you have a VPS:
+#     SSH_HOST        — server IP or hostname
+#     SSH_USER        — e.g. ubuntu or root
+#     SSH_KEY         — contents of your private key (~/.ssh/id_rsa)
+#     SSH_PORT        — usually 22
+#     DEPLOY_PATH     — e.g. /var/www/wei
+#
+#   APP SECRETS (written to php/.env on deploy):
+#     JWT_SECRET
+#     SMTP_USER        — Route Africa email address, e.g. info@wei.or.tz
+#     SMTP_PASS        — Route Africa email account password
+#     ADMIN_PASSWORD
+#     FRONTEND_URL    — e.g. https://wei.or.tz
+#     DB_DRIVER       — sqlite  or  mysql
+#     DB_HOST         — MySQL host (if DB_DRIVER=mysql)
+#     DB_NAME         — MySQL database name
+#     DB_USER         — MySQL username
+#     DB_PASS         — MySQL password
+# ──────────────────────────────────────────────────────────────────────────────
+
+jobs:
+
+  # ── 1. Validate ─────────────────────────────────────────────────────────────
+  validate:
+    name: Validate PHP syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo, pdo_sqlite, pdo_mysql, mbstring, fileinfo, gd
+
+      - name: Check PHP syntax — all files
+        run: find php -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Verify entry point loads
+        run: php -r "
+          \$_ENV['JWT_SECRET']      = 'ci-test-secret';
+          \$_ENV['ADMIN_EMAIL']     = 'test@example.com';
+          \$_ENV['ADMIN_PASSWORD']  = 'Test1234!';
+          \$_ENV['FRONTEND_URL']    = 'http://localhost';
+          \$_ENV['DB_DRIVER']       = 'sqlite';
+          define('DATA_DIR', sys_get_temp_dir() . '/wei_ci_' . uniqid() . '/');
+          mkdir(DATA_DIR, 0755, true);
+          define('DB_PATH', DATA_DIR . 'test.db');
+          require 'php/config/config.php';
+          require 'php/config/database.php';
+          Database::getInstance();
+          echo 'Database migration: OK' . PHP_EOL;
+        "
+
+  # ── 2a. Deploy to shared hosting via SFTP ───────────────────────────────────
+  deploy-sftp:
+    name: Deploy via SFTP (Shared Hosting)
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    # Remove the `if` line below to enable this job
+    if: ${{ vars.DEPLOY_METHOD == 'sftp' || vars.DEPLOY_METHOD == '' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write production .env
+        run: |
+          cat > php/.env <<EOF
+          APP_ENV=production
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          SMTP_HOST=mail.wei.or.tz
+          SMTP_PORT=587
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASS=${{ secrets.SMTP_PASS }}
+          EMAIL_FROM=info@wei.or.tz
+          ADMIN_EMAIL=admin@wei.or.tz
+          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          DB_DRIVER=${{ secrets.DB_DRIVER || 'sqlite' }}
+          DB_HOST=${{ secrets.DB_HOST || '127.0.0.1' }}
+          DB_PORT=${{ secrets.DB_PORT || '3306' }}
+          DB_NAME=${{ secrets.DB_NAME || 'wei' }}
+          DB_USER=${{ secrets.DB_USER || '' }}
+          DB_PASS=${{ secrets.DB_PASS || '' }}
+          EOF
+
+      - name: Exclude dev-only files from deploy
+        run: |
+          # Create a clean copy without files that shouldn't go to production
+          rm -f render.yaml php/data/wei.db
+
+      - name: Deploy via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}/
+          protocol: ftps            # use ftps (FTP over TLS) — safer than plain ftp
+          exclude: |
+            **/.git/**
+            **/.github/**
+            **/node_modules/**
+            php/data/**
+            php/uploads/**
+            docker-compose.yml
+            Dockerfile
+            docker-entrypoint.sh
+            render.yaml
+            deployment.txt
+
+      - name: Notify on success
+        run: echo "Deployed to ${{ secrets.FRONTEND_URL }} successfully."
+
+  # ── 2b. Deploy to VPS via SSH ────────────────────────────────────────────────
+  # Uncomment this entire job if you have a VPS instead of shared hosting.
+  # Also set DEPLOY_METHOD=ssh in repository variables.
+  #
+  # deploy-vps:
+  #   name: Deploy via SSH (VPS)
+  #   needs: validate
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   if: ${{ vars.DEPLOY_METHOD == 'ssh' }}
+  #
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Write SSH key
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+  #         chmod 600 ~/.ssh/deploy_key
+  #         ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+  #
+  #     - name: Rsync files to server
+  #       run: |
+  #         rsync -avz --delete \
+  #           --exclude='.git' \
+  #           --exclude='.github' \
+  #           --exclude='php/data' \
+  #           --exclude='php/uploads' \
+  #           --exclude='php/.env' \
+  #           --exclude='docker-compose.yml' \
+  #           --exclude='Dockerfile' \
+  #           --exclude='docker-entrypoint.sh' \
+  #           --exclude='render.yaml' \
+  #           --exclude='deployment.txt' \
+  #           -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }}" \
+  #           ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
+  #
+  #     - name: Write .env on server
+  #       run: |
+  #         ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
+  #           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+  #           "cat > ${{ secrets.DEPLOY_PATH }}/php/.env" <<'SSHEOF'
+  #         APP_ENV=production
+  #         JWT_SECRET=${{ secrets.JWT_SECRET }}
+  #         SMTP_HOST=mail.wei.or.tz
+  #         SMTP_PORT=587
+  #         SMTP_USER=${{ secrets.SMTP_USER }}
+  #         SMTP_PASS=${{ secrets.SMTP_PASS }}
+  #         EMAIL_FROM=info@wei.or.tz
+  #         ADMIN_EMAIL=admin@wei.or.tz
+  #         ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+  #         FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+  #         DB_DRIVER=${{ secrets.DB_DRIVER || 'sqlite' }}
+  #         DB_HOST=${{ secrets.DB_HOST || '127.0.0.1' }}
+  #         DB_NAME=${{ secrets.DB_NAME || 'wei' }}
+  #         DB_USER=${{ secrets.DB_USER || '' }}
+  #         DB_PASS=${{ secrets.DB_PASS || '' }}
+  #         SSHEOF
+  #
+  #     - name: Set permissions on server
+  #       run: |
+  #         ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
+  #           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+  #           chmod 600 ${{ secrets.DEPLOY_PATH }}/php/.env
+  #           chown -R www-data:www-data ${{ secrets.DEPLOY_PATH }}/php/uploads \
+  #                                       ${{ secrets.DEPLOY_PATH }}/php/data
+  #           chmod -R 755 ${{ secrets.DEPLOY_PATH }}/php/uploads \
+  #                         ${{ secrets.DEPLOY_PATH }}/php/data
+  #         "

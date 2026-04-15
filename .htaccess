@@ -1,0 +1,22 @@
+Options -Indexes
+RewriteEngine On
+
+# ── Security: block direct access to PHP internals ────────────────────────────
+RewriteRule ^php/(config|src|middleware|models|controllers|data)(/|$) - [F,L]
+
+<FilesMatch "\.(env|db|sql|lock)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+<DirectoryMatch "^.*/php/data/">
+    Order deny,allow
+    Deny from all
+</DirectoryMatch>
+
+# ── Static files: Apache serves them directly (no PHP overhead) ───────────────
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# ── Everything else (clean URLs, API, admin) → PHP front controller ───────────
+RewriteRule ^(.*)$ php/index.php [QSA,L]

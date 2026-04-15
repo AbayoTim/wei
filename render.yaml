@@ -1,12 +1,12 @@
 services:
   - type: web
     name: wei-backend
-    env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && node server.js
+    env: php
+    buildCommand: echo "No build step required"
+    startCommand: cd php && php -S 0.0.0.0:$PORT
     healthCheckPath: /api/health
     envVars:
-      - key: NODE_ENV
+      - key: APP_ENV
         value: production
       - key: JWT_SECRET
         generateValue: true
@@ -22,11 +22,24 @@ services:
         value: info@wei.or.tz
       - key: ADMIN_EMAIL
         value: admin@wei.or.tz
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: FRONTEND_URL
         value: https://wei.onrender.com
-      - key: ADMIN_PASSWORD
+      - key: DB_DRIVER
+        value: sqlite
+      # MySQL — set DB_DRIVER=mysql and fill these to switch databases
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
         sync: false
     disk:
       name: wei-data
-      mountPath: /opt/render/project/src/server
+      mountPath: /opt/render/project/src/php
       sizeGB: 1
