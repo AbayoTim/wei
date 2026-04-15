@@ -15,7 +15,4 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 </FilesMatch>
 
 # Deny access to data directory
-<DirectoryMatch "^.*/data/">
-    Order deny,allow
-    Deny from all
-</DirectoryMatch>
+RewriteRule ^data(/|$) - [F,L]
