@@ -9,10 +9,7 @@ RewriteRule ^php/(config|src|middleware|models|controllers|data)(/|$) - [F,L]
     Deny from all
 </FilesMatch>
 
-<DirectoryMatch "^.*/php/data/">
-    Order deny,allow
-    Deny from all
-</DirectoryMatch>
+RewriteRule ^php/data(/|$) - [F,L]
 
 # ── Static files: Apache serves them directly (no PHP overhead) ───────────────
 RewriteCond %{REQUEST_FILENAME} -f
