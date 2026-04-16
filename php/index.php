@@ -189,6 +189,13 @@ if (!str_starts_with($req->path, '/api/')) {
                 serveStatic($programFile);
             }
         }
+        // Event clean URL: /events/:slug → serve event.html
+        if (str_starts_with($rel, 'events/')) {
+            $eventFile = $root . '/event.html';
+            if (is_file($eventFile)) {
+                serveStatic($eventFile);
+            }
+        }
     }
 
     // SPA / HTML fallback — serve index.html for unknown paths

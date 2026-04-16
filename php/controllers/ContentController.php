@@ -344,6 +344,7 @@ class ContentController
             'status'        => in_array($req->body['status'] ?? '', ['upcoming','ongoing','completed','cancelled'])
                                ? $req->body['status'] : null,
             'isPublished'   => isset($req->body['isPublished']) ? (Helpers::boolVal($req->body['isPublished']) ? 1 : 0) : null,
+            'featuredImage' => array_key_exists('featuredImage', $req->body) ? ($req->body['featuredImage'] ?: null) : null,
             'gallery'       => isset($req->body['gallery'])
                                ? (is_array($req->body['gallery']) ? json_encode($req->body['gallery']) : $req->body['gallery'])
                                : null,
