@@ -182,6 +182,13 @@ if (!str_starts_with($req->path, '/api/')) {
                 serveStatic($singleFile);
             }
         }
+        // Program clean URL: /causes/:slug → serve program.html
+        if (str_starts_with($rel, 'causes/')) {
+            $programFile = $root . '/program.html';
+            if (is_file($programFile)) {
+                serveStatic($programFile);
+            }
+        }
     }
 
     // SPA / HTML fallback — serve index.html for unknown paths
