@@ -40,5 +40,5 @@ services:
         sync: false
     disk:
       name: wei-data
-      mountPath: /opt/render/project/src/php
+      mountPath: /var/www/html/php
       sizeGB: 1

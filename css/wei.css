@@ -1112,27 +1112,122 @@ img {
    SINGLE POST
    ============================================================ */
 .wei-post-content {
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--wei-dark);
 }
 
-.wei-post-content h2, .wei-post-content h3, .wei-post-content h4 {
-  font-family: var(--wei-font-heading);
-  margin-top: 32px;
-  margin-bottom: 12px;
+.wei-post-content > * + * {
+  margin-top: 1em;
 }
+
+.wei-post-content p {
+  margin-bottom: 1.1em;
+}
+
+.wei-post-content h1,
+.wei-post-content h2,
+.wei-post-content h3,
+.wei-post-content h4,
+.wei-post-content h5,
+.wei-post-content h6 {
+  font-family: var(--wei-font-heading);
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+  color: var(--wei-dark);
+}
+
+.wei-post-content h1 { font-size: 2em; }
+.wei-post-content h2 { font-size: 1.6em; }
+.wei-post-content h3 { font-size: 1.3em; }
+.wei-post-content h4 { font-size: 1.1em; }
+
+.wei-post-content a {
+  color: var(--wei-primary);
+  text-decoration: underline;
+}
+.wei-post-content a:hover { color: var(--wei-primary-dark); }
+
+.wei-post-content strong { font-weight: 700; }
+.wei-post-content em { font-style: italic; }
+
+.wei-post-content ul,
+.wei-post-content ol {
+  padding-left: 1.6em;
+  margin-bottom: 1.1em;
+}
+.wei-post-content ul { list-style: disc; }
+.wei-post-content ol { list-style: decimal; }
+.wei-post-content li { margin-bottom: 0.4em; }
+.wei-post-content li > ul,
+.wei-post-content li > ol { margin-top: 0.3em; margin-bottom: 0; }
 
 .wei-post-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
   border-radius: var(--wei-radius);
-  margin: 20px 0;
+  margin: 24px auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
 }
 
 .wei-post-content blockquote {
   border-left: 4px solid var(--wei-primary);
   padding: 16px 20px;
   background: var(--wei-light);
-  margin: 24px 0;
+  margin: 28px 0;
+  border-radius: 0 var(--wei-radius) var(--wei-radius) 0;
   font-style: italic;
   color: var(--wei-gray);
+}
+.wei-post-content blockquote p { margin-bottom: 0; }
+
+.wei-post-content pre {
+  background: #1e1e1e;
+  color: #e0e0e0;
+  padding: 1em 1.2em;
+  border-radius: var(--wei-radius);
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 24px 0;
+}
+.wei-post-content code {
+  background: #f0f4f8;
+  color: #d63384;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+.wei-post-content pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+.wei-post-content hr {
+  border: none;
+  border-top: 2px solid #e9ecef;
+  margin: 36px 0;
+}
+
+.wei-post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 15px;
+}
+.wei-post-content th,
+.wei-post-content td {
+  border: 1px solid #dee2e6;
+  padding: 10px 14px;
+  text-align: left;
+}
+.wei-post-content th {
+  background: var(--wei-light);
+  font-weight: 600;
 }
 
 /* ============================================================
