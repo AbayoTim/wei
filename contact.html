@@ -86,44 +86,76 @@
       <div id="contact-intro-content" class="mb-4"></div>
       <div class="row">
         <div class="col-lg-8 mb-5">
-          <form id="contact-form">
-            <!-- Honeypot: hidden from humans, bots fill it — server rejects if non-empty -->
-            <div style="position:absolute;left:-9999px;height:0;overflow:hidden;" aria-hidden="true">
-              <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+          <div class="wei-form-card">
+            <div class="wei-form-card-header">
+              <h3><i class="bi bi-chat-dots mr-2"></i>Send Us a Message</h3>
+              <p class="mb-0">We typically respond within <strong>1–2 business days</strong>.</p>
             </div>
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <input type="text" name="firstName" class="form-control" placeholder="First Name *" required>
+            <form id="contact-form" class="wei-form-body">
+              <!-- Honeypot: hidden from humans, bots fill it — server rejects if non-empty -->
+              <div style="position:absolute;left:-9999px;height:0;overflow:hidden;" aria-hidden="true">
+                <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
               </div>
-              <div class="form-group col-md-6">
-                <input type="text" name="lastName" class="form-control" placeholder="Last Name *" required>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="firstName">First Name <span class="text-danger">*</span></label>
+                  <div class="wei-input-group">
+                    <i class="bi bi-person wei-input-icon"></i>
+                    <input type="text" id="firstName" name="firstName" class="form-control wei-input-with-icon" placeholder="e.g. Amina" required>
+                  </div>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="lastName">Last Name <span class="text-danger">*</span></label>
+                  <div class="wei-input-group">
+                    <i class="bi bi-person wei-input-icon"></i>
+                    <input type="text" id="lastName" name="lastName" class="form-control wei-input-with-icon" placeholder="e.g. Hassan" required>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <input type="email" name="email" class="form-control" placeholder="Email Address *" required>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="email">Email Address <span class="text-danger">*</span></label>
+                  <div class="wei-input-group">
+                    <i class="bi bi-envelope wei-input-icon"></i>
+                    <input type="email" id="email" name="email" class="form-control wei-input-with-icon" placeholder="you@example.com" required>
+                  </div>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="phone">Phone Number <span class="text-muted" style="font-weight:400;">(optional)</span></label>
+                  <div class="wei-input-group">
+                    <i class="bi bi-telephone wei-input-icon"></i>
+                    <input type="tel" id="phone" name="phone" class="form-control wei-input-with-icon" placeholder="+255 700 000 000">
+                  </div>
+                </div>
               </div>
-              <div class="form-group col-md-6">
-                <input type="tel" name="phone" class="form-control" placeholder="Phone Number">
+              <div class="form-group">
+                <label for="subject">Subject</label>
+                <div class="wei-input-group">
+                  <i class="bi bi-tag wei-input-icon"></i>
+                  <select id="subject" name="subject" class="form-control wei-select wei-input-with-icon">
+                    <option value="">Select a subject…</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                    <option value="Partnership">Partnership Opportunity</option>
+                    <option value="Volunteering">Volunteering</option>
+                    <option value="Donation">Donation Inquiry</option>
+                    <option value="Media">Media Inquiry</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <select name="subject" class="form-control wei-select">
-                <option value="">Select Subject</option>
-                <option value="General Inquiry">General Inquiry</option>
-                <option value="Partnership">Partnership Opportunity</option>
-                <option value="Volunteering">Volunteering</option>
-                <option value="Donation">Donation Inquiry</option>
-                <option value="Media">Media Inquiry</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <textarea name="message" class="form-control" placeholder="Your Message *" rows="7" required></textarea>
-            </div>
-            <div id="contact-message" class="mb-3"></div>
-            <button type="submit" class="btn-wei-primary" id="submit-btn">Send Message</button>
-          </form>
+              <div class="form-group">
+                <label for="message">Message <span class="text-danger">*</span></label>
+                <textarea id="message" name="message" class="form-control" placeholder="Tell us how we can help you…" rows="6" required maxlength="2000"></textarea>
+                <small class="form-text text-muted text-right"><span id="msg-count">0</span>/2000</small>
+              </div>
+              <div id="contact-message" class="mb-3"></div>
+              <button type="submit" class="btn-wei-primary btn-wei-submit" id="submit-btn">
+                <span id="submit-label">Send Message</span>
+                <i class="bi bi-send ml-2" id="submit-icon"></i>
+                <span id="submit-spinner" class="wei-spinner d-none"></span>
+              </button>
+            </form>
+          </div>
         </div>
 
         <div class="col-lg-4 ml-auto">
@@ -279,31 +311,46 @@
     } catch (e) {}
   }
 
+  // Character counter
+  document.getElementById('message').addEventListener('input', function () {
+    document.getElementById('msg-count').textContent = this.value.length;
+  });
+
   document.getElementById('contact-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const submitBtn = document.getElementById('submit-btn');
-    const msgEl = document.getElementById('contact-message');
+    const submitBtn  = document.getElementById('submit-btn');
+    const label      = document.getElementById('submit-label');
+    const icon       = document.getElementById('submit-icon');
+    const spinner    = document.getElementById('submit-spinner');
+    const msgEl      = document.getElementById('contact-message');
+
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
+    label.textContent  = 'Sending…';
+    icon.classList.add('d-none');
+    spinner.classList.remove('d-none');
+
     const data = Object.fromEntries(new FormData(this).entries());
     try {
-      const res = await fetch('/api/contact', {
+      const res    = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
       const result = await res.json();
       if (result.success) {
-        msgEl.innerHTML = '<div class="wei-alert wei-alert-success">' + result.message + '</div>';
+        msgEl.innerHTML = '<div class="wei-alert wei-alert-success"><i class="bi bi-check-circle mr-2"></i>' + result.message + '</div>';
         this.reset();
+        document.getElementById('msg-count').textContent = '0';
       } else {
-        msgEl.innerHTML = '<div class="wei-alert wei-alert-danger">' + (result.message || 'Error sending message.') + '</div>';
+        msgEl.innerHTML = '<div class="wei-alert wei-alert-danger"><i class="bi bi-exclamation-circle mr-2"></i>' + (result.message || 'Error sending message.') + '</div>';
       }
     } catch (err) {
-      msgEl.innerHTML = '<div class="wei-alert wei-alert-danger">Error sending message. Please try again.</div>';
+      msgEl.innerHTML = '<div class="wei-alert wei-alert-danger"><i class="bi bi-exclamation-circle mr-2"></i>Error sending message. Please try again.</div>';
     }
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Send Message';
+    label.textContent  = 'Send Message';
+    icon.classList.remove('d-none');
+    spinner.classList.add('d-none');
   });
 </script>
 

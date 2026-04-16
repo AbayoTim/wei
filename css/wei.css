@@ -1455,6 +1455,90 @@ textarea.form-control {
   line-height: 1.6;
 }
 
+/* ---- Contact Form Card --------------------------------------- */
+.wei-form-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.wei-form-card-header {
+  background: linear-gradient(135deg, var(--wei-primary) 0%, var(--wei-primary-dark) 100%);
+  color: #fff;
+  padding: 28px 32px 24px;
+}
+
+.wei-form-card-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.wei-form-card-header p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.wei-form-body {
+  padding: 32px;
+}
+
+/* ---- Input with icon ----------------------------------------- */
+.wei-input-group {
+  position: relative;
+}
+
+.wei-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--wei-gray);
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.wei-input-with-icon {
+  padding-left: 36px !important;
+}
+
+/* ---- Form labels --------------------------------------------- */
+.wei-form-body label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wei-dark);
+  margin-bottom: 6px;
+}
+
+/* ---- Submit button ------------------------------------------- */
+.btn-wei-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* ---- Spinner ------------------------------------------------- */
+.wei-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: wei-spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes wei-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ============================================================
    IMPACT NUMBERS SIDEBAR (Donate page)
    ============================================================ */
