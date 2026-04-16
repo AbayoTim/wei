@@ -114,75 +114,6 @@
     </div>
   </section>
 
-  <!-- Education -->
-  <section class="wei-section" id="education">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6 mb-4 mb-md-0">
-          <img src="images/img_1.jpg" alt="Education Programs" class="img-fluid shadow rounded">
-        </div>
-        <div class="col-md-5 ml-auto">
-          <h2 class="wei-section-title wei-cursive">Education Programs</h2>
-          <p>We believe education is the foundation of empowerment. Our education programs include:</p>
-          <ul>
-            <li>School supplies and scholarships for girls</li>
-            <li>Adult literacy programs for women</li>
-            <li>Skills training and vocational education</li>
-            <li>Digital literacy workshops</li>
-            <li>Leadership development training</li>
-          </ul>
-          <a href="/donate" class="btn-wei-primary mt-2">Support Education</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Healthcare -->
-  <section class="wei-section" style="background:#f8f9fa;" id="health">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-5 order-md-1 order-2 mb-4 mb-md-0">
-          <h2 class="wei-section-title wei-cursive">Healthcare Programs</h2>
-          <p>Access to healthcare is a fundamental right. Our health initiatives include:</p>
-          <ul>
-            <li>Maternal and child health services</li>
-            <li>HIV/AIDS awareness and support</li>
-            <li>Reproductive health education</li>
-            <li>Community health worker training</li>
-            <li>Mental health support programs</li>
-          </ul>
-          <a href="/donate" class="btn-wei-primary mt-2">Support Healthcare</a>
-        </div>
-        <div class="col-md-6 ml-auto order-md-2 order-1 mb-4 mb-md-0">
-          <img src="images/img_2.jpg" alt="Healthcare Programs" class="img-fluid shadow rounded">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Livelihood -->
-  <section class="wei-section" id="livelihood">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6 mb-4 mb-md-0">
-          <img src="images/img_3.jpg" alt="Livelihood Programs" class="img-fluid shadow rounded">
-        </div>
-        <div class="col-md-5 ml-auto">
-          <h2 class="wei-section-title wei-cursive">Livelihood &amp; Economic Empowerment</h2>
-          <p>Economic independence is key to women's empowerment. Our programs include:</p>
-          <ul>
-            <li>Microfinance and savings groups</li>
-            <li>Business skills training</li>
-            <li>Agricultural training for women farmers</li>
-            <li>Entrepreneurship mentorship</li>
-            <li>Market access support</li>
-          </ul>
-          <a href="/donate" class="btn-wei-primary mt-2">Support Livelihoods</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- CTA -->
   <section class="wei-section-sm">
     <div class="container">
@@ -243,8 +174,8 @@
 <script src="js/wei-main.js"></script>
 
 <script>
-  function imgSrc(src, fallback) {
-    if (!src) return fallback || 'images/img_1.jpg';
+  function imgSrc(src) {
+    if (!src) return null;
     if (src.startsWith('http') || src.startsWith('/') || src.startsWith('data:')) return src;
     return '/uploads/images/' + src;
   }
@@ -257,13 +188,20 @@
   document.getElementById('category-filter').addEventListener('change', loadCauses);
 
   async function loadFeaturedCause() {
+    const container = document.getElementById('featured-cause-container');
     try {
       const res = await fetch('/api/content/causes?featured=true&limit=1');
       const data = await res.json();
-      if (!data.success || !data.data.length) return;
+      if (!data.success || !data.data.length) {
+        container.closest('section').style.display = 'none';
+        return;
+      }
       const cause = data.data[0];
-      const pct = Math.min(100, Math.round((cause.raisedAmount / cause.goalAmount) * 100));
-      document.getElementById('featured-cause-container').innerHTML = `
+      const goal = cause.goalAmount || 0;
+      const raised = cause.raisedAmount || 0;
+      const pct = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
+      const img = imgSrc(cause.featuredImage);
+      container.innerHTML = `
         <div class="col-md-5 mb-4 mb-md-0">
           <h2 class="wei-section-title wei-cursive">Featured Program</h2>
           <p>${cause.description || ''}</p>
@@ -271,7 +209,7 @@
         </div>
         <div class="col-md-7">
           <div class="wei-cause-card">
-            <img src="${imgSrc(cause.featuredImage, 'images/img_1.jpg')}" alt="${cause.title}">
+            ${img ? `<img src="${img}" alt="${cause.title}" style="width:100%;height:260px;object-fit:cover;">` : ''}
             <div class="wei-cause-progress-wrap">
               <div class="wei-cause-progress-label">${pct}% complete</div>
               <div class="wei-cause-progress-bar">
@@ -279,16 +217,18 @@
               </div>
             </div>
             <div class="wei-cause-body">
-              <span class="wei-badge wei-badge-primary">${cause.category}</span>
+              <span class="wei-badge wei-badge-primary">${cause.category || ''}</span>
               <h4>${cause.title}</h4>
               <div class="wei-cause-raised">
-                <span>Goal: TZS ${Number(cause.goalAmount).toLocaleString()}</span>
-                <strong class="text-primary">Raised: TZS ${Number(cause.raisedAmount).toLocaleString()}</strong>
+                <span>Goal: TZS ${Number(goal).toLocaleString()}</span>
+                <strong class="text-primary">Raised: TZS ${Number(raised).toLocaleString()}</strong>
               </div>
             </div>
           </div>
         </div>`;
-    } catch (e) {}
+    } catch (e) {
+      container.closest('section').style.display = 'none';
+    }
   }
 
   async function loadCauses() {
@@ -296,18 +236,21 @@
     const container = document.getElementById('causes-container');
     const colors = ['danger', 'primary', 'warning', 'success'];
     try {
-      let url = '/api/content/causes?limit=12';
-      if (category) url += '&category=' + category;
+      let url = '/api/content/causes?limit=50';
+      if (category) url += '&category=' + encodeURIComponent(category);
       const res = await fetch(url);
       const data = await res.json();
       if (data.success && data.data.length > 0) {
         container.innerHTML = data.data.map((cause, idx) => {
-          const pct = Math.min(100, Math.round((cause.raisedAmount / cause.goalAmount) * 100));
+          const goal   = cause.goalAmount  || 0;
+          const raised = cause.raisedAmount || 0;
+          const pct = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
           const col = colors[idx % colors.length];
+          const img = imgSrc(cause.featuredImage);
           return `
             <div class="col-md-4 mb-4">
               <div class="wei-cause-card">
-                <img src="${imgSrc(cause.featuredImage, 'images/img_' + ((idx % 3) + 1) + '.jpg')}" alt="${cause.title}">
+                ${img ? `<img src="${img}" alt="${cause.title}" style="width:100%;height:220px;object-fit:cover;">` : `<div style="height:220px;background:#e9ecef;display:flex;align-items:center;justify-content:center;"><i class="bi bi-image text-muted" style="font-size:2.5rem;"></i></div>`}
                 <div class="wei-cause-progress-wrap">
                   <div class="wei-cause-progress-label">${pct}% complete</div>
                   <div class="wei-cause-progress-bar">
@@ -315,11 +258,12 @@
                   </div>
                 </div>
                 <div class="wei-cause-body">
-                  <span class="wei-badge wei-badge-${col}">${cause.category}</span>
+                  <span class="wei-badge wei-badge-${col}">${cause.category || ''}</span>
                   <h5>${cause.title}</h5>
+                  ${cause.description ? `<p class="small text-muted mb-2">${cause.description}</p>` : ''}
                   <div class="wei-cause-raised">
                     <span>Raised</span>
-                    <strong class="text-primary">TZS ${Number(cause.raisedAmount).toLocaleString()}</strong>
+                    <strong class="text-primary">TZS ${Number(raised).toLocaleString()}</strong>
                   </div>
                   <a href="/donate" class="btn-wei-outline btn-sm mt-2">Donate</a>
                 </div>

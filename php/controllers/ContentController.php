@@ -247,9 +247,11 @@ class ContentController
         $page     = max(1, (int)($req->query['page']     ?? 1));
         $limit    = min(50, max(1, (int)($req->query['limit'] ?? 10)));
         $category = $req->query['category'] ?? null;
+        $featured = $req->query['featured'] ?? null;
 
         $where  = ["isPublished = 1"]; $params = [];
         if ($category) { $where[] = "category = ?"; $params[] = $category; }
+        if ($featured !== null) { $where[] = "isFeatured = ?"; $params[] = ($featured === 'true' || $featured === '1') ? 1 : 0; }
 
         $pg    = Helpers::paginate($page, $limit);
         $total = Cause::count(implode(' AND ', $where), $params);
@@ -362,11 +364,12 @@ class ContentController
             'startDate'   => $req->body['startDate']   ?? null,
             'endDate'     => $req->body['endDate']     ?? null,
             'status'      => in_array($req->body['status'] ?? '', ['active','completed','paused']) ? $req->body['status'] : null,
-            'isFeatured'  => isset($req->body['isFeatured'])  ? (Helpers::boolVal($req->body['isFeatured'])  ? 1 : 0) : null,
-            'isPublished' => isset($req->body['isPublished']) ? (Helpers::boolVal($req->body['isPublished']) ? 1 : 0) : null,
-            'gallery'     => isset($req->body['gallery'])
-                             ? (is_array($req->body['gallery']) ? json_encode($req->body['gallery']) : $req->body['gallery'])
-                             : null,
+            'isFeatured'    => isset($req->body['isFeatured'])  ? (Helpers::boolVal($req->body['isFeatured'])  ? 1 : 0) : null,
+            'isPublished'   => isset($req->body['isPublished']) ? (Helpers::boolVal($req->body['isPublished']) ? 1 : 0) : null,
+            'featuredImage' => array_key_exists('featuredImage', $req->body) ? ($req->body['featuredImage'] ?: null) : null,
+            'gallery'       => isset($req->body['gallery'])
+                               ? (is_array($req->body['gallery']) ? json_encode($req->body['gallery']) : $req->body['gallery'])
+                               : null,
         ];
     }
 
