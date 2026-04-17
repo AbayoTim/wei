@@ -248,7 +248,6 @@ $router->get ('/api/subscribers/confirm/:token',         [SubscriberController::
 $router->get ('/api/subscribers/unsubscribe/:token',     [SubscriberController::class, 'unsubscribe']);
 $router->get ('/api/subscribers',                        [SubscriberController::class, 'index']);
 $router->get ('/api/subscribers/stats',                  [SubscriberController::class, 'stats']);
-$router->get ('/api/subscribers/export',                 [SubscriberController::class, 'export']);
 $router->delete('/api/subscribers/:id',                  [SubscriberController::class, 'destroy']);
 
 // ── Contact ───────────────────────────────────────────────────────────────────

@@ -129,6 +129,7 @@ class Database
                 receiptFile          TEXT,
                 message              TEXT,
                 cause                TEXT,
+                causeId              TEXT REFERENCES causes(id) ON DELETE SET NULL,
                 status               TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
                 approvedAt           TEXT,
                 approvedBy           TEXT REFERENCES users(id) ON DELETE SET NULL,
@@ -240,6 +241,12 @@ class Database
             );
             CREATE INDEX IF NOT EXISTS idx_rl_key ON rate_limits(rkey);
         ");
+
+        // ── Incremental column migrations ─────────────────────────────────────
+        $cols = array_column($db->query("PRAGMA table_info(donations)")->fetchAll(), 'name');
+        if (!in_array('causeId', $cols)) {
+            $db->exec("ALTER TABLE donations ADD COLUMN causeId TEXT REFERENCES causes(id) ON DELETE SET NULL");
+        }
     }
 
     // ── MySQL migration ───────────────────────────────────────────────────────
@@ -552,6 +559,10 @@ class Database
             ['contact_intro',      '<p>We\'d love to hear from you. Whether you want to partner with us, volunteer, or learn more about our work, reach out and our team will get back to you soon.</p>', 'html'],
             ['contact_volunteer',  '<p>Passionate about women\'s empowerment? Join us as a volunteer and help drive meaningful change in communities across Tanzania.</p>', 'html'],
             ['contact_map_url',    'https://www.openstreetmap.org/export/embed.html?bbox=35.6800%2C-6.2200%2C35.7800%2C-6.1400&layer=mapnik&marker=-6.1800%2C35.7300', 'text'],
+            // Currency exchange rates (1 unit → TZS)
+            ['rate_USD_TZS',  '2600',  'text'],
+            ['rate_EUR_TZS',  '2800',  'text'],
+            ['rate_GBP_TZS',  '3200',  'text'],
             // Donate page
             ['payment_methods',    json_encode([
                 ['id' => 'bank', 'title' => 'Bank Transfer', 'details' => [

@@ -24,8 +24,17 @@ class DonationController
         $payMethod  = Helpers::sanitize(trim($req->body['paymentMethod'] ?? ''));
         $txRef      = Helpers::sanitize(trim($req->body['transactionReference'] ?? ''));
         $message    = Helpers::sanitize(trim($req->body['message'] ?? ''));
-        $cause      = Helpers::sanitize(trim($req->body['cause']   ?? ''));
+        $causeId    = trim($req->body['causeId'] ?? '');
         $isAnon     = Helpers::boolVal($req->body['isAnonymous'] ?? false);
+
+        // Resolve cause title from ID for display/email
+        $causeTitle = '';
+        $causeRow   = null;
+        if ($causeId) {
+            $causeRow = Cause::find($causeId);
+            if (!$causeRow) $causeId = ''; // ignore invalid ID
+            else $causeTitle = $causeRow['title'];
+        }
 
         if (!$donorName || !$donorEmail || !$amount) {
             Response::error('donorName, donorEmail, and amount are required.');
@@ -38,6 +47,9 @@ class DonationController
         }
         if (!in_array($currency, ['TZS','USD','EUR','GBP'], true)) {
             $currency = 'TZS';
+        }
+        if (!$req->hasFile('receiptFile')) {
+            Response::error('A payment receipt (image or PDF) is required.');
         }
 
         // Handle receipt upload
@@ -74,7 +86,8 @@ class DonationController
             'transactionReference' => $txRef ?: null,
             'receiptFile'          => $receiptFile,
             'message'              => $message ?: null,
-            'cause'                => $cause ?: null,
+            'cause'                => $causeTitle ?: null,
+            'causeId'              => $causeId    ?: null,
             'isAnonymous'          => $isAnon ? 1 : 0,
         ]);
 
@@ -88,6 +101,7 @@ class DonationController
             'Amount'           => "$currency $amount",
             'Payment Method'   => $payMethod ?: 'Not specified',
             'Tx Reference'     => $txRef ?: 'Not provided',
+            'Program'          => $causeTitle ?: 'General Support',
             'Status'           => 'Pending Verification',
         ]);
 
@@ -102,11 +116,14 @@ class DonationController
     {
         Auth::required($req);
 
-        $page   = max(1, (int)($req->query['page']   ?? 1));
-        $limit  = min(100, max(1, (int)($req->query['limit'] ?? 20)));
-        $status = $req->query['status'] ?? null;
+        $page    = max(1, (int)($req->query['page']   ?? 1));
+        $limit   = min(100, max(1, (int)($req->query['limit'] ?? 20)));
+        $status  = $req->query['status']  ?? null;
+        $causeId = $req->query['causeId'] ?? null;
 
         $where  = []; $params = [];
+        if ($causeId === 'general') { $where[] = "causeId IS NULL"; }
+        elseif ($causeId)           { $where[] = "causeId = ?"; $params[] = $causeId; }
         if ($status) { $where[] = "status = ?"; $params[] = $status; }
 
         $whereStr = $where ? implode(' AND ', $where) : '';
@@ -159,9 +176,9 @@ class DonationController
             'approvedBy' => $req->userId,
         ]);
 
-        // Increment raisedAmount on matching active causes
-        if ($donation['cause']) {
-            Cause::incrementRaised($donation['cause'], $donation['currency'], (float)$donation['amount']);
+        // Increment raisedAmount on the specific cause
+        if (!empty($donation['causeId'])) {
+            Cause::incrementRaised($donation['causeId'], (float)$donation['amount']);
         }
 
         Email::send($donation['donorEmail'], 'donationApproved', [
@@ -207,6 +224,17 @@ class DonationController
 
         $db = Database::getInstance();
 
+        // Fetch exchange rates (TZS is base)
+        $rateRows = $db->query("SELECT `key`, value FROM site_contents WHERE `key` IN ('rate_USD_TZS','rate_EUR_TZS','rate_GBP_TZS')")->fetchAll();
+        $rates = ['TZS' => 1.0];
+        foreach ($rateRows as $r) {
+            // key like 'rate_USD_TZS' → currency 'USD'
+            $parts = explode('_', $r['key']); // ['rate','USD','TZS']
+            if (count($parts) === 3) {
+                $rates[$parts[1]] = (float)$r['value'];
+            }
+        }
+
         $total    = Donation::count();
         $pending  = Donation::count("status = 'pending'");
         $approved = Donation::count("status = 'approved'");
@@ -220,12 +248,76 @@ class DonationController
             $totalsByCurrency[$row['currency']] = (float)$row['total'];
         }
 
+        // General (no program) donations
+        $generalApproved = (int)$db->query("SELECT COUNT(*) FROM donations WHERE status='approved' AND causeId IS NULL")->fetchColumn();
+        $generalPending  = (int)$db->query("SELECT COUNT(*) FROM donations WHERE status='pending'  AND causeId IS NULL")->fetchColumn();
+        $generalStmt     = $db->query("SELECT currency, SUM(amount) as total FROM donations WHERE status='approved' AND causeId IS NULL GROUP BY currency");
+        $generalByCurrency = [];
+        foreach ($generalStmt->fetchAll() as $row) {
+            $generalByCurrency[$row['currency']] = (float)$row['total'];
+        }
+
+        // Per-cause: get approved donations grouped by cause+currency to compute TZS equivalent
+        $causeStmt = $db->query("
+            SELECT c.id, c.title, c.goalAmount, c.currency, c.raisedAmount, c.status AS causeStatus,
+                   COUNT(d.id)                                                    AS totalDonations,
+                   SUM(CASE WHEN d.status='approved' THEN 1 ELSE 0 END)          AS approvedDonations,
+                   SUM(CASE WHEN d.status='pending'  THEN 1 ELSE 0 END)          AS pendingDonations
+            FROM causes c
+            LEFT JOIN donations d ON d.causeId = c.id
+            WHERE c.isPublished = 1
+            GROUP BY c.id
+            ORDER BY c.createdAt DESC
+        ");
+        $perCause = $causeStmt->fetchAll();
+
+        // For each cause get per-currency approved breakdown
+        $causeBreakdownStmt = $db->prepare("
+            SELECT currency, SUM(amount) AS total
+            FROM donations
+            WHERE causeId = ? AND status = 'approved'
+            GROUP BY currency
+        ");
+
+        $perCauseMapped = array_map(function ($r) use ($causeBreakdownStmt, $rates) {
+            $causeBreakdownStmt->execute([$r['id']]);
+            $byCurrency = [];
+            $approvedAmountTZS = 0.0;
+            foreach ($causeBreakdownStmt->fetchAll() as $br) {
+                $cur   = $br['currency'];
+                $total = (float)$br['total'];
+                $rate  = $rates[$cur] ?? 1.0;
+                $byCurrency[$cur] = $total;
+                $approvedAmountTZS += $total * $rate;
+            }
+            return [
+                'id'                => $r['id'],
+                'title'             => $r['title'],
+                'goalAmount'        => $r['goalAmount'] !== null ? (float)$r['goalAmount'] : null,
+                'currency'          => $r['currency'],
+                'raisedAmount'      => (float)$r['raisedAmount'],
+                'causeStatus'       => $r['causeStatus'],
+                'totalDonations'    => (int)$r['totalDonations'],
+                'approvedDonations' => (int)$r['approvedDonations'],
+                'pendingDonations'  => (int)$r['pendingDonations'],
+                'approvedByCurrency'=> $byCurrency,
+                'approvedAmountTZS' => $approvedAmountTZS,
+            ];
+        }, $perCause);
+
         Response::success([
             'total'            => $total,
             'pending'          => $pending,
             'approved'         => $approved,
             'rejected'         => $rejected,
             'totalsByCurrency' => $totalsByCurrency,
+            'rates'            => $rates,
+            'general'          => [
+                'approved'        => $generalApproved,
+                'pending'         => $generalPending,
+                'totalsByCurrency'=> $generalByCurrency,
+            ],
+            'perCause'         => $perCauseMapped,
         ]);
     }
 

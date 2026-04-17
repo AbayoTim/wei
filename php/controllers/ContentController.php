@@ -29,6 +29,12 @@ class ContentController
 
         if (!$key) Response::error('key is required.');
 
+        // If value is an array/object (decoded from JSON body), re-encode it for storage
+        if (is_array($value) || is_object($value)) {
+            $value = json_encode($value);
+            if ($type === null) $type = 'json';
+        }
+
         $item = SiteContent::findByKey($key);
         if (!$item) {
             // Create new key
@@ -58,11 +64,17 @@ class ContentController
         $updated = [];
         foreach ($items as $entry) {
             if (empty($entry['key'])) continue;
-            $existing = SiteContent::findByKey($entry['key']);
+            $existing  = SiteContent::findByKey($entry['key']);
             $entryType = isset($entry['type']) && in_array($entry['type'], ['text','html','json','image']) ? $entry['type'] : null;
+            $entryVal  = $entry['value'] ?? null;
+            // Re-encode arrays/objects that were decoded from the JSON request body
+            if (is_array($entryVal) || is_object($entryVal)) {
+                $entryVal  = json_encode($entryVal);
+                if ($entryType === null) $entryType = 'json';
+            }
             if ($existing) {
                 $upd = [
-                    'value'         => $entry['value'] ?? $existing['value'],
+                    'value'         => $entryVal ?? $existing['value'],
                     'lastUpdatedBy' => $req->userId,
                 ];
                 if ($entryType !== null) $upd['type'] = $entryType;
@@ -70,7 +82,7 @@ class ContentController
             } else {
                 $u = SiteContent::create([
                     'key'           => $entry['key'],
-                    'value'         => $entry['value'] ?? '',
+                    'value'         => $entryVal ?? '',
                     'type'          => $entryType ?? 'text',
                     'lastUpdatedBy' => $req->userId,
                 ]);

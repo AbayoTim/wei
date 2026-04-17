@@ -29,11 +29,41 @@ class Cause extends Model
         return static::findBy('slug', $slug);
     }
 
-    public static function incrementRaised(string $category, string $currency, float $amount): void
+    public static function incrementRaised(string $causeId, float $amount): void
     {
         self::db()->prepare(
-            "UPDATE causes SET raisedAmount = raisedAmount + ? WHERE category = ? AND currency = ? AND status = 'active'"
-        )->execute([$amount, $category, $currency]);
+            "UPDATE causes SET raisedAmount = raisedAmount + ? WHERE id = ?"
+        )->execute([$amount, $causeId]);
+    }
+
+    /** Recompute raisedAmount from real approved donations for a cause */
+    public static function recomputeRaised(string $causeId): void
+    {
+        $db   = self::db();
+        $stmt = $db->prepare(
+            "SELECT COALESCE(SUM(amount), 0) FROM donations WHERE causeId = ? AND status = 'approved'"
+        );
+        $stmt->execute([$causeId]);
+        $total = (float)$stmt->fetchColumn();
+        $db->prepare("UPDATE causes SET raisedAmount = ? WHERE id = ?")->execute([$total, $causeId]);
+    }
+
+    /** Per-currency donation breakdown for a cause */
+    public static function donationStats(string $causeId): array
+    {
+        $db   = self::db();
+        $rows = $db->prepare(
+            "SELECT currency,
+                    COUNT(*) AS total,
+                    SUM(CASE WHEN status='approved'  THEN 1 ELSE 0 END) AS approved,
+                    SUM(CASE WHEN status='pending'   THEN 1 ELSE 0 END) AS pending,
+                    SUM(CASE WHEN status='rejected'  THEN 1 ELSE 0 END) AS rejected,
+                    SUM(CASE WHEN status='approved'  THEN amount ELSE 0 END) AS raisedAmount
+             FROM donations WHERE causeId = ?
+             GROUP BY currency"
+        );
+        $rows->execute([$causeId]);
+        return $rows->fetchAll();
     }
 
     public static function toPublic(array $row): array

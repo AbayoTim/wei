@@ -131,7 +131,15 @@
       </div>
       <form id="login-form" method="post">
         <div class="mb-3"><label class="form-label fw-semibold">Email</label><input type="email" name="email" class="form-control" required autofocus></div>
-        <div class="mb-3"><label class="form-label fw-semibold">Password</label><input type="password" name="password" class="form-control" required></div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Password</label>
+          <div class="input-group">
+            <input type="password" name="password" id="login-password" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="toggleLoginPassword()" tabindex="-1">
+              <i class="bi bi-eye" id="login-password-icon"></i>
+            </button>
+          </div>
+        </div>
         <div id="login-error" class="alert alert-danger d-none py-2 small"></div>
         <button type="submit" class="btn btn-primary w-100 fw-semibold">Sign In</button>
       </form>
@@ -206,7 +214,7 @@
           <option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
         </select>
       </div>
-      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Reference</th><th>Donor</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="donations-table"></tbody></table></div></div></div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Reference</th><th>Donor</th><th>Amount</th><th>Date</th><th>Receipt</th><th>Status</th><th>Actions</th></tr></thead><tbody id="donations-table"></tbody></table></div></div></div>
     </div>
 
     <!-- Messages -->
@@ -224,7 +232,6 @@
     <div class="page-section" id="page-subscribers">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">Subscribers</h4>
-        <a href="/api/subscribers/export" class="btn btn-success btn-sm" target="_blank"><i class="bi bi-download"></i> Export CSV</a>
       </div>
       <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Email</th><th>Name</th><th>Subscribed</th><th>Actions</th></tr></thead><tbody id="subscribers-table"></tbody></table></div></div></div>
     </div>
@@ -244,7 +251,31 @@
         <h4 class="fw-bold mb-0">Programs</h4>
         <button class="btn btn-primary btn-sm" onclick="openCauseModal()"><i class="bi bi-plus-lg"></i> Add Program</button>
       </div>
-      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Goal</th><th>Raised</th><th>Status</th><th>Actions</th></tr></thead><tbody id="causes-table"></tbody></table></div></div></div>
+
+      <!-- General donations summary card -->
+      <div class="card mb-4" id="general-donations-card" style="display:none!important">
+        <div class="card-header bg-light fw-semibold small d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-heart me-1 text-primary"></i>General Support Donations</span>
+          <span class="badge bg-secondary" id="general-donation-badge"></span>
+        </div>
+        <div class="card-body" id="general-donations-body"></div>
+      </div>
+
+      <!-- Programs with progress bars -->
+      <div id="causes-cards" class="row g-3 mb-4"></div>
+
+      <!-- Classic table for quick management -->
+      <div class="card">
+        <div class="card-header bg-white fw-semibold small">All Programs</div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Goal</th><th>Raised</th><th>Donations</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="causes-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Events -->
@@ -547,6 +578,34 @@
             </div>
           </div>
         </div>
+        <div class="col-md-6 mb-4">
+          <div class="card"><div class="card-header bg-white fw-semibold">Currency Exchange Rates <small class="text-muted fw-normal">(1 unit → TZS)</small></div>
+            <div class="card-body">
+              <p class="text-muted small mb-3">Used to convert foreign-currency donations to TZS when computing program progress bars.</p>
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">1 USD =</label>
+                <div class="input-group input-group-sm">
+                  <input type="number" id="set-rate_USD_TZS" class="form-control" min="1" step="1" placeholder="2600">
+                  <span class="input-group-text">TZS</span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">1 EUR =</label>
+                <div class="input-group input-group-sm">
+                  <input type="number" id="set-rate_EUR_TZS" class="form-control" min="1" step="1" placeholder="2800">
+                  <span class="input-group-text">TZS</span>
+                </div>
+              </div>
+              <div>
+                <label class="form-label small fw-semibold">1 GBP =</label>
+                <div class="input-group input-group-sm">
+                  <input type="number" id="set-rate_GBP_TZS" class="form-control" min="1" step="1" placeholder="3200">
+                  <span class="input-group-text">TZS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -574,7 +633,7 @@
 <!-- ========== MODALS ========== -->
 
 <!-- Donation Modal -->
-<div class="modal fade" id="donationModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+<div class="modal fade" id="donationModal" tabindex="-1"><div class="modal-dialog modal-xl"><div class="modal-content">
   <div class="modal-header"><h5 class="modal-title">Donation Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
   <div class="modal-body" id="donation-detail-content"></div>
   <div class="modal-footer" id="donation-actions"></div>
@@ -931,7 +990,7 @@ import TextAlign from 'https://esm.sh/@tiptap/extension-text-align@2.11.5'
 import Youtube from 'https://esm.sh/@tiptap/extension-youtube@2.11.5'
 
 // ==================== STATE ====================
-let token = localStorage.getItem('wei_admin_token');
+let token = sessionStorage.getItem('wei_admin_token');
 let currentUser = null;
 const editorInstances = {};
 let mediaPickerCallback = null;
@@ -941,7 +1000,7 @@ let currentContactId = null;
 
 // ==================== AUTH ====================
 window.logout = function() {
-  localStorage.removeItem('wei_admin_token');
+  sessionStorage.removeItem('wei_admin_token');
   token = null; currentUser = null;
   document.getElementById('login-page').classList.remove('d-none');
   document.getElementById('admin-dashboard').classList.add('d-none');
@@ -961,6 +1020,18 @@ function showDashboard() {
   loadDashboardStats();
 }
 
+window.toggleLoginPassword = function() {
+  const input = document.getElementById('login-password');
+  const icon  = document.getElementById('login-password-icon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'bi bi-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'bi bi-eye';
+  }
+};
+
 document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(this));
@@ -969,7 +1040,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
     const result = await r.json();
     if (result.success) {
       token = result.data.token; currentUser = result.data.user;
-      localStorage.setItem('wei_admin_token', token); showDashboard();
+      sessionStorage.setItem('wei_admin_token', token); showDashboard();
     } else {
       const el = document.getElementById('login-error');
       el.textContent = result.message; el.classList.remove('d-none');
@@ -1181,10 +1252,10 @@ async function loadDashboardStats() {
     const [don, con, sub] = await Promise.all([apiCall('/api/donations/stats'), apiCall('/api/contact/stats'), apiCall('/api/subscribers/stats')]);
     if (don.success) {
       document.getElementById('stat-pending-donations').textContent = don.data.pending;
-      const totals = don.data.totalsByCurrency || {};
+      const totals  = don.data.totalsByCurrency || {};
       const entries = Object.entries(totals);
       document.getElementById('stat-total-raised').innerHTML = entries.length
-        ? entries.map(([cur, amt]) => `<div class="fw-bold fs-6">${cur} ${Number(amt).toLocaleString()}</div>`).join('')
+        ? entries.map(([cur, amt]) => `<div class="fw-bold fs-6">${fmtCurrency(amt, cur)}</div>`).join('')
         : '<div class="fw-bold fs-6">—</div>';
     }
     if (con.success) document.getElementById('stat-new-messages').textContent = con.data.new;
@@ -1197,7 +1268,7 @@ async function loadRecentDonations() {
   const d = await apiCall('/api/donations?limit=5&status=pending');
   if (d.success) {
     document.querySelector('#recent-donations-table tbody').innerHTML = d.data.map(x =>
-      `<tr><td>${x.referenceNumber}</td><td>${x.donorName}</td><td>${x.currency} ${Number(x.amount).toLocaleString()}</td><td><span class="badge bg-warning text-dark">Pending</span></td></tr>`
+      `<tr><td class="small font-monospace">${x.referenceNumber}</td><td>${escHtml(x.donorName)}</td><td class="fw-semibold">${fmtCurrency(x.amount, x.currency)}</td><td><span class="badge bg-warning text-dark">Pending</span></td></tr>`
     ).join('') || '<tr><td colspan="4" class="text-center text-muted py-3">No pending donations</td></tr>';
   }
 }
@@ -1217,32 +1288,146 @@ async function loadDonations() {
   const d = await apiCall(`/api/donations?status=${status}`);
   if (d.success) {
     document.getElementById('donations-table').innerHTML = d.data.map(x =>
-      `<tr><td>${x.referenceNumber}</td><td>${x.donorName}<br><small class="text-muted">${x.donorEmail}</small></td><td>${x.currency} ${Number(x.amount).toLocaleString()}</td><td>${new Date(x.createdAt).toLocaleDateString()}</td><td><span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></td><td><button class="btn btn-sm btn-outline-primary" onclick="viewDonation('${x.id}')">View</button></td></tr>`
-    ).join('') || '<tr><td colspan="6" class="text-center text-muted py-3">No donations found</td></tr>';
+      `<tr>
+        <td class="font-monospace small">${x.referenceNumber}</td>
+        <td>${escHtml(x.donorName)}${x.isAnonymous?'<br><span class="badge bg-secondary" style="font-size:10px">Anonymous</span>':''}<br><small class="text-muted">${escHtml(x.donorEmail)}</small></td>
+        <td class="fw-semibold">${fmtCurrency(x.amount, x.currency)}</td>
+        <td class="small">${new Date(x.createdAt).toLocaleDateString()}</td>
+        <td>${x.receiptFile ? '<i class="bi bi-paperclip text-success" title="Receipt attached"></i>' : '<i class="bi bi-dash text-muted"></i>'}</td>
+        <td><span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></td>
+        <td><button class="btn btn-sm btn-outline-primary" onclick="viewDonation('${x.id}')"><i class="bi bi-eye"></i> View</button></td>
+      </tr>`
+    ).join('') || '<tr><td colspan="7" class="text-center text-muted py-3">No donations found</td></tr>';
+  }
+}
+
+function fmtCurrency(amount, currency) {
+  try {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount);
+  } catch {
+    return `${currency} ${Number(amount).toLocaleString()}`;
+  }
+}
+
+async function loadReceiptBlob(filename) {
+  const isPdf = filename.toLowerCase().endsWith('.pdf');
+  const el    = document.getElementById('donation-receipt-area');
+  el.innerHTML = '<div class="text-muted small py-3"><div class="spinner-border spinner-border-sm me-2"></div>Loading receipt…</div>';
+  try {
+    const resp = await fetch(`/api/donations/receipt/${encodeURIComponent(filename)}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!resp.ok) throw new Error('Failed to load receipt');
+    const blob    = await resp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    if (isPdf) {
+      el.innerHTML = `
+        <p class="fw-semibold mb-2"><i class="bi bi-file-pdf text-danger me-1"></i>Receipt (PDF)</p>
+        <iframe src="${blobUrl}" width="100%" height="420"
+          style="border:1px solid #dee2e6;border-radius:6px;" title="Donation receipt"></iframe>
+        <a href="${blobUrl}" download="${filename}"
+          class="btn btn-sm btn-outline-primary mt-2"><i class="bi bi-download me-1"></i>Download PDF</a>`;
+    } else {
+      el.innerHTML = `
+        <p class="fw-semibold mb-2"><i class="bi bi-image text-success me-1"></i>Receipt</p>
+        <a href="${blobUrl}" target="_blank">
+          <img src="${blobUrl}" class="img-fluid rounded shadow-sm"
+            style="max-height:380px;display:block;cursor:zoom-in;" title="Click to open full size">
+        </a>
+        <a href="${blobUrl}" download="${filename}"
+          class="btn btn-sm btn-outline-secondary mt-2"><i class="bi bi-download me-1"></i>Download Image</a>`;
+    }
+  } catch {
+    el.innerHTML = '<div class="alert alert-warning py-2 small mb-0">Could not load receipt file.</div>';
   }
 }
 
 window.viewDonation = async function(id) {
   const d = await apiCall(`/api/donations/${id}`);
-  if (d.success) {
-    const x = d.data;
-    document.getElementById('donation-detail-content').innerHTML = `
-      <div class="row"><div class="col-md-6">
-        <p><b>Reference:</b> ${x.referenceNumber}</p><p><b>Donor:</b> ${x.donorName}</p><p><b>Email:</b> ${x.donorEmail}</p>
-        <p><b>Phone:</b> ${x.donorPhone||'N/A'}</p><p><b>Amount:</b> ${x.currency} ${Number(x.amount).toLocaleString()}</p>
-        <p><b>Method:</b> ${x.paymentMethod||'N/A'}</p><p><b>Txn Ref:</b> ${x.transactionReference||'N/A'}</p>
-        <p><b>Status:</b> <span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></p>
-      </div><div class="col-md-6">
-        ${x.receiptFile ? (x.receiptFile.toLowerCase().endsWith('.pdf')
-          ? `<p><b>Receipt (PDF):</b><br><iframe src="/uploads/receipts/${x.receiptFile}" width="100%" height="350" style="border:1px solid #dee2e6;border-radius:4px;" title="Donation receipt"></iframe><br><a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-primary mt-2"><i class="bi bi-file-pdf"></i> Open PDF in new tab</a></p>`
-          : `<p><b>Receipt:</b><br><img src="/uploads/receipts/${x.receiptFile}" class="img-fluid rounded" style="max-height:300px;display:block;"><br><a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2"><i class="bi bi-box-arrow-up-right"></i> View full size</a></p>`) : ''}
-        ${x.message?`<p><b>Message:</b><br>${x.message}</p>`:''}
-      </div></div>`;
-    let acts = '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-    if (x.status === 'pending') acts += `<button class="btn btn-success ms-2" onclick="approveDonation('${x.id}')">Approve</button><button class="btn btn-danger ms-2" onclick="rejectDonation('${x.id}')">Reject</button>`;
-    document.getElementById('donation-actions').innerHTML = acts;
-    new bootstrap.Modal(document.getElementById('donationModal')).show();
+  if (!d.success) return;
+  const x = d.data;
+
+  const statusColor = { pending: 'warning text-dark', approved: 'success', rejected: 'danger' }[x.status] || 'secondary';
+  const submittedAt = x.createdAt ? new Date(x.createdAt).toLocaleString() : 'N/A';
+  const approvedAt  = x.approvedAt ? new Date(x.approvedAt).toLocaleString() : null;
+
+  document.getElementById('donation-detail-content').innerHTML = `
+    <div class="row g-3">
+      <!-- Left: donor + payment info -->
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header bg-light fw-semibold small"><i class="bi bi-person me-1"></i>Donor Information</div>
+          <div class="card-body">
+            <table class="table table-sm table-borderless mb-0 small">
+              <tr><th class="text-muted fw-normal ps-0" style="width:42%">Name</th>
+                  <td class="fw-semibold">${escHtml(x.donorName)}${x.isAnonymous?'<span class="badge bg-secondary ms-2 small">Anonymous</span>':''}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Email</th>
+                  <td><a href="mailto:${escHtml(x.donorEmail)}">${escHtml(x.donorEmail)}</a></td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Phone</th>
+                  <td>${escHtml(x.donorPhone||'—')}</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Right: payment details -->
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header bg-light fw-semibold small"><i class="bi bi-cash-coin me-1"></i>Payment Details</div>
+          <div class="card-body">
+            <table class="table table-sm table-borderless mb-0 small">
+              <tr><th class="text-muted fw-normal ps-0" style="width:42%">Reference</th>
+                  <td class="fw-semibold font-monospace">${escHtml(x.referenceNumber)}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Amount</th>
+                  <td class="fw-bold fs-6 text-primary">${fmtCurrency(x.amount, x.currency)}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Currency</th>
+                  <td><span class="badge bg-info text-dark">${escHtml(x.currency)}</span></td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Method</th>
+                  <td>${escHtml(x.paymentMethod||'—')}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Txn Reference</th>
+                  <td class="font-monospace">${escHtml(x.transactionReference||'—')}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Cause</th>
+                  <td>${escHtml(x.cause||'General')}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Submitted</th>
+                  <td>${escHtml(submittedAt)}</td></tr>
+              <tr><th class="text-muted fw-normal ps-0">Status</th>
+                  <td><span class="badge bg-${statusColor}">${x.status}</span></td></tr>
+              ${approvedAt ? `<tr><th class="text-muted fw-normal ps-0">${x.status === 'approved' ? 'Approved' : 'Processed'}</th><td>${escHtml(approvedAt)}</td></tr>` : ''}
+              ${x.rejectionReason ? `<tr><th class="text-muted fw-normal ps-0 text-danger">Rejection Reason</th><td class="text-danger">${escHtml(x.rejectionReason)}</td></tr>` : ''}
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Message -->
+      ${x.message ? `
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-light fw-semibold small"><i class="bi bi-chat-left-text me-1"></i>Donor Message</div>
+          <div class="card-body small">${escHtml(x.message)}</div>
+        </div>
+      </div>` : ''}
+      <!-- Receipt -->
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-light fw-semibold small"><i class="bi bi-receipt me-1"></i>Payment Receipt</div>
+          <div class="card-body" id="donation-receipt-area">
+            ${x.receiptFile
+              ? '<div class="text-muted small">Loading…</div>'
+              : '<div class="text-muted small fst-italic">No receipt was uploaded with this donation.</div>'}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  let acts = '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+  if (x.status === 'pending') {
+    acts += `<button class="btn btn-success ms-2" onclick="approveDonation('${x.id}')"><i class="bi bi-check-lg me-1"></i>Approve</button>`;
+    acts += `<button class="btn btn-danger ms-2" onclick="rejectDonation('${x.id}')"><i class="bi bi-x-lg me-1"></i>Reject</button>`;
   }
+  document.getElementById('donation-actions').innerHTML = acts;
+  new bootstrap.Modal(document.getElementById('donationModal')).show();
+
+  // Load receipt blob after modal opens
+  if (x.receiptFile) loadReceiptBlob(x.receiptFile);
 };
 
 window.approveDonation = async function(id) {
@@ -1379,12 +1564,127 @@ window.deleteBlog = async function(id) {
 
 // ==================== CAUSES ====================
 async function loadCauses() {
-  const d = await apiCall('/api/content/causes/admin');
-  if (d.success) {
-    document.getElementById('causes-table').innerHTML = d.data.map(c =>
-      `<tr><td>${c.featuredImage?`<img src="${imgUrl(c.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${c.title}</td><td><span class="badge bg-secondary">${c.category}</span></td><td>TZS ${Number(c.goalAmount||0).toLocaleString()}</td><td>TZS ${Number(c.raisedAmount||0).toLocaleString()}</td><td><span class="badge bg-${c.status==='active'?'success':c.status==='completed'?'primary':'warning text-dark'}">${c.status}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editCause('${c.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCause('${c.id}')">Delete</button></td></tr>`
-    ).join('') || '<tr><td colspan="7" class="text-center text-muted py-3">No programs yet</td></tr>';
+  const [causeRes, statsRes] = await Promise.all([
+    apiCall('/api/content/causes/admin'),
+    apiCall('/api/donations/stats'),
+  ]);
+  if (!causeRes.success) return;
+
+  // Build lookup of per-cause donation stats
+  const perCause = {};
+  const rates    = (statsRes.success && statsRes.data.rates) || { TZS: 1 };
+  if (statsRes.success && statsRes.data.perCause) {
+    statsRes.data.perCause.forEach(s => { perCause[s.id] = s; });
   }
+
+  // General donations card
+  if (statsRes.success) {
+    const gen    = statsRes.data.general || {};
+    const totals = gen.totalsByCurrency || {};
+    const entries = Object.entries(totals);
+    const card  = document.getElementById('general-donations-card');
+    const badge = document.getElementById('general-donation-badge');
+    const body  = document.getElementById('general-donations-body');
+    badge.textContent = `${gen.approved || 0} approved · ${gen.pending || 0} pending`;
+    if (entries.length) {
+      body.innerHTML = entries.map(([cur, amt]) =>
+        `<span class="fw-semibold me-3">${fmtCurrency(amt, cur)}</span>`
+      ).join('') + `<span class="text-muted small ms-2">(donations not tied to a specific program)</span>`;
+      card.style.display = '';
+    } else {
+      body.innerHTML = '<span class="text-muted small">No general donations yet.</span>';
+      card.style.display = '';
+    }
+  }
+
+  // Helper: render per-currency breakdown lines for a cause stat object
+  function renderCurrencyBreakdown(s, rates) {
+    const byCur = s.approvedByCurrency || {};
+    const entries = Object.entries(byCur);
+    if (!entries.length) return '';
+    return entries.map(([cur, amt]) => {
+      const rate = rates[cur] || 1;
+      const tzs  = amt * rate;
+      if (cur === 'TZS') return `<span class="badge bg-light text-dark border me-1">${fmtCurrency(amt, 'TZS')}</span>`;
+      return `<span class="badge bg-light text-dark border me-1">${fmtCurrency(amt, cur)} <span class="text-muted">≈ ${fmtCurrency(tzs,'TZS')}</span></span>`;
+    }).join('');
+  }
+
+  // Progress-bar cards — progress bar uses approvedAmountTZS vs goal (goal is in TZS)
+  const causes = causeRes.data;
+  document.getElementById('causes-cards').innerHTML = causes.length
+    ? causes.map(c => {
+        const s           = perCause[c.id] || {};
+        const raisedTZS   = s.approvedAmountTZS ?? 0;
+        const goal        = c.goalAmount;
+        const pct         = goal && goal > 0 ? Math.min(100, Math.round((raisedTZS / goal) * 100)) : null;
+        const statusColor = c.status === 'active' ? 'success' : c.status === 'completed' ? 'primary' : 'warning';
+        const barColor    = pct === 100 ? 'bg-success' : pct >= 75 ? 'bg-info' : 'bg-primary';
+        const breakdown   = renderCurrencyBreakdown(s, rates);
+        return `
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100">
+            ${c.featuredImage ? `<img src="${imgUrl(c.featuredImage)}" class="card-img-top" style="height:120px;object-fit:cover">` : ''}
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <h6 class="fw-semibold mb-0">${escHtml(c.title)}</h6>
+                <span class="badge bg-${statusColor} ms-2" style="white-space:nowrap">${c.status}</span>
+              </div>
+              <div class="text-muted small mb-2"><span class="badge bg-secondary">${c.category}</span></div>
+              ${goal ? `
+              <div class="mb-1">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="text-muted">Raised (TZS equiv.)</span>
+                  <span class="fw-semibold">${fmtCurrency(raisedTZS,'TZS')}${pct !== null ? ` <span class="text-muted">(${pct}%)</span>` : ''}</span>
+                </div>
+                <div class="progress" style="height:8px">
+                  <div class="progress-bar ${barColor}" style="width:${pct ?? 0}%" role="progressbar"
+                    aria-valuenow="${pct ?? 0}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="text-muted small mt-1">Goal: ${fmtCurrency(goal,'TZS')}</div>
+              </div>` : `
+              <div class="small text-muted mb-2">Raised: <span class="fw-semibold text-dark">${fmtCurrency(raisedTZS,'TZS')}</span> <em>(no goal set)</em></div>`}
+              ${breakdown ? `<div class="mt-2 small">${breakdown}</div>` : ''}
+              <div class="d-flex gap-3 small text-muted mt-2">
+                <span><i class="bi bi-check-circle text-success"></i> ${s.approvedDonations ?? 0} approved</span>
+                <span><i class="bi bi-hourglass text-warning"></i> ${s.pendingDonations ?? 0} pending</span>
+              </div>
+            </div>
+            <div class="card-footer bg-white border-top-0 d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary flex-fill" onclick="editCause('${c.id}')"><i class="bi bi-pencil"></i> Edit</button>
+              <button class="btn btn-sm btn-outline-secondary flex-fill" onclick="viewCauseDonations('${c.id}','${escHtml(c.title)}')"><i class="bi bi-list-ul"></i> Donations</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteCause('${c.id}')"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="col-12"><p class="text-muted">No programs yet.</p></div>';
+
+  // Classic table
+  document.getElementById('causes-table').innerHTML = causes.map(c => {
+    const s       = perCause[c.id] || {};
+    const raisedTZS = s.approvedAmountTZS ?? 0;
+    const goal    = c.goalAmount;
+    const pct     = goal && goal > 0 ? Math.min(100, Math.round((raisedTZS / goal) * 100)) : null;
+    const breakdown = Object.entries(s.approvedByCurrency || {}).map(([cur, amt]) => `${fmtCurrency(amt, cur)}`).join(' + ') || '—';
+    return `<tr>
+      <td>${c.featuredImage ? `<img src="${imgUrl(c.featuredImage)}" height="40" class="rounded">` : '<span class="text-muted">—</span>'}</td>
+      <td class="fw-semibold">${escHtml(c.title)}</td>
+      <td><span class="badge bg-secondary">${c.category}</span></td>
+      <td class="small">${goal ? fmtCurrency(goal,'TZS') : '<span class="text-muted">—</span>'}</td>
+      <td class="small">
+        ${fmtCurrency(raisedTZS,'TZS')}
+        ${pct !== null ? `<div class="progress mt-1" style="height:4px;min-width:80px"><div class="progress-bar" style="width:${pct}%"></div></div><div class="text-muted" style="font-size:11px">${pct}%</div>` : ''}
+        <div class="text-muted" style="font-size:11px">${breakdown}</div>
+      </td>
+      <td class="small text-center">${(s.approvedDonations ?? 0)}<br><span class="text-warning" style="font-size:11px">${(s.pendingDonations ?? 0)} pending</span></td>
+      <td><span class="badge bg-${c.status==='active'?'success':c.status==='completed'?'primary':'warning text-dark'}">${c.status}</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCause('${c.id}')">Edit</button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteCause('${c.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="text-center text-muted py-3">No programs yet</td></tr>';
 }
 
 window.openCauseModal = async function(data = null) {
@@ -1445,6 +1745,36 @@ window.deleteCause = async function(id) {
   if (!confirm('Delete this program?')) return;
   await apiCall(`/api/content/causes/${id}`, 'DELETE');
   loadCauses(); toast('Program deleted.', 'warning');
+};
+
+window.viewCauseDonations = async function(causeId, causeTitle) {
+  const d = await apiCall(`/api/donations?causeId=${causeId}&limit=100`);
+  if (!d.success) return toast('Failed to load donations', 'danger');
+  const rows = d.data || [];
+  const html = rows.length
+    ? `<div class="table-responsive"><table class="table table-sm table-hover mb-0 small">
+        <thead><tr><th>Reference</th><th>Donor</th><th>Amount</th><th>Date</th><th>Receipt</th><th>Status</th><th></th></tr></thead>
+        <tbody>${rows.map(x => `
+          <tr>
+            <td class="font-monospace">${x.referenceNumber}</td>
+            <td>${escHtml(x.donorName)}${x.isAnonymous ? ' <span class="badge bg-secondary" style="font-size:10px">Anon</span>' : ''}</td>
+            <td class="fw-semibold">${fmtCurrency(x.amount, x.currency)}</td>
+            <td>${new Date(x.createdAt).toLocaleDateString()}</td>
+            <td>${x.receiptFile ? '<i class="bi bi-paperclip text-success"></i>' : '<i class="bi bi-dash text-muted"></i>'}</td>
+            <td><span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></td>
+            <td><button class="btn btn-sm btn-outline-primary py-0" onclick="viewDonation('${x.id}')"><i class="bi bi-eye"></i></button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`
+    : '<p class="text-muted small mb-0">No donations for this program yet.</p>';
+
+  document.getElementById('donation-detail-content').innerHTML = `
+    <h6 class="fw-bold mb-3"><i class="bi bi-flag me-1"></i>${escHtml(causeTitle)}</h6>
+    ${html}`;
+  document.getElementById('donation-actions').innerHTML =
+    '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+  document.getElementById('donationModal').querySelector('.modal-title').textContent = 'Program Donations';
+  new bootstrap.Modal(document.getElementById('donationModal')).show();
 };
 
 // ==================== EVENTS ====================
@@ -1895,7 +2225,7 @@ window.clearFeaturedImage = function(target) {
 async function loadSettings() {
   const d = await apiCall('/api/content/site');
   if (d.success) {
-    const keys = ['site_name','site_tagline','cta_text','contact_email','contact_phone','contact_address','social_facebook','social_twitter','social_instagram','social_youtube','social_linkedin','admin_email','bank_name','bank_account','bank_account_name'];
+    const keys = ['site_name','site_tagline','cta_text','contact_email','contact_phone','contact_address','social_facebook','social_twitter','social_instagram','social_youtube','social_linkedin','admin_email','bank_name','bank_account','bank_account_name','rate_USD_TZS','rate_EUR_TZS','rate_GBP_TZS'];
     keys.forEach(k => {
       const el = document.getElementById('set-' + k);
       if (el && d.data[k]) el.value = d.data[k].value || '';
@@ -1904,7 +2234,7 @@ async function loadSettings() {
 }
 
 window.saveSettings = async function() {
-  const keys = ['site_name','site_tagline','cta_text','contact_email','contact_phone','contact_address','social_facebook','social_twitter','social_instagram','social_youtube','social_linkedin','admin_email','bank_name','bank_account','bank_account_name'];
+  const keys = ['site_name','site_tagline','cta_text','contact_email','contact_phone','contact_address','social_facebook','social_twitter','social_instagram','social_youtube','social_linkedin','admin_email','bank_name','bank_account','bank_account_name','rate_USD_TZS','rate_EUR_TZS','rate_GBP_TZS'];
   const items = keys.map(k => ({ key: k, value: document.getElementById('set-'+k)?.value || '', type: 'text' }));
   const r = await apiCall('/api/content/site/bulk', 'PUT', { items });
   if (r.success) toast('Settings saved!');
