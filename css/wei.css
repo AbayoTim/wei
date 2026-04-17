@@ -860,44 +860,378 @@ img {
 }
 
 /* ============================================================
-   PARTNERS
+   PARTNERS — MARQUEE
    ============================================================ */
-.wei-partner-item {
+.wei-partners-marquee-section {
+  background: linear-gradient(150deg, #071223 0%, #0d2137 55%, #0a1a2e 100%);
+  padding: 72px 0 64px;
+  overflow: hidden;
+  position: relative;
+}
+
+.wei-partners-header {
   text-align: center;
-  padding: 16px 12px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: var(--wei-transition);
-  height: 100%;
+  margin-bottom: 48px;
+}
+
+.wei-partners-header .wei-label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,176,216,0.15);
+  color: var(--wei-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(0,176,216,0.3);
+}
+
+.wei-partners-header h2 {
+  color: #fff;
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.wei-partners-header p {
+  color: rgba(255,255,255,0.55);
+  font-size: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.wei-marquee-outer {
+  position: relative;
+  overflow: hidden;
+}
+
+.wei-marquee-outer::before,
+.wei-marquee-outer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wei-marquee-outer::before {
+  left: 0;
+  background: linear-gradient(to right, #071223 0%, transparent 100%);
+}
+
+.wei-marquee-outer::after {
+  right: 0;
+  background: linear-gradient(to left, #0a1a2e 0%, transparent 100%);
+}
+
+.wei-marquee-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  padding: 10px 0 14px;
+  will-change: transform;
+  animation: wei-marquee-scroll 38s linear infinite;
+}
+
+.wei-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes wei-marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.wei-partner-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+  padding: 22px 30px;
+  min-width: 190px;
+  max-width: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.35s ease, border-color 0.35s ease,
+              transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94),
+              box-shadow 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.wei-partner-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(0,176,216,0.15) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  border-radius: 18px;
+}
+
+.wei-partner-card:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(0,176,216,0.45);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,176,216,0.2);
+  text-decoration: none;
+}
+
+.wei-partner-card:hover::before {
+  opacity: 1;
+}
+
+.wei-partner-card .partner-logo-wrap {
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.wei-partner-item a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+.wei-partner-card .partner-logo-wrap img {
+  max-height: 52px;
+  max-width: 150px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.62;
+  transition: filter 0.35s ease, opacity 0.35s ease;
+  object-fit: contain;
 }
 
-.wei-partner-item img {
-  max-height: 60px;
-  max-width: 100%;
-  filter: grayscale(100%);
-  opacity: 0.6;
-  transition: var(--wei-transition);
-}
-
-.wei-partner-item:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  transform: translateY(-2px);
-}
-
-.wei-partner-item:hover img {
+.wei-partner-card:hover .partner-logo-wrap img {
   filter: none;
   opacity: 1;
+}
+
+.wei-partner-card .partner-icon-fallback {
+  width: 52px;
+  height: 52px;
+  background: rgba(0,176,216,0.15);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wei-primary);
+  font-size: 24px;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+.wei-partner-card:hover .partner-icon-fallback {
+  background: rgba(0,176,216,0.3);
+}
+
+.wei-partner-card .partner-name {
+  color: rgba(255,255,255,0.72);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.35;
+  letter-spacing: 0.2px;
+  transition: color 0.35s ease;
+}
+
+.wei-partner-card:hover .partner-name {
+  color: #fff;
+}
+
+.wei-partner-card .partner-type-badge {
+  font-size: 10px;
+  color: rgba(0,176,216,0.7);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 600;
+  background: rgba(0,176,216,0.1);
+  padding: 3px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,176,216,0.2);
+}
+
+/* ============================================================
+   BECOME A PARTNER FORM
+   ============================================================ */
+.wei-become-partner-section {
+  background: linear-gradient(160deg, #f0f9ff 0%, #e8f4fd 50%, #f5f0ff 100%);
+  padding: 88px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.wei-become-partner-section::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,176,216,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.wei-become-partner-section::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -60px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(30,181,58,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.wei-partner-form-header {
+  text-align: center;
+  margin-bottom: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.wei-partner-form-header .wei-badge-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(0,176,216,0.12), rgba(30,181,58,0.12));
+  color: #0090b5;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(0,176,216,0.2);
+}
+
+.wei-partner-form-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #0d1f3c;
+  margin-bottom: 12px;
+}
+
+.wei-partner-form-header p {
+  color: #5a6a7e;
+  font-size: 1rem;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.wei-partner-form-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 52px 52px;
+  box-shadow: 0 8px 64px rgba(13,31,60,0.10), 0 0 0 1px rgba(0,0,0,0.04);
+  position: relative;
+  z-index: 1;
+}
+
+.wei-partner-form-card label.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 7px;
+  display: block;
+}
+
+.wei-partner-form-card .form-control,
+.wei-partner-form-card .form-select {
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  padding: 11px 15px;
+  font-size: 14px;
+  color: #1a2232;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #fafbfd;
+}
+
+.wei-partner-form-card .form-control:focus,
+.wei-partner-form-card .form-select:focus {
+  border-color: var(--wei-primary);
+  box-shadow: 0 0 0 3px rgba(0,176,216,0.14);
+  background: #fff;
+  outline: none;
+}
+
+.wei-partner-submit-btn {
+  background: linear-gradient(135deg, #009fc4 0%, #00B0D8 50%, #00c8f5 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 36px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,176,216,0.35);
+}
+
+.wei-partner-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(0,176,216,0.45);
+}
+
+.wei-partner-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.wei-partner-success-state {
+  display: none;
+  text-align: center;
+  padding: 16px 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.wei-partner-success-state .success-circle {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 36px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(34,197,94,0.35);
+  animation: successPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+@keyframes successPop {
+  0%   { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .wei-partner-form-card { padding: 28px 20px; }
+  .wei-partner-form-header h2 { font-size: 1.7rem; }
+  .wei-partners-header h2 { font-size: 1.6rem; }
+  .wei-marquee-outer::before,
+  .wei-marquee-outer::after { width: 60px; }
+  .wei-partner-card { min-width: 155px; padding: 18px 20px; }
 }
 
 

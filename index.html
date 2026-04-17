@@ -207,15 +207,23 @@
   </section>
 
   <!-- Partners -->
-  <section class="wei-section" style="background: #f8f9fa;">
+  <section class="wei-partners-marquee-section">
     <div class="container">
-      <div class="text-center mb-5">
-        <h2 class="wei-section-title wei-cursive">Our Partners</h2>
-        <p class="wei-section-subtitle">We work with trusted organizations to maximize our impact</p>
+      <div class="wei-partners-header">
+        <div class="wei-label-pill"><i class="bi bi-building"></i> Trusted Collaborators</div>
+        <h2 class="wei-cursive">Our Partners</h2>
+        <p>Working alongside trusted organizations to maximize our impact across Tanzania.</p>
       </div>
-      <div class="row justify-content-center" id="partners-container">
+    </div>
+    <div class="wei-marquee-outer">
+      <div class="wei-marquee-track" id="partners-container">
         <!-- Loaded dynamically -->
       </div>
+    </div>
+    <div class="container text-center mt-4">
+      <a href="/about#become-partner" class="btn btn-outline-light btn-sm px-4 py-2 rounded-pill" style="border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.75);font-size:13px;font-weight:600;letter-spacing:.5px;">
+        <i class="bi bi-handshake mr-2"></i> Become a Partner
+      </a>
     </div>
   </section>
 
@@ -479,20 +487,25 @@
     try {
       const res = await fetch('/api/partners');
       const data = await res.json();
-      if (data.success && data.data.length > 0) {
-        document.getElementById('partners-container').innerHTML = data.data.map(p => `
-          <div class="col-md-3 col-6 mb-4">
-            <div class="wei-partner-item p-3 bg-white shadow-sm rounded text-center">
-              <a href="${p.website || '#'}" target="_blank">
-                ${p.logo
-                  ? `<img src="${imgSrc(p.logo)}" alt="${p.name}" style="max-height:60px;">`
-                  : `<i class="bi bi-building text-primary" style="font-size:40px;"></i>`
-                }
-                <h6 class="mt-2 mb-0 small">${p.name}</h6>
-              </a>
-            </div>
-          </div>`).join('');
+      const track = document.getElementById('partners-container');
+      if (!data.success || !data.data.length) return;
+      const partners = data.data;
+
+      function buildCard(p) {
+        const logoHtml = p.logo
+          ? `<div class="partner-logo-wrap"><img src="${imgSrc(p.logo)}" alt="${p.name}"></div>`
+          : `<div class="partner-icon-fallback"><i class="bi bi-building"></i></div>`;
+        const typeLabel = p.partnerType ? `<span class="partner-type-badge">${p.partnerType}</span>` : '';
+        return `<a href="${p.website || '#'}" target="_blank" rel="noopener" class="wei-partner-card">
+          ${logoHtml}
+          <div class="partner-name">${p.name}</div>
+          ${typeLabel}
+        </a>`;
       }
+
+      let items = [...partners];
+      while (items.length < 8) items = [...items, ...partners];
+      track.innerHTML = [...items, ...items].map(buildCard).join('');
     } catch (e) {}
   }
 

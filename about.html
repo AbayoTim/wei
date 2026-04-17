@@ -155,14 +155,87 @@
   </section>
 
   <!-- Partners -->
-  <section class="wei-section" style="background:#f8f9fa;">
+  <section class="wei-partners-marquee-section">
     <div class="container">
-      <div class="text-center mb-5">
-        <h2 class="wei-section-title wei-cursive">Our Partners</h2>
-        <p class="wei-section-subtitle">We collaborate with trusted organizations to maximize our impact.</p>
+      <div class="wei-partners-header">
+        <div class="wei-label-pill"><i class="bi bi-building"></i> Trusted Collaborators</div>
+        <h2 class="wei-cursive">Our Partners</h2>
+        <p>We work alongside trusted organizations to amplify our impact across Tanzania.</p>
       </div>
-      <div class="row justify-content-center" id="partners-container">
+    </div>
+    <div class="wei-marquee-outer">
+      <div class="wei-marquee-track" id="partners-container">
         <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Become a Partner -->
+  <section class="wei-become-partner-section" id="become-partner">
+    <div class="container">
+      <div class="wei-partner-form-header">
+        <div class="wei-badge-accent"><i class="bi bi-handshake"></i> Partnership Opportunities</div>
+        <h2 class="wei-cursive">Become a Partner</h2>
+        <p>Join our growing network of organizations committed to empowering women and transforming communities across Tanzania. Together we create lasting change.</p>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+          <div class="wei-partner-form-card">
+            <div id="partner-form-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">First Name <span class="text-danger">*</span></label>
+                  <input type="text" id="pf-firstname" class="form-control" placeholder="Your first name">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                  <input type="text" id="pf-lastname" class="form-control" placeholder="Your last name">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Organization <span class="text-danger">*</span></label>
+                  <input type="text" id="pf-org" class="form-control" placeholder="Your organization name">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                  <input type="email" id="pf-email" class="form-control" placeholder="you@organization.org">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Phone Number</label>
+                  <input type="tel" id="pf-phone" class="form-control" placeholder="+255 700 000 000">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Partnership Type <span class="text-danger">*</span></label>
+                  <select id="pf-type" class="form-select">
+                    <option value="">Select a type...</option>
+                    <option value="Funding">Funding / Grants</option>
+                    <option value="Implementation">Program Implementation</option>
+                    <option value="Research">Research &amp; Learning</option>
+                    <option value="Advocacy">Advocacy &amp; Policy</option>
+                    <option value="Technical">Technical Assistance</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="col-12 mb-4">
+                  <label class="form-label">Tell us about your interest <span class="text-danger">*</span></label>
+                  <textarea id="pf-message" class="form-control" rows="4" placeholder="Describe how you'd like to collaborate, what resources you can offer, and your organization's mission..."></textarea>
+                </div>
+                <div class="col-12">
+                  <div id="pf-error" class="alert alert-danger py-2 small d-none"></div>
+                  <button type="button" id="pf-submit-btn" class="wei-partner-submit-btn" onclick="submitPartnerForm()">
+                    <i class="bi bi-send" id="pf-icon"></i>
+                    <span id="pf-label">Send Partnership Request</span>
+                    <span id="pf-spinner" class="spinner-border spinner-border-sm d-none"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="wei-partner-success-state" id="partner-success">
+              <div class="success-circle"><i class="bi bi-check-lg"></i></div>
+              <h4 class="fw-bold mb-2" style="color:#0d1f3c;">Request Received!</h4>
+              <p class="text-muted mb-0">Thank you for your interest in partnering with WEI. Our team will review your request and reach out within 2–3 business days.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -327,21 +400,89 @@
     try {
       const res = await fetch('/api/partners');
       const data = await res.json();
-      if (data.success && data.data.length > 0) {
-        document.getElementById('partners-container').innerHTML = data.data.map(p => `
-          <div class="col-md-3 col-6 mb-4">
-            <div class="wei-partner-item p-3 bg-white shadow-sm rounded text-center">
-              <a href="${p.website || '#'}" target="_blank">
-                ${p.logo
-                  ? `<img src="${imgSrc(p.logo)}" alt="${p.name}" style="max-height:60px;">`
-                  : `<i class="bi bi-building text-primary" style="font-size:40px;"></i>`
-                }
-                <h6 class="mt-2 mb-0 small">${p.name}</h6>
-              </a>
-            </div>
-          </div>`).join('');
+      const track = document.getElementById('partners-container');
+      if (!data.success || !data.data.length) return;
+      const partners = data.data;
+
+      function buildCard(p) {
+        const logoHtml = p.logo
+          ? `<div class="partner-logo-wrap"><img src="${imgSrc(p.logo)}" alt="${p.name}"></div>`
+          : `<div class="partner-icon-fallback"><i class="bi bi-building"></i></div>`;
+        const typeLabel = p.partnerType ? `<span class="partner-type-badge">${p.partnerType}</span>` : '';
+        return `<a href="${p.website || '#'}" target="_blank" rel="noopener" class="wei-partner-card">
+          ${logoHtml}
+          <div class="partner-name">${p.name}</div>
+          ${typeLabel}
+        </a>`;
       }
+
+      // Repeat items to always fill viewport before looping
+      let items = [...partners];
+      while (items.length < 8) items = [...items, ...partners];
+      // Duplicate for seamless CSS loop (animate -50%)
+      track.innerHTML = [...items, ...items].map(buildCard).join('');
     } catch (e) {}
+  }
+
+  async function submitPartnerForm() {
+    const btn    = document.getElementById('pf-submit-btn');
+    const label  = document.getElementById('pf-label');
+    const icon   = document.getElementById('pf-icon');
+    const spinner= document.getElementById('pf-spinner');
+    const errEl  = document.getElementById('pf-error');
+
+    const firstName = document.getElementById('pf-firstname').value.trim();
+    const lastName  = document.getElementById('pf-lastname').value.trim();
+    const org       = document.getElementById('pf-org').value.trim();
+    const email     = document.getElementById('pf-email').value.trim();
+    const phone     = document.getElementById('pf-phone').value.trim();
+    const type      = document.getElementById('pf-type').value;
+    const message   = document.getElementById('pf-message').value.trim();
+
+    errEl.classList.add('d-none');
+    if (!firstName || !lastName || !org || !email || !type || !message) {
+      errEl.textContent = 'Please fill in all required fields.';
+      errEl.classList.remove('d-none');
+      return;
+    }
+
+    btn.disabled = true;
+    icon.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    label.textContent = 'Sending…';
+
+    try {
+      const body = {
+        firstName,
+        lastName,
+        email,
+        phone: phone || undefined,
+        subject: `Partnership Inquiry — ${type}`,
+        message: `Organization: ${org}\nPartnership Type: ${type}\n\n${message}`,
+      };
+      const res  = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const result = await res.json();
+      if (result.success) {
+        document.getElementById('partner-form-body').style.display = 'none';
+        const success = document.getElementById('partner-success');
+        success.style.display = 'block';
+      } else {
+        errEl.textContent = result.message || 'Error sending request. Please try again.';
+        errEl.classList.remove('d-none');
+      }
+    } catch (e) {
+      errEl.textContent = 'Network error. Please try again.';
+      errEl.classList.remove('d-none');
+    } finally {
+      btn.disabled = false;
+      icon.classList.remove('d-none');
+      spinner.classList.add('d-none');
+      label.textContent = 'Send Partnership Request';
+    }
   }
 </script>
 
