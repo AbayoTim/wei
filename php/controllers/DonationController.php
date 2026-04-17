@@ -323,13 +323,14 @@ class DonationController
 
     public static function approved(Request $req): void
     {
-        $limit = min(100, max(1, (int)($req->query['limit'] ?? 10)));
-        $rows  = Donation::findAll(
-            "status = 'approved' AND isAnonymous = 0",
-            [],
-            'approvedAt DESC',
-            $limit
-        );
+        $limit  = min(50, max(1, (int)($req->query['limit'] ?? 12)));
+        $page   = max(1, (int)($req->query['page'] ?? 1));
+        $offset = ($page - 1) * $limit;
+
+        $where  = "status = 'approved' AND isAnonymous = 0";
+        $total  = Donation::count($where);
+        $rows   = Donation::findAll($where, [], 'approvedAt DESC', $limit, $offset);
+
         $public = array_map(fn($r) => [
             'donorName'  => $r['donorName'],
             'amount'     => (float)$r['amount'],
@@ -338,7 +339,16 @@ class DonationController
             'approvedAt' => $r['approvedAt'],
         ], $rows);
 
-        Response::success($public);
+        Response::json([
+            'success' => true,
+            'data'    => $public,
+            'meta'    => [
+                'total'   => $total,
+                'page'    => $page,
+                'limit'   => $limit,
+                'hasMore' => ($offset + count($rows)) < $total,
+            ],
+        ]);
     }
 
     public static function receipt(Request $req): void

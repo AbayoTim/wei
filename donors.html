@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Our Donors - Women Empowerment Initiatives (WEI)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Meet the generous donors who support WEI's mission to empower women across Tanzania.">
+
+  <link href="https://fonts.googleapis.com/css2?family=Mansalva&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/wei.css?v=2">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+
+<body>
+<div class="wei-wrap">
+
+  <div class="wei-overlay-bg"></div>
+  <nav class="wei-mobile-nav">
+    <button class="wei-mobile-nav-close"><i class="bi bi-x-lg"></i></button>
+    <div class="wei-mobile-nav-logo">
+      <a href="/"><img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-mobile-logo-img"></a>
+    </div>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About Us</a></li>
+      <li><a href="/causes">Our Programs</a></li>
+      <li><a href="/events">Events</a></li>
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="wei-mobile-donate mt-3">
+      <a href="/donate" class="btn-wei-donate d-block text-center">Donate Now</a>
+    </div>
+  </nav>
+
+  <header class="wei-navbar scrolled">
+    <div class="container">
+      <div class="wei-logo mr-auto">
+        <a href="/">
+          <img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-logo-img">
+          <div class="wei-logo-text">
+            <span class="wei-logo-main">WEI</span>
+            <span class="wei-logo-sub">Tanzania</span>
+          </div>
+        </a>
+      </div>
+      <ul class="wei-nav-menu wei-nav-desktop mb-0">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/causes">Our Programs</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="wei-header-actions wei-nav-desktop">
+        <a href="https://facebook.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-facebook"></i></a>
+        <a href="https://twitter.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-twitter-x"></i></a>
+        <a href="https://instagram.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-instagram"></i></a>
+        <a href="/donate" class="btn-wei-donate ml-2">Donate Now</a>
+      </div>
+      <button class="wei-menu-toggle"><i class="bi bi-list"></i></button>
+    </div>
+  </header>
+
+  <!-- Page Hero -->
+  <div class="wei-page-hero" style="background-image: url('images/hero_1.jpg');">
+    <div class="container">
+      <div class="wei-page-hero-content">
+        <h1>Our Generous Donors</h1>
+        <p>Every contribution makes a difference. Thank you to all who support our mission.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div style="background:linear-gradient(90deg,#0d2137 0%,#1a3a5c 100%);padding:28px 0;">
+    <div class="container">
+      <div class="row text-center text-white" id="donor-stats">
+        <div class="col-4">
+          <div style="font-size:2rem;font-weight:700;" id="stat-total">—</div>
+          <div style="font-size:12px;opacity:.7;letter-spacing:1px;text-transform:uppercase;">Total Donors</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:2rem;font-weight:700;" id="stat-programs">—</div>
+          <div style="font-size:12px;opacity:.7;letter-spacing:1px;text-transform:uppercase;">Programs Supported</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:2rem;font-weight:700;" id="stat-general">—</div>
+          <div style="font-size:12px;opacity:.7;letter-spacing:1px;text-transform:uppercase;">General Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Donors grid -->
+  <section class="wei-section" style="background:#f8f9fa;">
+    <div class="container">
+      <div class="row mb-4 align-items-center">
+        <div class="col">
+          <h2 class="wei-section-title wei-cursive mb-0">Hall of Donors</h2>
+        </div>
+        <div class="col-auto">
+          <span class="text-muted small" id="showing-label"></span>
+        </div>
+      </div>
+
+      <div class="row" id="donors-grid">
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4" id="load-more-wrap" style="display:none!important;">
+        <button class="btn btn-outline-primary px-5 py-2 rounded-pill" id="load-more-btn" onclick="loadMore()">
+          <i class="bi bi-arrow-down-circle mr-2"></i> Load More
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="wei-section-sm">
+    <div class="container">
+      <div class="wei-cta">
+        <h2 class="wei-cursive">Join Our Community of Donors</h2>
+        <p class="mb-4" style="opacity:.85;">Your generosity helps us empower women and transform communities across Tanzania.</p>
+        <a href="/donate" class="btn-wei-primary">Donate Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="wei-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">About WEI</h3>
+          <p>Women Empowerment Initiatives (WEI) focuses on enhancing women's autonomy and capabilities through sustainable programs.</p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h3 class="wei-footer-heading">Quick Links</h3>
+          <ul class="wei-footer-links">
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/causes">Our Programs</a></li>
+            <li><a href="/donors">Donors</a></li>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">Contact Info</h3>
+          <div class="wei-footer-contact">
+            <p><i class="bi bi-geo-alt"></i> <span id="footer-address">Dodoma - Makulu, Tanzania</span></p>
+            <p><i class="bi bi-telephone"></i> <span id="footer-phone">+255 743 111 867</span></p>
+            <p><i class="bi bi-envelope"></i> <span id="footer-email">info@wei.or.tz</span></p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <h3 class="wei-footer-heading">Follow Us</h3>
+          <div class="wei-footer-social">
+            <a id="footer-facebook" href="https://facebook.com/weitanzania" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a id="footer-twitter" href="https://twitter.com/weitanzania" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            <a id="footer-instagram" href="https://instagram.com/weitanzania" target="_blank"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wei-footer-bottom">
+      <div class="container d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
+        <p class="mb-0">Copyright &copy; <script>document.write(new Date().getFullYear());</script> Women Empowerment Initiatives (WEI). All rights reserved.</p>
+        <a href="admin/" style="color:#bbb;font-size:12px;text-decoration:none;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#bbb'"><i class="bi bi-shield-lock"></i> Admin</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/wei-main.js"></script>
+
+<script>
+  const PAGE_SIZE = 12;
+  let currentPage = 1;
+  let totalDonors = 0;
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function fmtAmount(amount, currency) {
+    try {
+      return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(amount);
+    } catch (e) {
+      return currency + ' ' + Number(amount).toLocaleString();
+    }
+  }
+
+  function avatarInitials(name) {
+    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  // Soft palette for avatar backgrounds
+  const AVATAR_COLORS = [
+    '#1a6b8a','#2e7d52','#7b4a9e','#c0392b','#d35400',
+    '#1565c0','#00838f','#558b2f','#6a1b9a','#ad1457',
+  ];
+  function avatarColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return AVATAR_COLORS[h % AVATAR_COLORS.length];
+  }
+
+  function buildCard(d) {
+    const initials = avatarInitials(d.donorName);
+    const color    = avatarColor(d.donorName);
+    const causeTag = d.cause
+      ? `<span class="donor-cause-tag"><i class="bi bi-heart-fill mr-1" style="font-size:9px;"></i>${d.cause}</span>`
+      : `<span class="donor-cause-tag donor-cause-general"><i class="bi bi-globe mr-1" style="font-size:9px;"></i>General Support</span>`;
+    return `
+      <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+        <div class="donor-card">
+          <div class="donor-avatar" style="background:${color};">${initials}</div>
+          <div class="donor-name">${d.donorName}</div>
+          <div class="donor-amount">${fmtAmount(d.amount, d.currency)}</div>
+          ${causeTag}
+          <div class="donor-date">${fmtDate(d.approvedAt)}</div>
+        </div>
+      </div>`;
+  }
+
+  async function loadDonors(page, append = false) {
+    try {
+      const res  = await fetch(`/api/donations/approved?limit=${PAGE_SIZE}&page=${page}`);
+      const data = await res.json();
+      if (!data.success) return;
+
+      totalDonors = data.meta.total;
+      const grid  = document.getElementById('donors-grid');
+
+      if (!append) grid.innerHTML = '';
+
+      if (data.data.length === 0 && !append) {
+        grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No donors to display yet.</p></div>';
+        return;
+      }
+
+      grid.insertAdjacentHTML('beforeend', data.data.map(buildCard).join(''));
+
+      const shown = Math.min(page * PAGE_SIZE, totalDonors);
+      document.getElementById('showing-label').textContent = `Showing ${shown} of ${totalDonors} donors`;
+
+      const wrap = document.getElementById('load-more-wrap');
+      if (data.meta.hasMore) {
+        wrap.style.removeProperty('display');
+      } else {
+        wrap.style.setProperty('display', 'none', 'important');
+      }
+    } catch (e) {}
+  }
+
+  function loadMore() {
+    currentPage++;
+    document.getElementById('load-more-btn').disabled = true;
+    document.getElementById('load-more-btn').innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span> Loading...';
+    loadDonors(currentPage, true).then(() => {
+      document.getElementById('load-more-btn').disabled = false;
+      document.getElementById('load-more-btn').innerHTML = '<i class="bi bi-arrow-down-circle mr-2"></i> Load More';
+    });
+  }
+
+  async function loadStats() {
+    try {
+      const res  = await fetch('/api/donations/approved?limit=1&page=1');
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('stat-total').textContent = data.meta.total.toLocaleString();
+      }
+    } catch (e) {}
+    // program vs general split from donation stats (public doesn't need auth for approved)
+    try {
+      const res  = await fetch('/api/donations/approved?limit=200&page=1');
+      const data = await res.json();
+      if (data.success) {
+        const donors  = data.data;
+        const program = donors.filter(d => d.cause).length;
+        const general = donors.filter(d => !d.cause).length;
+        document.getElementById('stat-programs').textContent = program.toLocaleString();
+        document.getElementById('stat-general').textContent  = general.toLocaleString();
+      }
+    } catch (e) {}
+  }
+
+  // Load footer contact info
+  async function loadFooterContact() {
+    try {
+      const res  = await fetch('/api/content/site');
+      const data = await res.json();
+      if (!data.success) return;
+      const c = data.data;
+      if (c.contact_address?.value) document.getElementById('footer-address').textContent  = c.contact_address.value;
+      if (c.contact_phone?.value)   document.getElementById('footer-phone').textContent    = c.contact_phone.value;
+      if (c.contact_email?.value)   document.getElementById('footer-email').textContent    = c.contact_email.value;
+      if (c.social_facebook?.value) document.getElementById('footer-facebook').href        = c.social_facebook.value;
+      if (c.social_twitter?.value)  document.getElementById('footer-twitter').href         = c.social_twitter.value;
+      if (c.social_instagram?.value)document.getElementById('footer-instagram').href       = c.social_instagram.value;
+    } catch (e) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadDonors(1);
+    loadStats();
+    loadFooterContact();
+  });
+</script>
+
+<style>
+  .donor-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .donor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+  }
+  .donor-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+  }
+  .donor-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: #1a2a3a;
+    line-height: 1.3;
+  }
+  .donor-amount {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--wei-primary, #00b0d8);
+  }
+  .donor-cause-tag {
+    font-size: 11px;
+    background: rgba(0,176,216,0.1);
+    color: #0e7fa0;
+    border: 1px solid rgba(0,176,216,0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-weight: 600;
+  }
+  .donor-cause-general {
+    background: rgba(90,90,90,0.08);
+    color: #666;
+    border-color: rgba(0,0,0,0.1);
+  }
+  .donor-date {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 2px;
+  }
+</style>
+
+</body>
+</html>
