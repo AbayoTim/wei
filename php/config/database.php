@@ -31,6 +31,7 @@ class Database
         $pdo->exec('PRAGMA foreign_keys=ON');
         self::migrateSqlite($pdo);
         self::seed($pdo);
+        self::ensureContentDefaults($pdo);
         return $pdo;
     }
 
@@ -47,6 +48,7 @@ class Database
         ]);
         self::migrateMysql($pdo);
         self::seed($pdo);
+        self::ensureContentDefaults($pdo);
         return $pdo;
     }
 
@@ -485,6 +487,90 @@ class Database
             "║  Admin password: $adminPassword\n" .
             "╚════════════════════════════════════════════════╝\n"
         );
+    }
+
+    // ── Content defaults (runs every boot, INSERT OR IGNORE) ─────────────────
+
+    private static function ensureContentDefaults(PDO $db): void
+    {
+        $adminId = $db->query("SELECT id FROM users WHERE role='admin' LIMIT 1")->fetchColumn() ?: 'system';
+
+        // Pull existing old-style social keys so we can migrate their values
+        $oldKeys = [];
+        $rows = $db->query("SELECT `key`, value FROM site_contents WHERE `key` IN ('facebook_url','twitter_url','instagram_url')")->fetchAll();
+        foreach ($rows as $r) $oldKeys[$r['key']] = $r['value'];
+
+        $defaults = [
+            // General
+            ['site_name',          'Women Empowerment Initiatives',                                          'text'],
+            ['site_tagline',       'WEI focuses on enhancing women\'s autonomy and capabilities through sustainable programs in education, healthcare, and economic development.', 'text'],
+            ['cta_text',           'Donate Now',                                                              'text'],
+            // Contact (may already exist from old seed — INSERT OR IGNORE preserves them)
+            ['contact_phone',      '+255 743 111 867',                                                        'text'],
+            ['contact_email',      'info@wei.or.tz',                                                          'text'],
+            ['contact_address',    'Dodoma - Makulu, Tanzania',                                               'text'],
+            // Social — migrate values from old keys if present
+            ['social_facebook',    $oldKeys['facebook_url']  ?? 'https://facebook.com/weitanzania',           'text'],
+            ['social_twitter',     $oldKeys['twitter_url']   ?? 'https://twitter.com/weitanzania',            'text'],
+            ['social_instagram',   $oldKeys['instagram_url'] ?? 'https://instagram.com/weitanzania',          'text'],
+            ['social_youtube',     '',                                                                          'text'],
+            ['social_linkedin',    '',                                                                          'text'],
+            // Admin / bank
+            ['admin_email',        'admin@wei.or.tz',                                                         'text'],
+            ['bank_name',          'CRDB Bank',                                                                'text'],
+            ['bank_account',       '0150XXXXXXXX',                                                            'text'],
+            ['bank_account_name',  'Women Empowerment Initiatives',                                            'text'],
+            // Hero
+            ['hero_title',         'Empowering Women, Building Stronger Communities',                          'text'],
+            ['hero_subtitle',      'Join us in creating opportunities for women and youth in Tanzania through education, healthcare, and livelihood programs.', 'text'],
+            ['hero_slides',        '[]',                                                                       'json'],
+            // About page
+            ['about_mission',      '<p>Women Empowerment Initiatives (WEI) focuses on enhancing women\'s autonomy and capabilities. We address how women have fewer opportunities for economic participation than men, less access to basic and higher education, and limited health resources. Our work emphasizes strengthening women\'s decision-making authority, resource access, and ability to create meaningful change in their lives and communities.</p>', 'html'],
+            ['about_vision',       '<p>A society where women are empowered, have equal opportunities, and actively participate in all aspects of community development.</p>', 'html'],
+            ['about_story',        '',                                                                          'html'],
+            ['about_short',        'WEI is a Tanzanian NGO dedicated to empowering women through education, healthcare, economic programs, and advocacy across Dodoma region.', 'text'],
+            ['about_values',       '<ul><li><strong>Empowerment:</strong> Building capacity and confidence</li><li><strong>Equality:</strong> Advocating for equal rights and opportunities</li><li><strong>Community:</strong> Working together for collective growth</li><li><strong>Sustainability:</strong> Creating lasting impact</li><li><strong>Integrity:</strong> Operating with transparency and accountability</li></ul>', 'html'],
+            ['about_areas',        '<div class="col-md-4 mb-4"><div class="wei-area-card"><i class="bi bi-geo-alt-fill"></i><h4>Dodoma City Council</h4><p class="text-muted">Urban programs focusing on education and economic empowerment.</p></div></div><div class="col-md-4 mb-4"><div class="wei-area-card"><i class="bi bi-geo-alt-fill"></i><h4>Chamwino District Council</h4><p class="text-muted">Rural programs supporting women\'s healthcare and livelihood.</p></div></div><div class="col-md-4 mb-4"><div class="wei-area-card"><i class="bi bi-geo-alt-fill"></i><h4>Bahi District Council</h4><p class="text-muted">Community development and youth empowerment initiatives.</p></div></div>', 'html'],
+            // Home page
+            ['home_features',      '<h3>Community-Driven Approach</h3><p>We work directly with local communities to understand and address their specific needs.</p><h3>Sustainable Programs</h3><p>Our programs focus on long-term impact through skills training, education support, and economic empowerment.</p><h3>Strong Partnerships</h3><p>We collaborate with ACWW, ViiV Healthcare, and government entities to maximize our impact.</p>', 'html'],
+            // Page hero images (empty = use CSS default background)
+            ['page_hero_home',     '',  'image'],
+            ['page_hero_about',    '',  'image'],
+            ['page_hero_contact',  '',  'image'],
+            ['page_hero_donate',   '',  'image'],
+            ['page_hero_causes',   '',  'image'],
+            ['page_hero_events',   '',  'image'],
+            ['page_hero_blog',     '',  'image'],
+            // Site images
+            ['img_mission',        '',  'image'],
+            ['img_support',        '',  'image'],
+            ['img_tile_edu',       '',  'image'],
+            ['img_tile_health',    '',  'image'],
+            ['img_tile_livelihood','',  'image'],
+            // Contact page
+            ['contact_intro',      '<p>We\'d love to hear from you. Whether you want to partner with us, volunteer, or learn more about our work, reach out and our team will get back to you soon.</p>', 'html'],
+            ['contact_volunteer',  '<p>Passionate about women\'s empowerment? Join us as a volunteer and help drive meaningful change in communities across Tanzania.</p>', 'html'],
+            ['contact_map_url',    'https://www.openstreetmap.org/export/embed.html?bbox=35.6800%2C-6.2200%2C35.7800%2C-6.1400&layer=mapnik&marker=-6.1800%2C35.7300', 'text'],
+            // Donate page
+            ['payment_methods',    json_encode([
+                ['id' => 'bank', 'title' => 'Bank Transfer', 'details' => [
+                    ['label' => 'Bank',           'value' => 'CRDB Bank'],
+                    ['label' => 'Account Name',   'value' => 'Women Empowerment Initiatives'],
+                    ['label' => 'Account Number', 'value' => '0150XXXXXXXX'],
+                    ['label' => 'Swift Code',     'value' => 'CORUTZTZ'],
+                ]],
+                ['id' => 'mobile_money', 'title' => 'Mobile Money (M-Pesa / Tigo Pesa / Airtel Money)', 'details' => [
+                    ['label' => 'Number', 'value' => '+255 743 111 867'],
+                    ['label' => 'Name',   'value' => 'Women Empowerment Initiatives'],
+                ]],
+            ]), 'json'],
+        ];
+
+        $ignore = DB_DRIVER === 'mysql' ? 'INSERT IGNORE' : 'INSERT OR IGNORE';
+        $stmt   = $db->prepare("$ignore INTO site_contents (id, `key`, value, type, lastUpdatedBy) VALUES (?, ?, ?, ?, ?)");
+        foreach ($defaults as [$key, $value, $type]) {
+            $stmt->execute([self::uuid(), $key, $value, $type, $adminId]);
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

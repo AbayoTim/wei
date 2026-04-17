@@ -138,22 +138,24 @@
 
     // Social links in header (.wei-header-social) and footer (.wei-footer-social a)
     var SOCIAL = {
-      'bi-facebook':  'social_facebook',
-      'bi-twitter-x': 'social_twitter',
-      'bi-twitter':   'social_twitter',
-      'bi-instagram': 'social_instagram',
-      'bi-youtube':   'social_youtube',
-      'bi-linkedin':  'social_linkedin',
+      'bi-facebook':  ['social_facebook',  'facebook_url'],
+      'bi-twitter-x': ['social_twitter',   'twitter_url'],
+      'bi-twitter':   ['social_twitter',   'twitter_url'],
+      'bi-instagram': ['social_instagram', 'instagram_url'],
+      'bi-youtube':   ['social_youtube'],
+      'bi-linkedin':  ['social_linkedin'],
     };
     document.querySelectorAll('a.wei-header-social, .wei-footer-social a').forEach(function (a) {
       var icon = a.querySelector('i');
       if (!icon) return;
       for (var iconCls in SOCIAL) {
-        var key = SOCIAL[iconCls];
-        if (icon.classList.contains(iconCls) && c[key] && c[key].value) {
-          a.href = c[key].value;
-          break;
+        if (!icon.classList.contains(iconCls)) continue;
+        var keys = SOCIAL[iconCls];
+        for (var ki = 0; ki < keys.length; ki++) {
+          var val = c[keys[ki]] && c[keys[ki]].value;
+          if (val && val !== '#') { a.href = val; break; }
         }
+        break;
       }
     });
 
