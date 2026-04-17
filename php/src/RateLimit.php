@@ -53,27 +53,27 @@ class RateLimit
 
     // Predefined limiters matching server.js --------------------------------
 
-    /** General API: 100 req / 15 min */
+    /** General API: 500 req / 15 min */
     public static function api(string $ip): void
     {
-        self::check("api:$ip", 100, 15 * 60);
+        self::check("api:$ip", 500, 15 * 60);
     }
 
-    /** Auth (login): 5 attempts / 1 hour */
+    /** Auth (login): 20 attempts / 1 hour */
     public static function auth(string $ip): void
     {
-        self::check("auth:$ip", 5, 3600);
+        self::check("auth:$ip", 20, 3600);
     }
 
-    /** Public forms (donations, contact): 10 / 1 hour; skipped when authenticated */
+    /** Public forms (donations, contact): 30 / 1 hour; skipped when authenticated */
     public static function form(string $ip, bool $isAuthenticated = false): void
     {
-        self::check("form:$ip", 10, 3600, $isAuthenticated);
+        self::check("form:$ip", 30, 3600, $isAuthenticated);
     }
 
-    /** Subscribe: 5 / 1 hour */
+    /** Subscribe: 20 / 1 hour */
     public static function subscribe(string $ip): void
     {
-        self::check("sub:$ip", 5, 3600);
+        self::check("sub:$ip", 20, 3600);
     }
 }
