@@ -347,8 +347,11 @@
     try {
       const res = await fetch('/api/content/site/payment_methods');
       const data = await res.json();
-      if (data.success && Array.isArray(data.data?.value) && data.data.value.length) {
-        methods = data.data.value;
+      if (data.success && data.data?.value) {
+        try {
+          const parsed = JSON.parse(data.data.value);
+          if (Array.isArray(parsed) && parsed.length) methods = parsed;
+        } catch (e) {}
       }
     } catch (e) {}
     const container = document.getElementById('payment-methods-container');

@@ -205,6 +205,7 @@
         <div class="col-lg-10">
           <div style="border-radius:8px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10);">
             <iframe
+              id="contact-map-iframe"
               src="https://www.openstreetmap.org/export/embed.html?bbox=35.6800%2C-6.2200%2C35.7800%2C-6.1400&layer=mapnik&marker=-6.1800%2C35.7300"
               width="100%"
               height="420"
@@ -310,6 +311,7 @@
       const c = data.data;
       if (c.contact_intro?.value)     document.getElementById('contact-intro-content').innerHTML     = c.contact_intro.value;
       if (c.contact_volunteer?.value) document.getElementById('contact-volunteer-content').innerHTML = c.contact_volunteer.value;
+      if (c.contact_map_url?.value)   document.getElementById('contact-map-iframe').src              = c.contact_map_url.value;
     } catch (e) {}
   }
 

@@ -329,6 +329,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     loadHeroContent();
+    loadHeroSlides();
     loadCauses();
     loadEvents();
     loadPartners();
@@ -365,6 +366,24 @@
       if (c.hero_title?.value)    document.getElementById('hero-title').textContent    = c.hero_title.value;
       if (c.hero_subtitle?.value) document.getElementById('hero-subtitle').textContent = c.hero_subtitle.value;
       if (c.cta_text?.value)      document.getElementById('hero-cta').textContent      = c.cta_text.value;
+    } catch (e) {}
+  }
+
+  async function loadHeroSlides() {
+    try {
+      const res = await fetch('/api/content/site/hero_slides');
+      const data = await res.json();
+      if (!data.success || !data.data?.value) return;
+      let slides;
+      try { slides = JSON.parse(data.data.value); } catch (e) { return; }
+      if (!Array.isArray(slides) || !slides.length) return;
+      document.querySelector('.wei-hero-slides').innerHTML = slides.map(s =>
+        `<div class="wei-hero-slide" style="background-image: url('${s.image}');"></div>`
+      ).join('');
+      document.querySelector('.wei-hero-dots').innerHTML = slides.map((_, i) =>
+        `<button class="wei-hero-dot"></button>`
+      ).join('');
+      if (typeof window.reinitHeroSlider === 'function') window.reinitHeroSlider();
     } catch (e) {}
   }
 

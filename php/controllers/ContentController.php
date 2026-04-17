@@ -59,16 +59,19 @@ class ContentController
         foreach ($items as $entry) {
             if (empty($entry['key'])) continue;
             $existing = SiteContent::findByKey($entry['key']);
+            $entryType = isset($entry['type']) && in_array($entry['type'], ['text','html','json','image']) ? $entry['type'] : null;
             if ($existing) {
-                $u = SiteContent::update($existing['id'], [
+                $upd = [
                     'value'         => $entry['value'] ?? $existing['value'],
                     'lastUpdatedBy' => $req->userId,
-                ]);
+                ];
+                if ($entryType !== null) $upd['type'] = $entryType;
+                $u = SiteContent::update($existing['id'], $upd);
             } else {
                 $u = SiteContent::create([
                     'key'           => $entry['key'],
                     'value'         => $entry['value'] ?? '',
-                    'type'          => 'text',
+                    'type'          => $entryType ?? 'text',
                     'lastUpdatedBy' => $req->userId,
                 ]);
             }

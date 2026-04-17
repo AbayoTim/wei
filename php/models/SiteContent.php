@@ -11,13 +11,13 @@ class SiteContent extends Model
         return static::findBy('key', $key);
     }
 
-    /** Return all content as a key => value map */
+    /** Return all content as a key => {value, type} map */
     public static function getMap(): array
     {
         $rows = static::findAll();
         $map  = [];
         foreach ($rows as $row) {
-            $map[$row['key']] = $row['value'];
+            $map[$row['key']] = ['value' => $row['value'], 'type' => $row['type'] ?? 'text'];
         }
         return $map;
     }

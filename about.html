@@ -127,6 +127,20 @@
     </div>
   </section>
 
+  <!-- Our Story -->
+  <section class="wei-section" id="about-story-section" style="display:none;">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="wei-section-title wei-cursive">Our Story</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div id="about-story-content"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Team -->
   <section class="wei-section">
     <div class="container">
@@ -268,6 +282,10 @@
       if (c.about_vision?.value)   document.getElementById('about-vision-content').innerHTML   = c.about_vision.value;
       if (c.about_values?.value)   document.getElementById('about-values-content').innerHTML   = c.about_values.value;
       if (c.about_areas?.value)    document.getElementById('about-areas-container').innerHTML  = c.about_areas.value;
+      if (c.about_story?.value) {
+        document.getElementById('about-story-content').innerHTML = c.about_story.value;
+        document.getElementById('about-story-section').style.display = '';
+      }
     } catch (e) {}
   }
 

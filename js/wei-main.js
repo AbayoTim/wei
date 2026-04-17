@@ -82,6 +82,24 @@
     });
   }
 
+  window.reinitHeroSlider = function () {
+    clearInterval(sliderInterval);
+    slides  = document.querySelectorAll('.wei-hero-slide');
+    dots    = document.querySelectorAll('.wei-hero-dot');
+    current = 0;
+    if (slides.length > 0) {
+      goToSlide(0);
+      startSlider();
+      dots.forEach(function (dot, i) {
+        dot.addEventListener('click', function () {
+          clearInterval(sliderInterval);
+          goToSlide(i);
+          startSlider();
+        });
+      });
+    }
+  };
+
   /* ============================================================
      SMOOTH SCROLL for anchor links
      ============================================================ */

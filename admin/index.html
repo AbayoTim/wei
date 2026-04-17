@@ -2011,9 +2011,13 @@ const DEFAULT_PAYMENT_METHODS = [
 
 async function loadDonatePage() {
   const d = await apiCall('/api/content/site/payment_methods');
-  paymentMethods = (d.success && Array.isArray(d.data?.value) && d.data.value.length)
-    ? d.data.value
-    : JSON.parse(JSON.stringify(DEFAULT_PAYMENT_METHODS));
+  paymentMethods = JSON.parse(JSON.stringify(DEFAULT_PAYMENT_METHODS));
+  if (d.success && d.data?.value) {
+    try {
+      const parsed = JSON.parse(d.data.value);
+      if (Array.isArray(parsed) && parsed.length) paymentMethods = parsed;
+    } catch (e) {}
+  }
   renderPaymentMethods();
 }
 
