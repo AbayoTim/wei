@@ -541,12 +541,13 @@ class Database
             ['page_hero_causes',   '',  'image'],
             ['page_hero_events',   '',  'image'],
             ['page_hero_blog',     '',  'image'],
-            // Site images
-            ['img_mission',        '',  'image'],
-            ['img_support',        '',  'image'],
-            ['img_tile_edu',       '',  'image'],
-            ['img_tile_health',    '',  'image'],
-            ['img_tile_livelihood','',  'image'],
+            // Site images (keys match admin SITE_IMAGE_SLOTS and public page JS)
+            ['about_mission_image',   '',  'image'],
+            ['home_support_image',    '',  'image'],
+            ['home_tile_edu',         '',  'image'],
+            ['home_tile_health',      '',  'image'],
+            ['home_tile_livelihood',  '',  'image'],
+            ['home_features_bg',      '',  'image'],
             // Contact page
             ['contact_intro',      '<p>We\'d love to hear from you. Whether you want to partner with us, volunteer, or learn more about our work, reach out and our team will get back to you soon.</p>', 'html'],
             ['contact_volunteer',  '<p>Passionate about women\'s empowerment? Join us as a volunteer and help drive meaningful change in communities across Tanzania.</p>', 'html'],
