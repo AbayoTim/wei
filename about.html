@@ -87,7 +87,7 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-md-6 mb-4 mb-md-0">
-          <img src="images/img_2.jpg" alt="About WEI" class="img-fluid rounded shadow">
+          <img id="about-mission-img" src="images/img_2.jpg" alt="About WEI" class="img-fluid rounded shadow">
         </div>
         <div class="col-md-5 ml-auto">
           <h2 class="wei-section-title wei-cursive">Our Mission</h2>
@@ -285,6 +285,16 @@
       if (c.about_story?.value) {
         document.getElementById('about-story-content').innerHTML = c.about_story.value;
         document.getElementById('about-story-section').style.display = '';
+      }
+      if (c.about_mission_image?.value) {
+        const v = c.about_mission_image.value;
+        const url = v.startsWith('http') || v.startsWith('/') || v.startsWith('data:') ? v : '/uploads/images/' + v;
+        document.getElementById('about-mission-img').src = url;
+      }
+      if (c.page_hero_about?.value) {
+        const v = c.page_hero_about.value;
+        const url = v.startsWith('http') || v.startsWith('/') || v.startsWith('data:') ? v : '/uploads/images/' + v;
+        document.querySelector('.wei-page-hero').style.backgroundImage = `url('${url}')`;
       }
     } catch (e) {}
   }

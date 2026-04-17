@@ -185,7 +185,20 @@
   document.addEventListener('DOMContentLoaded', function () {
     loadFeaturedCause();
     loadCauses();
+    loadCausesPageHero();
   });
+
+  async function loadCausesPageHero() {
+    try {
+      const res = await fetch('/api/content/site/page_hero_causes');
+      const data = await res.json();
+      if (data.success && data.data?.value) {
+        const v = data.data.value;
+        const url = v.startsWith('http') || v.startsWith('/') || v.startsWith('data:') ? v : '/uploads/images/' + v;
+        document.querySelector('.wei-page-hero').style.backgroundImage = `url('${url}')`;
+      }
+    } catch (e) {}
+  }
 
   document.getElementById('category-filter').addEventListener('change', loadCauses);
 

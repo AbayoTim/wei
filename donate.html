@@ -367,6 +367,18 @@
   }
   loadPaymentMethods();
 
+  (async function loadDonatePageHero() {
+    try {
+      const res = await fetch('/api/content/site/page_hero_donate');
+      const data = await res.json();
+      if (data.success && data.data?.value) {
+        const v = data.data.value;
+        const url = v.startsWith('http') || v.startsWith('/') || v.startsWith('data:') ? v : '/uploads/images/' + v;
+        document.querySelector('.wei-page-hero').style.backgroundImage = `url('${url}')`;
+      }
+    } catch (e) {}
+  })();
+
   async function loadCauseOptions() {
     try {
       const res = await fetch('/api/content/causes?limit=50');

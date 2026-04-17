@@ -169,6 +169,7 @@
       <a class="nav-link" href="#" onclick="showPage('homepage',this)"><i class="bi bi-house"></i> Home Page</a>
       <a class="nav-link" href="#" onclick="showPage('contactpage',this)"><i class="bi bi-telephone"></i> Contact Page</a>
       <a class="nav-link" href="#" onclick="showPage('donatepage',this)"><i class="bi bi-credit-card"></i> Donate Page</a>
+      <a class="nav-link" href="#" onclick="showPage('siteimages',this)"><i class="bi bi-images"></i> Site Images</a>
       <a class="nav-link" href="#" onclick="showPage('media',this)"><i class="bi bi-folder2-open"></i> Media Library</a>
       <div class="nav-section">Config</div>
       <a class="nav-link" href="#" onclick="showPage('settings',this)"><i class="bi bi-gear"></i> Settings</a>
@@ -464,6 +465,21 @@
       </div>
       <p class="text-muted small mb-4">These are the payment options shown to donors on the donation page. Click a method to edit it.</p>
       <div id="payment-methods-list" class="row"></div>
+    </div>
+
+    <!-- Site Images -->
+    <div class="page-section" id="page-siteimages">
+      <h4 class="fw-bold mb-2">Site Images</h4>
+      <p class="text-muted small mb-4">Click <strong>Change</strong> on any image to replace it from the Media Library. Changes save immediately. Badges show <span class="badge bg-success" style="font-size:10px;">Custom</span> when overridden or <span class="badge bg-secondary" style="font-size:10px;">Default</span> when using the built-in image.</p>
+
+      <h6 class="fw-semibold text-uppercase text-muted small mb-3 mt-2">Page Hero Banners</h6>
+      <div class="row mb-4" id="site-images-heroes"></div>
+
+      <h6 class="fw-semibold text-uppercase text-muted small mb-3">Homepage Section Images</h6>
+      <div class="row mb-4" id="site-images-home"></div>
+
+      <h6 class="fw-semibold text-uppercase text-muted small mb-3">About Page Images</h6>
+      <div class="row" id="site-images-about"></div>
     </div>
 
     <!-- Media Library -->
@@ -1011,6 +1027,7 @@ window.showPage = function(page, el) {
     case 'homepage': loadHomepageContent(); break;
     case 'contactpage': loadContactPageContent(); break;
     case 'donatepage': loadDonatePage(); break;
+    case 'siteimages': loadSiteImages(); break;
     case 'media': loadMedia(); break;
     case 'settings': loadSettings(); break;
     case 'users': loadUsers(); break;
@@ -2103,6 +2120,82 @@ window.deletePaymentMethod = function(index) {
   paymentMethods.splice(index, 1);
   savePaymentMethods();
   renderPaymentMethods();
+};
+
+// ==================== SITE IMAGES ====================
+const SITE_IMAGE_SLOTS = {
+  heroes: [
+    { key: 'page_hero_about',    label: 'About Page Banner',    fallback: 'images/hero_1.jpg' },
+    { key: 'page_hero_contact',  label: 'Contact Page Banner',  fallback: 'images/hero_3.jpg' },
+    { key: 'page_hero_donate',   label: 'Donate Page Banner',   fallback: 'images/hero_2.jpg' },
+    { key: 'page_hero_causes',   label: 'Programs Page Banner', fallback: 'images/hero_2.jpg' },
+    { key: 'page_hero_events',   label: 'Events Page Banner',   fallback: 'images/hero_3.jpg' },
+    { key: 'page_hero_blog',     label: 'Blog Page Banner',     fallback: 'images/hero_2.jpg' },
+  ],
+  home: [
+    { key: 'home_tile_edu',        label: 'Education Program Tile',          fallback: 'images/img_3_gray.jpg' },
+    { key: 'home_tile_health',     label: 'Healthcare Program Tile',         fallback: 'images/img_2_gray.jpg' },
+    { key: 'home_tile_livelihood', label: 'Livelihood Program Tile',         fallback: 'images/img_1_gray.jpg' },
+    { key: 'home_features_bg',     label: '"Why Choose WEI" Background',     fallback: 'images/hero_1.jpg' },
+    { key: 'home_support_image',   label: 'Support / Donate Section Image',  fallback: 'images/img_1.jpg' },
+  ],
+  about: [
+    { key: 'about_mission_image', label: 'Mission Section Photo', fallback: 'images/img_2.jpg' },
+  ],
+};
+
+function _siteImgSrc(src, fallback) {
+  if (!src) return '/' + fallback;
+  if (src.startsWith('http') || src.startsWith('/') || src.startsWith('data:')) return src;
+  return '/uploads/images/' + src;
+}
+
+function renderSiteImageSlots(containerId, slots, contentMap) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = slots.map(slot => {
+    const imgVal = contentMap[slot.key]?.value || '';
+    const imgUrl = _siteImgSrc(imgVal, slot.fallback);
+    const isCustom = !!imgVal;
+    return `
+      <div class="col-md-4 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div style="position:relative;background:#eee;height:140px;overflow:hidden;border-radius:4px 4px 0 0;">
+            <img src="${imgUrl}" id="simg-preview-${slot.key}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='/${slot.fallback}'">
+            <span class="badge position-absolute top-0 end-0 m-1 ${isCustom ? 'bg-success' : 'bg-secondary'}" style="font-size:10px;">${isCustom ? 'Custom' : 'Default'}</span>
+          </div>
+          <div class="card-body p-2">
+            <div class="small fw-semibold mb-2">${slot.label}</div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-primary flex-grow-1" onclick="pickSiteImage('${slot.key}','${slot.fallback}')"><i class="bi bi-image"></i> Change</button>
+              ${isCustom ? `<button class="btn btn-sm btn-outline-danger" onclick="clearSiteImage('${slot.key}','${slot.fallback}')" title="Reset to default"><i class="bi bi-x-lg"></i></button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function loadSiteImages() {
+  const d = await apiCall('/api/content/site');
+  const c = d.success ? d.data : {};
+  renderSiteImageSlots('site-images-heroes', SITE_IMAGE_SLOTS.heroes, c);
+  renderSiteImageSlots('site-images-home',   SITE_IMAGE_SLOTS.home,   c);
+  renderSiteImageSlots('site-images-about',  SITE_IMAGE_SLOTS.about,  c);
+}
+
+window.pickSiteImage = function(key, fallback) {
+  openMediaPicker('image', async (url) => {
+    const r = await apiCall('/api/content/site', 'PUT', { key, value: url, type: 'image' });
+    if (r.success) { toast('Image updated!'); loadSiteImages(); }
+    else toast(r.message || 'Error saving image', 'danger');
+  });
+};
+
+window.clearSiteImage = async function(key, fallback) {
+  if (!confirm('Reset this image to the default?')) return;
+  const r = await apiCall('/api/content/site', 'PUT', { key, value: '', type: 'image' });
+  if (r.success) { toast('Image reset to default.', 'warning'); loadSiteImages(); }
+  else toast(r.message || 'Error', 'danger');
 };
 
 // ==================== CATEGORIES ====================

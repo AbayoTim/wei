@@ -312,6 +312,11 @@
       if (c.contact_intro?.value)     document.getElementById('contact-intro-content').innerHTML     = c.contact_intro.value;
       if (c.contact_volunteer?.value) document.getElementById('contact-volunteer-content').innerHTML = c.contact_volunteer.value;
       if (c.contact_map_url?.value)   document.getElementById('contact-map-iframe').src              = c.contact_map_url.value;
+      if (c.page_hero_contact?.value) {
+        const v = c.page_hero_contact.value;
+        const url = v.startsWith('http') || v.startsWith('/') || v.startsWith('data:') ? v : '/uploads/images/' + v;
+        document.querySelector('.wei-page-hero').style.backgroundImage = `url('${url}')`;
+      }
     } catch (e) {}
   }
 
