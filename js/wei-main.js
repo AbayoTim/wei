@@ -115,3 +115,67 @@
   });
 
 })();
+
+/* ============================================================
+   SITE-WIDE SETTINGS — runs on every public page
+   Updates header/footer social links, footer contact info,
+   and footer tagline from /api/content/site
+   ============================================================ */
+(async function applySiteSettings() {
+  try {
+    var res  = await fetch('/api/content/site');
+    var json = await res.json();
+    if (!json.success) return;
+    var c = json.data;
+
+    // Helper: safe text reconstruction for icon+text paragraphs
+    function setIconText(p, value) {
+      var icon = p.querySelector('i');
+      if (!icon) return;
+      var cls = icon.className;
+      p.innerHTML = '<i class="' + cls + '"></i> ' + value;
+    }
+
+    // Social links in header (.wei-header-social) and footer (.wei-footer-social a)
+    var SOCIAL = {
+      'bi-facebook':  'social_facebook',
+      'bi-twitter-x': 'social_twitter',
+      'bi-twitter':   'social_twitter',
+      'bi-instagram': 'social_instagram',
+      'bi-youtube':   'social_youtube',
+      'bi-linkedin':  'social_linkedin',
+    };
+    document.querySelectorAll('a.wei-header-social, .wei-footer-social a').forEach(function (a) {
+      var icon = a.querySelector('i');
+      if (!icon) return;
+      for (var iconCls in SOCIAL) {
+        var key = SOCIAL[iconCls];
+        if (icon.classList.contains(iconCls) && c[key] && c[key].value) {
+          a.href = c[key].value;
+          break;
+        }
+      }
+    });
+
+    // Footer contact info (.wei-footer-contact paragraphs)
+    var footerContact = document.querySelector('.wei-footer-contact');
+    if (footerContact) {
+      footerContact.querySelectorAll('p').forEach(function (p) {
+        var icon = p.querySelector('i');
+        if (!icon) return;
+        if (icon.classList.contains('bi-geo-alt')   && c.contact_address && c.contact_address.value) setIconText(p, c.contact_address.value);
+        if (icon.classList.contains('bi-telephone') && c.contact_phone   && c.contact_phone.value)   setIconText(p, c.contact_phone.value);
+        if (icon.classList.contains('bi-envelope')  && c.contact_email   && c.contact_email.value)   setIconText(p, c.contact_email.value);
+      });
+    }
+
+    // Footer about description — first <p> in the first .col-md-3 of the footer
+    if (c.site_tagline && c.site_tagline.value) {
+      var firstCol = document.querySelector('.wei-footer .row > .col-md-3:first-child');
+      if (firstCol) {
+        var p = firstCol.querySelector('p');
+        if (p) p.textContent = c.site_tagline.value;
+      }
+    }
+  } catch (e) {}
+})();

@@ -165,15 +165,15 @@
             <h3>Contact Info</h3>
             <div class="wei-contact-item">
               <div class="label">Address</div>
-              <p><i class="bi bi-geo-alt text-primary mr-2"></i>Dodoma - Makulu, Tanzania</p>
+              <p id="contact-info-address"><i class="bi bi-geo-alt text-primary mr-2"></i>Dodoma - Makulu, Tanzania</p>
             </div>
             <div class="wei-contact-item">
               <div class="label">Phone</div>
-              <p><i class="bi bi-telephone text-primary mr-2"></i><a href="tel:+255743111867">+255 743 111 867</a></p>
+              <p id="contact-info-phone"><i class="bi bi-telephone text-primary mr-2"></i><a href="tel:+255743111867">+255 743 111 867</a></p>
             </div>
             <div class="wei-contact-item">
               <div class="label">Email</div>
-              <p><i class="bi bi-envelope text-primary mr-2"></i><a href="mailto:info@wei.or.tz">info@wei.or.tz</a></p>
+              <p id="contact-info-email"><i class="bi bi-envelope text-primary mr-2"></i><a href="mailto:info@wei.or.tz">info@wei.or.tz</a></p>
             </div>
             <hr>
             <h6 class="mb-3">Follow Us</h6>
@@ -316,6 +316,19 @@
         const v = c.page_hero_contact.value;
         const url = v.startsWith('http') || v.startsWith('/') || v.startsWith('data:') ? v : '/uploads/images/' + v;
         document.querySelector('.wei-page-hero').style.backgroundImage = `url('${url}')`;
+      }
+      // Inline contact info box
+      if (c.contact_address?.value) {
+        const el = document.getElementById('contact-info-address');
+        if (el) el.innerHTML = '<i class="bi bi-geo-alt text-primary mr-2"></i>' + c.contact_address.value;
+      }
+      if (c.contact_phone?.value) {
+        const el = document.getElementById('contact-info-phone');
+        if (el) el.innerHTML = '<i class="bi bi-telephone text-primary mr-2"></i><a href="tel:' + c.contact_phone.value.replace(/\s/g,'') + '">' + c.contact_phone.value + '</a>';
+      }
+      if (c.contact_email?.value) {
+        const el = document.getElementById('contact-info-email');
+        if (el) el.innerHTML = '<i class="bi bi-envelope text-primary mr-2"></i><a href="mailto:' + c.contact_email.value + '">' + c.contact_email.value + '</a>';
       }
     } catch (e) {}
   }

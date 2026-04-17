@@ -233,9 +233,9 @@
             <a href="/donate" class="btn-wei-primary d-block text-center mb-3">Donate Now</a>
             <hr>
             <h6>Bank Transfer Details:</h6>
-            <p class="small mb-1"><strong>Bank:</strong> CRDB Bank</p>
-            <p class="small mb-1"><strong>Account:</strong> Women Empowerment Initiatives</p>
-            <p class="small mb-1"><strong>Account No:</strong> 0150XXXXXXXX</p>
+            <p id="home-bank-name" class="small mb-1"><strong>Bank:</strong> CRDB Bank</p>
+            <p id="home-bank-account-name" class="small mb-1"><strong>Account:</strong> Women Empowerment Initiatives</p>
+            <p id="home-bank-account" class="small mb-1"><strong>Account No:</strong> 0150XXXXXXXX</p>
             <p class="small mb-0"><strong>Swift:</strong> CORUTZTZ</p>
           </div>
         </div>
@@ -367,6 +367,9 @@
       if (c.hero_title?.value)    document.getElementById('hero-title').textContent    = c.hero_title.value;
       if (c.hero_subtitle?.value) document.getElementById('hero-subtitle').textContent = c.hero_subtitle.value;
       if (c.cta_text?.value)      document.getElementById('hero-cta').textContent      = c.cta_text.value;
+      if (c.bank_name?.value)         document.getElementById('home-bank-name').innerHTML         = '<strong>Bank:</strong> '       + c.bank_name.value;
+      if (c.bank_account_name?.value) document.getElementById('home-bank-account-name').innerHTML = '<strong>Account:</strong> '    + c.bank_account_name.value;
+      if (c.bank_account?.value)      document.getElementById('home-bank-account').innerHTML      = '<strong>Account No:</strong> ' + c.bank_account.value;
     } catch (e) {}
   }
 
