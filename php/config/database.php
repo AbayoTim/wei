@@ -233,6 +233,38 @@ class Database
                 updatedAt    TEXT NOT NULL DEFAULT (datetime('now'))
             );
 
+            CREATE TABLE IF NOT EXISTS gallery_items (
+                id          TEXT PRIMARY KEY,
+                imageUrl    TEXT NOT NULL,
+                description TEXT,
+                groupName   TEXT,
+                sortOrder   INTEGER NOT NULL DEFAULT 0,
+                isPublished INTEGER NOT NULL DEFAULT 1,
+                createdAt   TEXT NOT NULL DEFAULT (datetime('now')),
+                updatedAt   TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS event_registrations (
+                id             TEXT PRIMARY KEY,
+                eventId        TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+                name           TEXT NOT NULL,
+                email          TEXT NOT NULL,
+                phone          TEXT,
+                amount         REAL NOT NULL DEFAULT 0,
+                currency       TEXT NOT NULL DEFAULT 'TZS',
+                paymentMethod  TEXT,
+                transactionRef TEXT,
+                receiptFile    TEXT,
+                authCode       TEXT NOT NULL,
+                status         TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','confirmed','cancelled')),
+                checkedIn      INTEGER NOT NULL DEFAULT 0,
+                checkedInAt    TEXT,
+                notes          TEXT,
+                createdAt      TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_er_authcode ON event_registrations(authCode);
+            CREATE INDEX IF NOT EXISTS idx_er_event ON event_registrations(eventId);
+
             CREATE TABLE IF NOT EXISTS rate_limits (
                 id      TEXT PRIMARY KEY,
                 rkey    TEXT NOT NULL,
@@ -243,9 +275,15 @@ class Database
         ");
 
         // ── Incremental column migrations ─────────────────────────────────────
-        $cols = array_column($db->query("PRAGMA table_info(donations)")->fetchAll(), 'name');
-        if (!in_array('causeId', $cols)) {
+        $donCols = array_column($db->query("PRAGMA table_info(donations)")->fetchAll(), 'name');
+        if (!in_array('causeId', $donCols)) {
             $db->exec("ALTER TABLE donations ADD COLUMN causeId TEXT REFERENCES causes(id) ON DELETE SET NULL");
+        }
+
+        // Safe migrations for new columns (no-op if already added)
+        $evtCols = ['isPaid INTEGER NOT NULL DEFAULT 0', 'ticketPrice REAL', "ticketCurrency TEXT NOT NULL DEFAULT 'TZS'"];
+        foreach ($evtCols as $col) {
+            try { $db->exec("ALTER TABLE events ADD COLUMN $col"); } catch (\PDOException $e) {}
         }
     }
 
@@ -433,6 +471,39 @@ class Database
                 FOREIGN KEY (uploadedBy) REFERENCES users(id) ON DELETE SET NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
 
+            "CREATE TABLE IF NOT EXISTS gallery_items (
+                id          VARCHAR(36)  PRIMARY KEY,
+                imageUrl    VARCHAR(500) NOT NULL,
+                description TEXT,
+                groupName   VARCHAR(255),
+                sortOrder   INT NOT NULL DEFAULT 0,
+                isPublished TINYINT(1) NOT NULL DEFAULT 1,
+                createdAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS event_registrations (
+                id             VARCHAR(36)  PRIMARY KEY,
+                eventId        VARCHAR(36)  NOT NULL,
+                name           VARCHAR(255) NOT NULL,
+                email          VARCHAR(255) NOT NULL,
+                phone          VARCHAR(50),
+                amount         DECIMAL(14,2) NOT NULL DEFAULT 0,
+                currency       VARCHAR(10)  NOT NULL DEFAULT 'TZS',
+                paymentMethod  VARCHAR(100),
+                transactionRef VARCHAR(255),
+                receiptFile    VARCHAR(500),
+                authCode       VARCHAR(6)   NOT NULL,
+                status         ENUM('pending','confirmed','cancelled') NOT NULL DEFAULT 'pending',
+                checkedIn      TINYINT(1)   NOT NULL DEFAULT 0,
+                checkedInAt    DATETIME,
+                notes          TEXT,
+                createdAt      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY idx_er_authcode (authCode),
+                KEY idx_er_event (eventId),
+                FOREIGN KEY (eventId) REFERENCES events(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
             "CREATE TABLE IF NOT EXISTS rate_limits (
                 id      VARCHAR(36) PRIMARY KEY,
                 rkey    VARCHAR(255) NOT NULL,
@@ -444,6 +515,16 @@ class Database
 
         foreach ($tables as $sql) {
             $db->exec($sql);
+        }
+
+        // Safe migrations for new event columns
+        $eventCols = [
+            'isPaid TINYINT(1) NOT NULL DEFAULT 0',
+            'ticketPrice DECIMAL(14,2)',
+            "ticketCurrency VARCHAR(10) NOT NULL DEFAULT 'TZS'",
+        ];
+        foreach ($eventCols as $col) {
+            try { $db->exec("ALTER TABLE events ADD COLUMN $col"); } catch (\PDOException $e) {}
         }
     }
 

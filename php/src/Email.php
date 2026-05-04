@@ -177,6 +177,88 @@ class Email
         ];
     }
 
+    public static function eventTicket(string $name, string $authCode, array $event): array
+    {
+        $n       = htmlspecialchars($name, ENT_QUOTES);
+        $c       = htmlspecialchars($authCode, ENT_QUOTES);
+        $title   = htmlspecialchars($event['title'] ?? 'Event', ENT_QUOTES);
+        $dateStr = '';
+        if (!empty($event['eventDate'])) {
+            $ts      = strtotime($event['eventDate']);
+            $dateStr = htmlspecialchars(date('l, d F Y', $ts), ENT_QUOTES);
+        }
+        $time  = htmlspecialchars($event['startTime'] ?? '', ENT_QUOTES);
+        $loc   = htmlspecialchars(($event['location'] ?? '') ?: ($event['venue'] ?? ''), ENT_QUOTES);
+        $price = number_format((float)($event['ticketPrice'] ?? 0), 2);
+        $curr  = htmlspecialchars($event['ticketCurrency'] ?? 'TZS', ENT_QUOTES);
+        $slug  = $event['slug'] ?? '';
+        $eventUrl = htmlspecialchars(rtrim(FRONTEND_URL, '/') . '/events/' . $slug, ENT_QUOTES);
+
+        // QR code encodes the 6-digit auth code using a free public API
+        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($authCode)
+               . '&size=180x180&ecc=H&margin=8';
+
+        $dateRow = $dateStr
+            ? "<tr><td style='padding:4px 0;font-size:13px;color:rgba(255,255,255,0.85);'>&#128197; $dateStr"
+              . ($time ? " &bull; $time" : '') . "</td></tr>"
+            : '';
+        $locRow = $loc
+            ? "<tr><td style='padding:4px 0;font-size:13px;color:rgba(255,255,255,0.85);'>&#128205; $loc</td></tr>"
+            : '';
+
+        return [
+            'subject' => "Your Ticket: $title | Code: $authCode",
+            'html'    => self::wrap(
+                heading: 'Your Event Ticket',
+                body:    "
+<p>Dear <strong>$n</strong>, your registration for <strong>$title</strong> has been received.
+Present this ticket (the code or QR) at the entrance.</p>
+
+<!-- Ticket card -->
+<table width='100%' cellpadding='0' cellspacing='0' style='margin:20px 0;border-radius:12px;overflow:hidden;'>
+  <tr>
+    <td style='background:#0d3d28;border-radius:12px;padding:0;'>
+
+      <!-- Event info -->
+      <table width='100%' cellpadding='0' cellspacing='0'>
+        <tr><td style='padding:20px 24px 14px;border-bottom:2px dashed rgba(255,255,255,0.2);'>
+          <p style='margin:0 0 4px;font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1.5px;'>EVENT TICKET</p>
+          <p style='margin:0;font-size:19px;font-weight:800;color:#fff;'>$title</p>
+        </td></tr>
+        <tr><td style='padding:14px 24px 16px;border-bottom:2px dashed rgba(255,255,255,0.2);'>
+          <table cellpadding='0' cellspacing='0'>
+            $dateRow
+            $locRow
+            <tr><td style='padding:4px 0;font-size:13px;color:rgba(255,255,255,0.85);'>&#127915; $curr $price</td></tr>
+          </table>
+        </td></tr>
+      </table>
+
+      <!-- Auth code + QR -->
+      <table width='100%' cellpadding='0' cellspacing='0'>
+        <tr>
+          <td width='55%' style='padding:20px 24px;vertical-align:middle;'>
+            <p style='margin:0 0 6px;font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;'>ENTRANCE CODE</p>
+            <p style='margin:0;font-size:36px;font-weight:900;color:#fff;letter-spacing:10px;font-family:\"Courier New\",monospace;'>$c</p>
+            <p style='margin:10px 0 0;font-size:11px;color:rgba(255,255,255,0.45);'>Show code OR QR at the entrance</p>
+          </td>
+          <td width='45%' style='padding:16px 20px 16px 0;text-align:right;vertical-align:middle;'>
+            <img src='$qrUrl' width='130' height='130' alt='Entry QR' style='border-radius:8px;background:#fff;padding:6px;display:block;margin-left:auto;'>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+<p style='font-size:12px;color:#888;'>&#9888; This code is unique to you and valid for one-time entry only. Do not share it.</p>
+<div class='btn-wrap'><a href='$eventUrl' class='btn'>View Event Details</a></div>
+                ",
+            ),
+        ];
+    }
+
     public static function adminNotification(string $type, array $details): array
     {
         $t    = htmlspecialchars($type, ENT_QUOTES);

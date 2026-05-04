@@ -28,6 +28,8 @@ require_once __DIR__ . '/models/Event.php';
 require_once __DIR__ . '/models/Cause.php';
 require_once __DIR__ . '/models/TeamMember.php';
 require_once __DIR__ . '/models/Media.php';
+require_once __DIR__ . '/models/GalleryItem.php';
+require_once __DIR__ . '/models/EventRegistration.php';
 
 require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/controllers/BlogController.php';
@@ -37,6 +39,8 @@ require_once __DIR__ . '/controllers/DonationController.php';
 require_once __DIR__ . '/controllers/ContentController.php';
 require_once __DIR__ . '/controllers/PartnerController.php';
 require_once __DIR__ . '/controllers/MediaController.php';
+require_once __DIR__ . '/controllers/GalleryController.php';
+require_once __DIR__ . '/controllers/EventRegistrationController.php';
 
 // ── Security headers (mirrors Helmet.js in server.js) ────────────────────────
 header("X-Content-Type-Options: nosniff");
@@ -128,6 +132,9 @@ if (str_starts_with($req->path, '/uploads/')) {
     $file = __DIR__ . '/' . ltrim($req->path, '/');
     if (file_exists($file) && is_file($file)) {
         header("Cross-Origin-Resource-Policy: cross-origin");
+        // Allow PDFs and images to be embedded (e.g. receipt iframes in admin)
+        header_remove('X-Frame-Options');
+        header_remove('Content-Security-Policy');
         serveStatic($file);
     }
     http_response_code(404); exit;
@@ -196,6 +203,13 @@ if (!str_starts_with($req->path, '/api/')) {
                 serveStatic($eventFile);
             }
         }
+        // Gallery clean URL: /gallery → serve gallery.html
+        if ($rel === 'gallery') {
+            $galleryFile = $root . '/gallery.html';
+            if (is_file($galleryFile)) {
+                serveStatic($galleryFile);
+            }
+        }
     }
 
     // SPA / HTML fallback — serve index.html for unknown paths
@@ -237,6 +251,7 @@ $router->delete('/api/auth/users/:id',    [AuthController::class, 'deleteUser'])
 $router->get ('/api/blogs',               [BlogController::class, 'index']);
 $router->get ('/api/blogs/admin',         [BlogController::class, 'adminIndex']);
 $router->get ('/api/blogs/categories',    [BlogController::class, 'categories']);
+$router->get ('/api/blogs/id/:id',        [BlogController::class, 'showById']);
 $router->get ('/api/blogs/:slug',         [BlogController::class, 'show']);
 $router->post('/api/blogs',               [BlogController::class, 'store']);
 $router->put ('/api/blogs/:id',           [BlogController::class, 'update']);
@@ -294,6 +309,12 @@ $router->get   ('/api/content/events/:slug',      [ContentController::class, 'ge
 $router->post  ('/api/content/events',            [ContentController::class, 'createEvent']);
 $router->put   ('/api/content/events/:id',        [ContentController::class, 'updateEvent']);
 $router->delete('/api/content/events/:id',        [ContentController::class, 'deleteEvent']);
+
+// Event registrations & check-in (literal routes before parameterized)
+$router->post('/api/events/validate',            [EventRegistrationController::class, 'validate']);
+$router->post('/api/events/checkin',             [EventRegistrationController::class, 'checkin']);
+$router->post('/api/events/:id/register',        [EventRegistrationController::class, 'register']);
+$router->get ('/api/events/:id/registrations',   [EventRegistrationController::class, 'listByEvent']);
 $router->get   ('/api/content/causes',            [ContentController::class, 'getCauses']);
 $router->get   ('/api/content/causes/admin',      [ContentController::class, 'getAdminCauses']);
 $router->get   ('/api/content/causes/id/:id',     [ContentController::class, 'getCauseById']);
@@ -306,6 +327,15 @@ $router->delete('/api/content/causes/:id',        [ContentController::class, 'de
 $router->post  ('/api/media',     [MediaController::class, 'upload']);
 $router->get   ('/api/media',     [MediaController::class, 'index']);
 $router->delete('/api/media/:id', [MediaController::class, 'destroy']);
+
+// ── Gallery ───────────────────────────────────────────────────────────────────
+$router->get   ('/api/gallery',          [GalleryController::class, 'index']);
+$router->get   ('/api/gallery/admin',    [GalleryController::class, 'adminIndex']);
+$router->get   ('/api/gallery/groups',   [GalleryController::class, 'groups']);
+$router->get   ('/api/gallery/:id',      [GalleryController::class, 'show']);
+$router->post  ('/api/gallery',          [GalleryController::class, 'store']);
+$router->put   ('/api/gallery/:id',      [GalleryController::class, 'update']);
+$router->delete('/api/gallery/:id',      [GalleryController::class, 'destroy']);
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 $router->dispatch($req);

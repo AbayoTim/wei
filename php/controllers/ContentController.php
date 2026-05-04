@@ -347,22 +347,25 @@ class ContentController
     private static function eventData(Request $req): array
     {
         return [
-            'title'         => isset($req->body['title']) ? Helpers::sanitize($req->body['title']) : null,
-            'description'   => $req->body['description'] ?? null,
-            'content'       => $req->body['content']     ?? null,
-            'eventDate'     => $req->body['eventDate']   ?? null,
-            'endDate'       => $req->body['endDate']     ?? null,
-            'startTime'     => $req->body['startTime']   ?? null,
-            'endTime'       => $req->body['endTime']     ?? null,
-            'location'      => $req->body['location']    ?? null,
-            'venue'         => $req->body['venue']       ?? null,
-            'status'        => in_array($req->body['status'] ?? '', ['upcoming','ongoing','completed','cancelled'])
-                               ? $req->body['status'] : null,
-            'isPublished'   => isset($req->body['isPublished']) ? (Helpers::boolVal($req->body['isPublished']) ? 1 : 0) : null,
-            'featuredImage' => array_key_exists('featuredImage', $req->body) ? ($req->body['featuredImage'] ?: null) : null,
-            'gallery'       => isset($req->body['gallery'])
-                               ? (is_array($req->body['gallery']) ? json_encode($req->body['gallery']) : $req->body['gallery'])
-                               : null,
+            'title'          => isset($req->body['title']) ? Helpers::sanitize($req->body['title']) : null,
+            'description'    => $req->body['description']    ?? null,
+            'content'        => $req->body['content']        ?? null,
+            'eventDate'      => $req->body['eventDate']      ?? null,
+            'endDate'        => $req->body['endDate']        ?? null,
+            'startTime'      => $req->body['startTime']      ?? null,
+            'endTime'        => $req->body['endTime']        ?? null,
+            'location'       => $req->body['location']       ?? null,
+            'venue'          => $req->body['venue']          ?? null,
+            'status'         => in_array($req->body['status'] ?? '', ['upcoming','ongoing','completed','cancelled'])
+                                ? $req->body['status'] : null,
+            'isPublished'    => isset($req->body['isPublished']) ? (Helpers::boolVal($req->body['isPublished']) ? 1 : 0) : null,
+            'isPaid'         => isset($req->body['isPaid'])      ? (Helpers::boolVal($req->body['isPaid'])      ? 1 : 0) : null,
+            'ticketPrice'    => isset($req->body['ticketPrice']) ? (float)$req->body['ticketPrice'] : null,
+            'ticketCurrency' => $req->body['ticketCurrency'] ?? null,
+            'featuredImage'  => array_key_exists('featuredImage', $req->body) ? ($req->body['featuredImage'] ?: null) : null,
+            'gallery'        => isset($req->body['gallery'])
+                                ? (is_array($req->body['gallery']) ? json_encode($req->body['gallery']) : $req->body['gallery'])
+                                : null,
         ];
     }
 

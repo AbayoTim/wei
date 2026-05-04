@@ -30,8 +30,11 @@ class Event extends Model
 
     public static function toPublic(array $row): array
     {
-        $row['isPublished'] = (bool)(int)($row['isPublished'] ?? 0);
-        $row['gallery']     = Helpers::jsonDecode($row['gallery'] ?? null, []);
+        $row['isPublished']    = (bool)(int)($row['isPublished']    ?? 0);
+        $row['isPaid']         = (bool)(int)($row['isPaid']         ?? 0);
+        $row['ticketPrice']    = isset($row['ticketPrice']) ? (float)$row['ticketPrice'] : null;
+        $row['ticketCurrency'] = $row['ticketCurrency'] ?? 'TZS';
+        $row['gallery']        = Helpers::jsonDecode($row['gallery'] ?? null, []);
         return $row;
     }
 

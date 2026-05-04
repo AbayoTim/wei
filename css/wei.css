@@ -10,10 +10,10 @@
    ============================================================ */
 :root {
   --wei-primary: #00B0D8;
-  --wei-primary-dark: #0090B5;
+  --wei-primary-dark: #359fb9;
   --wei-tz-green: #1EB53A;
   --wei-tz-yellow: #FCD116;
-  --wei-tz-black: #000000;
+  --wei-tz-black: #2d8bd2;
   --wei-tz-blue: #00A3DD;
   --wei-secondary: #28a745;
   --wei-warning: #ffc107;
@@ -891,7 +891,7 @@ img {
 }
 
 .wei-partners-header h2 {
-  color: #fff;
+  color: #00B0D8;
   font-size: 2.1rem;
   font-weight: 700;
   margin-bottom: 10px;
