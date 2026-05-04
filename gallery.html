@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Gallery - Women Empowerment Initiatives (WEI)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Photo gallery from Women Empowerment Initiatives (WEI) events and community programs in Tanzania.">
+
+  <link href="https://fonts.googleapis.com/css2?family=Mansalva&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/wei.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Women Empowerment Initiatives">
+  <meta property="og:title" content="Gallery — Women Empowerment Initiatives">
+  <meta property="og:description" content="Photos from WEI events, programs, and community activities across Tanzania.">
+  <meta property="og:url" content="https://wei.or.tz/gallery">
+  <meta property="og:image" content="https://wei.or.tz/images/hero_1.jpg">
+  <style>
+    .gallery-filter-btn { border-radius: 20px; font-size: 13px; padding: 5px 16px; border: 1px solid #dee2e6; background: #fff; cursor: pointer; transition: all .2s; margin: 4px; }
+    .gallery-filter-btn.active,
+    .gallery-filter-btn:hover { background: var(--wei-primary, #1a6b3e); color: #fff; border-color: var(--wei-primary, #1a6b3e); }
+    .gallery-grid { column-count: 3; column-gap: 14px; }
+    @media (max-width: 767px) { .gallery-grid { column-count: 2; } }
+    @media (max-width: 480px) { .gallery-grid { column-count: 1; } }
+    .gallery-item-wrap { break-inside: avoid; margin-bottom: 14px; position: relative; cursor: pointer; border-radius: 8px; overflow: hidden; background: #eee; }
+    .gallery-item-wrap img { width: 100%; display: block; transition: transform .35s; }
+    .gallery-item-wrap:hover img { transform: scale(1.04); }
+    .gallery-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%); opacity: 0; transition: opacity .25s; display: flex; align-items: flex-end; padding: 14px; }
+    .gallery-item-wrap:hover .gallery-item-overlay { opacity: 1; }
+    .gallery-item-caption { color: #fff; font-size: 13px; line-height: 1.4; }
+    .gallery-group-heading { font-size: 1.05rem; font-weight: 700; color: #333; border-left: 4px solid var(--wei-primary, #1a6b3e); padding-left: 12px; margin: 28px 0 16px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+    /* Lightbox */
+    #gallery-lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; }
+    #gallery-lightbox.open { display: flex; }
+    #gallery-lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 6px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); object-fit: contain; }
+    #gallery-lightbox-caption { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #fff; text-align: center; font-size: 14px; max-width: 600px; background: rgba(0,0,0,0.5); padding: 8px 18px; border-radius: 20px; }
+    #gallery-lightbox-close { position: absolute; top: 16px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; background: none; border: none; }
+    #gallery-lightbox-prev, #gallery-lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 2rem; cursor: pointer; background: rgba(255,255,255,0.12); border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+    #gallery-lightbox-prev { left: 16px; }
+    #gallery-lightbox-next { right: 16px; }
+    #gallery-lightbox-prev:hover, #gallery-lightbox-next:hover { background: rgba(255,255,255,0.25); }
+  </style>
+</head>
+
+<body>
+<div class="wei-wrap">
+
+  <div class="wei-overlay-bg"></div>
+  <nav class="wei-mobile-nav">
+    <button class="wei-mobile-nav-close"><i class="bi bi-x-lg"></i></button>
+    <div class="wei-mobile-nav-logo">
+      <a href="/"><img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-mobile-logo-img"></a>
+    </div>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About Us</a></li>
+      <li><a href="/causes">Our Programs</a></li>
+      <li><a href="/events">Events</a></li>
+      <li class="active"><a href="/gallery">Gallery</a></li>
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="wei-mobile-donate mt-3">
+      <a href="/donate" class="btn-wei-donate d-block text-center">Donate Now</a>
+    </div>
+  </nav>
+
+  <header class="wei-navbar scrolled">
+    <div class="container">
+      <div class="wei-logo mr-auto">
+        <a href="/">
+          <img src="images/wei-logo.jpg" alt="WEI Tanzania" class="wei-logo-img">
+          <div class="wei-logo-text"><span class="wei-logo-main">WEI</span>
+          <span class="wei-logo-sub">Tanzania</span></div>
+        </a>
+      </div>
+      <ul class="wei-nav-menu wei-nav-desktop mb-0">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/causes">Our Programs</a></li>
+        <li><a href="/events">Events</a></li>
+        <li class="active"><a href="/gallery">Gallery</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="wei-header-actions wei-nav-desktop">
+        <a href="https://facebook.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-facebook"></i></a>
+        <a href="https://twitter.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-twitter-x"></i></a>
+        <a href="https://instagram.com/weitanzania" target="_blank" class="wei-header-social"><i class="bi bi-instagram"></i></a>
+        <a href="/donate" class="btn-wei-donate ml-2">Donate Now</a>
+      </div>
+      <button class="wei-menu-toggle"><i class="bi bi-list"></i></button>
+    </div>
+  </header>
+
+  <!-- Page Hero -->
+  <div class="wei-page-hero" id="gallery-hero" style="background-image: url('images/hero_1.jpg');">
+    <div class="container">
+      <div class="wei-page-hero-content">
+        <h1>Photo Gallery</h1>
+        <p>Moments from our programs, events, and community activities across Tanzania.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gallery Section -->
+  <section class="wei-section">
+    <div class="container">
+
+      <!-- Group filter pills -->
+      <div id="gallery-filters" class="mb-4 text-center d-none">
+        <button class="gallery-filter-btn active" data-group="">All Photos</button>
+      </div>
+
+      <!-- Loading state -->
+      <div id="gallery-loading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status" style="color:#1a6b3e!important;"></div>
+        <p class="mt-3 text-muted small">Loading gallery...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div id="gallery-empty" class="text-center py-5 d-none">
+        <i class="bi bi-images" style="font-size:3rem;color:#ccc;display:block;margin-bottom:12px;"></i>
+        <p class="text-muted">No photos in the gallery yet. Check back soon!</p>
+      </div>
+
+      <!-- Gallery content (grouped) -->
+      <div id="gallery-content" class="d-none"></div>
+
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="gallery-lightbox">
+    <button id="gallery-lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+    <button id="gallery-lightbox-prev" onclick="lightboxNav(-1)" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
+    <img id="gallery-lightbox-img" src="" alt="">
+    <button id="gallery-lightbox-next" onclick="lightboxNav(1)" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
+    <div id="gallery-lightbox-caption"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="wei-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">About WEI</h3>
+          <p>Women Empowerment Initiatives (WEI) focuses on enhancing women's autonomy and capabilities through sustainable programs.</p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h3 class="wei-footer-heading">Quick Links</h3>
+          <ul class="wei-footer-links">
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/causes">Our Programs</a></li>
+            <li><a href="/events">Events</a></li>
+            <li><a href="/gallery">Gallery</a></li>
+            <li><a href="/donate">Donate</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h3 class="wei-footer-heading">Contact Info</h3>
+          <div class="wei-footer-contact">
+            <p><i class="bi bi-geo-alt"></i> Dodoma - Makulu, Tanzania</p>
+            <p><i class="bi bi-telephone"></i> +255 743 111 867</p>
+            <p><i class="bi bi-envelope"></i> info@wei.or.tz</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <h3 class="wei-footer-heading">Follow Us</h3>
+          <div class="wei-footer-social">
+            <a href="https://facebook.com/weitanzania" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://twitter.com/weitanzania" target="_blank"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://instagram.com/weitanzania" target="_blank"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wei-footer-bottom">
+      <div class="container d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
+        <p class="mb-0">Copyright &copy; <script>document.write(new Date().getFullYear());</script> Women Empowerment Initiatives (WEI). All rights reserved.</p>
+        <a href="admin/" style="color:#bbb;font-size:12px;text-decoration:none;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#bbb'"><i class="bi bi-shield-lock"></i> Admin</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/wei-main.js"></script>
+
+<script>
+  let allPhotos    = [];
+  let filteredPhotos = [];
+  let lightboxIndex  = 0;
+  let activeGroup    = '';
+
+  // Lightbox
+  function openLightbox(photos, idx) {
+    filteredPhotos = photos;
+    lightboxIndex  = idx;
+    showLightboxPhoto(idx);
+    document.getElementById('gallery-lightbox').classList.add('open');
+    document.addEventListener('keydown', lbKeyHandler);
+  }
+  function closeLightbox() {
+    document.getElementById('gallery-lightbox').classList.remove('open');
+    document.removeEventListener('keydown', lbKeyHandler);
+  }
+  function showLightboxPhoto(idx) {
+    const photo = filteredPhotos[idx];
+    if (!photo) return;
+    document.getElementById('gallery-lightbox-img').src = photo.imageUrl;
+    document.getElementById('gallery-lightbox-caption').textContent = photo.description || '';
+    document.getElementById('gallery-lightbox-prev').style.visibility = idx > 0 ? 'visible' : 'hidden';
+    document.getElementById('gallery-lightbox-next').style.visibility = idx < filteredPhotos.length - 1 ? 'visible' : 'hidden';
+  }
+  window.lightboxNav = function(dir) {
+    const next = lightboxIndex + dir;
+    if (next >= 0 && next < filteredPhotos.length) { lightboxIndex = next; showLightboxPhoto(next); }
+  };
+  function lbKeyHandler(e) {
+    if (e.key === 'ArrowLeft')  lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
+    if (e.key === 'Escape')     closeLightbox();
+  }
+  document.getElementById('gallery-lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+
+  // Render gallery grouped by album
+  function renderGallery(photos, group) {
+    const content = document.getElementById('gallery-content');
+    if (!photos.length) {
+      content.innerHTML = '<div class="text-center py-4 text-muted">No photos in this group.</div>';
+      return;
+    }
+
+    const grouped = {};
+    photos.forEach(p => {
+      const key = p.groupName || '';
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(p);
+    });
+
+    let html = '';
+    const groupKeys = Object.keys(grouped).sort((a, b) => {
+      if (!a) return 1; if (!b) return -1; return a.localeCompare(b);
+    });
+
+    groupKeys.forEach(g => {
+      const items = grouped[g];
+      if (g) html += `<div class="gallery-group-heading"><i class="bi bi-collection mr-2"></i>${escHtml(g)}</div>`;
+      html += '<div class="gallery-grid">';
+      items.forEach((photo, i) => {
+        const allIdx = photos.indexOf(photo);
+        html += `
+          <div class="gallery-item-wrap" onclick="openLightbox(photos_${escAttr(g||'all')},${i})">
+            <img src="${escHtml(photo.imageUrl)}" alt="${escHtml(photo.description||'')}" loading="lazy">
+            ${photo.description ? `<div class="gallery-item-overlay"><div class="gallery-item-caption">${escHtml(photo.description)}</div></div>` : ''}
+          </div>`;
+      });
+      html += '</div>';
+      // Store photos array per group for lightbox
+      html += `<script>var photos_${escAttr(g||'all')} = ${JSON.stringify(items)};<\/script>`;
+    });
+
+    content.innerHTML = html;
+  }
+
+  function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escAttr(s) { return String(s||'').replace(/[^a-zA-Z0-9_]/g,'_'); }
+
+  // Group filter
+  function applyGroupFilter(group) {
+    activeGroup = group;
+    document.querySelectorAll('.gallery-filter-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.group === group);
+    });
+    const filtered = group ? allPhotos.filter(p => p.groupName === group) : allPhotos;
+    renderGallery(filtered, group);
+  }
+
+  // Load gallery
+  document.addEventListener('DOMContentLoaded', async function() {
+    try {
+      const res  = await fetch('/api/gallery');
+      const data = await res.json();
+      document.getElementById('gallery-loading').classList.add('d-none');
+
+      if (!data.success || !data.data.length) {
+        document.getElementById('gallery-empty').classList.remove('d-none');
+        return;
+      }
+
+      allPhotos = data.data;
+      document.getElementById('gallery-content').classList.remove('d-none');
+
+      // Build group filter pills
+      const groups = [...new Set(allPhotos.map(p => p.groupName).filter(Boolean))].sort();
+      const filtersEl = document.getElementById('gallery-filters');
+      if (groups.length) {
+        groups.forEach(g => {
+          const btn = document.createElement('button');
+          btn.className = 'gallery-filter-btn';
+          btn.dataset.group = g;
+          btn.textContent = g;
+          btn.addEventListener('click', () => applyGroupFilter(g));
+          filtersEl.appendChild(btn);
+        });
+        filtersEl.querySelector('[data-group=""]').addEventListener('click', () => applyGroupFilter(''));
+        filtersEl.classList.remove('d-none');
+      }
+
+      renderGallery(allPhotos, '');
+    } catch(e) {
+      document.getElementById('gallery-loading').classList.add('d-none');
+      document.getElementById('gallery-empty').classList.remove('d-none');
+    }
+  });
+</script>
+
+</body>
+</html>

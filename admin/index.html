@@ -30,13 +30,21 @@
     .page-section { display: none; }
     .page-section.active { display: block; }
     #login-page { display: flex; min-height: 100vh; }
-    .login-left { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; background: #1EB53A; color: #fff; }
-    .login-left::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top right, #1EB53A 38%, #FCD116 38%, #FCD116 41%, #000 41%, #000 59%, #FCD116 59%, #FCD116 62%, #00A3DD 62%); }
+    .login-left { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; background: linear-gradient(145deg, #0d3d28 0%, #1a6b3e 55%, #0d4a2a 100%); color: #fff; }
+    .login-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     .login-left-content { position: relative; z-index: 1; text-align: center; }
-    .login-logo-circle { width: 90px; height: 90px; background: rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; backdrop-filter: blur(4px); }
-    .login-logo-text { font-size: 2rem; font-weight: 900; color: #fff; letter-spacing: 2px; line-height: 1; }
-    .login-logo-sub { font-size: 0.85rem; color: rgba(255,255,255,0.85); letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
-    .login-tagline { font-size: 1rem; color: rgba(255,255,255,0.9); max-width: 260px; line-height: 1.5; margin-top: 20px; }
+    .login-logo-container { position: relative; width: 140px; height: 140px; margin: 0 auto 28px; }
+    .login-pulse-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); animation: wei-pulse 2.2s ease-out infinite; }
+    .login-pulse-ring-2 { animation-delay: 1.1s; }
+    @keyframes wei-pulse { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(1.7); opacity: 0; } }
+    @keyframes scanLine { 0% { top: 10%; } 50% { top: 85%; } 100% { top: 10%; } }
+    .login-logo-circle { position: absolute; inset: 12px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(255,255,255,0.12); }
+    .login-logo-svg { filter: drop-shadow(0 0 18px rgba(255,255,255,0.5)); }
+    .login-logo-name { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .login-tagline { font-size: 0.85rem; color: rgba(255,255,255,0.78); max-width: 290px; line-height: 1.65; margin-bottom: 36px; }
+    .login-stats { display: flex; gap: 28px; text-align: center; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 24px; }
+    .login-stat-num { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1; }
+    .login-stat-label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.6); margin-top: 4px; }
     .login-right { width: 420px; display: flex; align-items: center; justify-content: center; background: #fff; padding: 40px; }
     .login-right-inner { width: 100%; max-width: 340px; }
     @media (max-width: 768px) {
@@ -109,16 +117,26 @@
 <!-- Login -->
 <div id="login-page">
 
-  <!-- Left: Tanzania flag + WEI branding -->
+  <!-- Left: WEI branding with particle animation -->
   <div class="login-left">
+    <canvas id="login-canvas" class="login-canvas"></canvas>
     <div class="login-left-content">
-      <div class="login-logo-circle">
-        <div>
-          <div class="login-logo-text">WEI</div>
+      <div class="login-logo-container">
+        <div class="login-pulse-ring"></div>
+        <div class="login-pulse-ring login-pulse-ring-2"></div>
+        <div class="login-logo-circle">
+          <svg class="login-logo-svg" viewBox="0 0 110 60" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="50">
+            <text x="55" y="46" text-anchor="middle" font-size="46" font-weight="900" fill="white" font-family="'Segoe UI',Arial,sans-serif" letter-spacing="3">WEI</text>
+          </svg>
         </div>
       </div>
-      <div class="login-logo-sub">Tanzania</div>
-      <p class="login-tagline">Women Empowerment Initiatives — Empowering women, building stronger communities.</p>
+      <div class="login-logo-name">Women Empowerment Initiatives</div>
+      <p class="login-tagline">Empowering women, building stronger communities across Tanzania through education, health, and sustainable programs.</p>
+      <div class="login-stats">
+        <div><span class="login-stat-num">10+</span><span class="login-stat-label">Years</span></div>
+        <div><span class="login-stat-num">1000+</span><span class="login-stat-label">Women</span></div>
+        <div><span class="login-stat-num">3</span><span class="login-stat-label">Districts</span></div>
+      </div>
     </div>
   </div>
 
@@ -161,12 +179,14 @@
       <a class="nav-link" href="#" onclick="showPage('blogs',this)"><i class="bi bi-file-text"></i> Blog Posts</a>
       <a class="nav-link" href="#" onclick="showPage('causes',this)"><i class="bi bi-flag"></i> Programs</a>
       <a class="nav-link" href="#" onclick="showPage('events',this)"><i class="bi bi-calendar-event"></i> Events</a>
+      <a class="nav-link" href="#" onclick="showPage('checkin',this)"><i class="bi bi-qr-code-scan"></i> Check-In</a>
       <a class="nav-link" href="#" onclick="showPage('categories',this)"><i class="bi bi-tags"></i> Categories</a>
       <div class="nav-section">Website</div>
       <a class="nav-link" href="#" onclick="showPage('hero',this)"><i class="bi bi-card-image"></i> Hero Slides</a>
       <a class="nav-link" href="#" onclick="showPage('about',this)"><i class="bi bi-info-circle"></i> About Page</a>
       <a class="nav-link" href="#" onclick="showPage('team',this)"><i class="bi bi-person-badge"></i> Team</a>
       <a class="nav-link" href="#" onclick="showPage('partners',this)"><i class="bi bi-building"></i> Partners</a>
+      <a class="nav-link" href="#" onclick="showPage('gallery',this)"><i class="bi bi-images"></i> Gallery</a>
       <a class="nav-link" href="#" onclick="showPage('homepage',this)"><i class="bi bi-house"></i> Home Page</a>
       <a class="nav-link" href="#" onclick="showPage('contactpage',this)"><i class="bi bi-telephone"></i> Contact Page</a>
       <a class="nav-link" href="#" onclick="showPage('donatepage',this)"><i class="bi bi-credit-card"></i> Donate Page</a>
@@ -253,7 +273,7 @@
         <h4 class="fw-bold mb-0">Events</h4>
         <button class="btn btn-primary btn-sm" onclick="openEventModal()"><i class="bi bi-plus-lg"></i> Add Event</button>
       </div>
-      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Image</th><th>Title</th><th>Date</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody id="events-table"></tbody></table></div></div></div>
+      <div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Image</th><th>Title</th><th>Date</th><th>Location</th><th>Ticket</th><th>Status</th><th>Actions</th></tr></thead><tbody id="events-table"></tbody></table></div></div></div>
     </div>
 
     <!-- Categories -->
@@ -280,6 +300,85 @@
             <div class="card-body" id="blog-categories-list">
               <p class="text-muted small">Loading...</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="page-section" id="page-gallery">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Photo Gallery</h4>
+        <button class="btn btn-primary btn-sm" onclick="openGalleryItemModal()"><i class="bi bi-plus-lg"></i> Add Photo</button>
+      </div>
+      <div id="gallery-admin-group-filter" class="mb-3 d-flex flex-wrap gap-2"></div>
+      <div id="gallery-admin-grid" class="row"></div>
+      <div id="gallery-admin-empty" class="text-center text-muted py-5 d-none"><i class="bi bi-images fs-1 d-block mb-2"></i>No photos yet. Add your first photo.</div>
+    </div>
+
+    <!-- Check-In -->
+    <div class="page-section" id="page-checkin">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0"><i class="bi bi-qr-code-scan me-2"></i>Event Check-In</h4>
+        <select id="checkin-event-select" class="form-select form-select-sm" style="max-width:280px;" onchange="loadCheckinRegistrations()">
+          <option value="">— Select event —</option>
+        </select>
+      </div>
+
+      <!-- Validation box -->
+      <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-shield-check me-1"></i>Validate Entrance Code</h6>
+          <div class="d-flex gap-2 mb-3">
+            <input type="text" id="checkin-code-input" class="form-control form-control-lg text-center fw-bold"
+              maxlength="6" placeholder="_ _ _ _ _ _"
+              style="letter-spacing:10px;font-size:1.5rem;max-width:220px;"
+              oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)"
+              onkeydown="if(event.key==='Enter')checkinSubmit()">
+            <button class="btn btn-success px-4 fw-semibold" onclick="checkinSubmit()">
+              <i class="bi bi-check-circle me-1"></i>Validate &amp; Check In
+            </button>
+            <button class="btn btn-outline-secondary px-3" id="checkin-scan-btn" onclick="toggleQRScanner()" title="Scan QR code">
+              <i class="bi bi-camera"></i>
+            </button>
+          </div>
+
+          <!-- Camera QR scanner -->
+          <div id="checkin-scanner-wrap" class="d-none mb-3">
+            <div class="position-relative d-inline-block">
+              <video id="checkin-video" autoplay playsinline muted
+                style="width:300px;height:220px;border-radius:8px;background:#000;display:block;"></video>
+              <canvas id="checkin-canvas" style="display:none;"></canvas>
+              <div style="position:absolute;inset:0;border:3px solid #1a6b3c;border-radius:8px;pointer-events:none;"></div>
+              <div id="checkin-scan-line"
+                style="position:absolute;left:8px;right:8px;height:2px;background:rgba(26,107,60,0.8);border-radius:2px;animation:scanLine 2s linear infinite;"></div>
+            </div>
+            <div class="mt-2 text-muted small"><i class="bi bi-info-circle me-1"></i>Point camera at the attendee's ticket QR code</div>
+            <button class="btn btn-sm btn-outline-danger mt-2" onclick="stopQRScanner()"><i class="bi bi-x-circle me-1"></i>Close Camera</button>
+          </div>
+
+          <!-- Result panel -->
+          <div id="checkin-result" class="d-none"></div>
+        </div>
+      </div>
+
+      <!-- Registrations list -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <span class="fw-semibold">Registrations <span id="checkin-reg-count" class="badge bg-secondary ms-1">0</span></span>
+          <input type="text" id="checkin-search" class="form-control form-control-sm" style="max-width:200px;" placeholder="Search name / email / code…" oninput="filterCheckinList()">
+        </div>
+        <div class="card-body p-0">
+          <div id="checkin-reg-empty" class="text-center text-muted py-4 small">Select an event to see registrations.</div>
+          <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0 d-none" id="checkin-reg-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Name</th><th>Email</th><th>Code</th><th>Amount</th><th>Status</th><th>Checked In</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="checkin-reg-tbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -405,7 +504,7 @@
           </div>
         </div>
         <div class="col-12 mb-4">
-          <div class="card"><div class="card-header bg-white fw-semibold">"Why Choose WEI" Section</div>
+          <div class="card"><div class="card-header bg-white fw-semibold">"Our Commitment" Section</div>
             <div class="card-body">
               <p class="text-muted small mb-2">Use <strong>H3 headings</strong> for feature titles and paragraphs for descriptions. The numbered bullets are auto-assigned by order.</p>
               <div class="tiptap-wrapper">
@@ -693,8 +792,15 @@
       <div class="col-md-3"><label class="form-label fw-semibold">Status</label>
         <select id="event-status" class="form-select"><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
       </div>
-      <div class="col-md-3 d-flex align-items-end pb-1">
+      <div class="col-md-3 d-flex align-items-end pb-1 gap-3">
         <div class="form-check"><input class="form-check-input" type="checkbox" id="event-isPublished" checked><label class="form-check-label" for="event-isPublished">Published</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="event-isPaid"><label class="form-check-label" for="event-isPaid">Paid</label></div>
+      </div>
+    </div>
+    <div class="row mb-3" id="event-ticket-row" style="display:none!important">
+      <div class="col-md-4"><label class="form-label fw-semibold">Ticket Price</label><input type="number" id="event-ticketPrice" class="form-control" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="col-md-4"><label class="form-label fw-semibold">Currency</label>
+        <select id="event-ticketCurrency" class="form-select"><option value="TZS">TZS</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select>
       </div>
     </div>
     <div class="row mb-3">
@@ -918,6 +1024,44 @@
   </div>
 </div></div></div>
 
+<!-- Gallery Item Modal -->
+<div class="modal fade" id="galleryItemModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="gallery-item-modal-title">Add Photo</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="gallery-item-id">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Photo *</label>
+      <div class="d-flex align-items-center gap-2">
+        <div id="gallery-item-img-preview"></div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="pickGalleryItemImage()"><i class="bi bi-image"></i> Pick from Media</button>
+        <input type="hidden" id="gallery-item-imageUrl">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Description</label>
+      <textarea id="gallery-item-description" class="form-control" rows="2" placeholder="Brief description of this photo..."></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Group / Album</label>
+      <input type="text" id="gallery-item-group" class="form-control" placeholder="e.g. Annual Conference 2024, Community Day..." list="gallery-groups-datalist">
+      <datalist id="gallery-groups-datalist"></datalist>
+      <div class="form-text">Group similar photos together. Leave blank for general gallery.</div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Sort Order</label>
+      <input type="number" id="gallery-item-sortOrder" class="form-control" value="0" min="0">
+    </div>
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="checkbox" id="gallery-item-published" checked>
+      <label class="form-check-label fw-semibold" for="gallery-item-published">Published</label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-primary" onclick="saveGalleryItem()">Save Photo</button>
+  </div>
+</div></div></div>
+
 <div id="toast-container" style="position:fixed;bottom:20px;right:20px;z-index:9999"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -1022,6 +1166,8 @@ window.showPage = function(page, el) {
     case 'events': loadEvents(); break;
     case 'categories': loadCategoryPage(); break;
     case 'partners': loadPartners(); break;
+    case 'gallery': loadGalleryAdmin(); break;
+    case 'checkin': loadCheckinPage(); break;
     case 'team': loadTeam(); break;
     case 'hero': loadHeroSlides(); break;
     case 'about': loadAboutContent(); break;
@@ -1234,8 +1380,17 @@ window.viewDonation = async function(id) {
         <p><b>Status:</b> <span class="badge bg-${x.status==='pending'?'warning text-dark':x.status==='approved'?'success':'danger'}">${x.status}</span></p>
       </div><div class="col-md-6">
         ${x.receiptFile ? (x.receiptFile.toLowerCase().endsWith('.pdf')
-          ? `<p><b>Receipt (PDF):</b><br><iframe src="/uploads/receipts/${x.receiptFile}" width="100%" height="350" style="border:1px solid #dee2e6;border-radius:4px;" title="Donation receipt"></iframe><br><a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-primary mt-2"><i class="bi bi-file-pdf"></i> Open PDF in new tab</a></p>`
-          : `<p><b>Receipt:</b><br><img src="/uploads/receipts/${x.receiptFile}" class="img-fluid rounded" style="max-height:300px;display:block;"><br><a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2"><i class="bi bi-box-arrow-up-right"></i> View full size</a></p>`) : ''}
+          ? `<p><b>Receipt (PDF):</b><br>
+              <iframe src="/uploads/receipts/${x.receiptFile}" width="100%" height="380" style="border:1px solid #dee2e6;border-radius:4px;" title="Donation receipt"></iframe>
+              <br><div class="d-flex gap-2 mt-2">
+                <a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-box-arrow-up-right"></i> Open in new tab</a>
+                <a href="/uploads/receipts/${x.receiptFile}" download class="btn btn-sm btn-primary"><i class="bi bi-download"></i> Download PDF</a>
+              </div></p>`
+          : `<p><b>Receipt:</b><br><img src="/uploads/receipts/${x.receiptFile}" class="img-fluid rounded" style="max-height:300px;display:block;">
+              <br><div class="d-flex gap-2 mt-2">
+                <a href="/uploads/receipts/${x.receiptFile}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-box-arrow-up-right"></i> View full size</a>
+                <a href="/uploads/receipts/${x.receiptFile}" download class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i> Download</a>
+              </div></p>`) : ''}
         ${x.message?`<p><b>Message:</b><br>${x.message}</p>`:''}
       </div></div>`;
     let acts = '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -1349,8 +1504,9 @@ window.openBlogModal = async function(data = null) {
 };
 
 window.editBlog = async function(id) {
-  const d = await apiCall(`/api/blogs/${id}`);
+  const d = await apiCall(`/api/blogs/id/${id}`);
   if (d.success) window.openBlogModal(d.data);
+  else toast('Failed to load blog post', 'danger');
 };
 
 window.saveBlog = async function() {
@@ -1452,7 +1608,7 @@ async function loadEvents() {
   const d = await apiCall('/api/content/events/admin');
   if (d.success) {
     document.getElementById('events-table').innerHTML = d.data.map(e =>
-      `<tr><td>${e.featuredImage?`<img src="${imgUrl(e.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${e.title}</td><td>${new Date(e.eventDate).toLocaleDateString()}</td><td>${e.location||'-'}</td><td><span class="badge bg-${e.status==='upcoming'?'primary':e.status==='ongoing'?'success':e.status==='cancelled'?'danger':'secondary'}">${e.status}</span></td><td><button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent('${e.id}')">Edit</button><button class="btn btn-sm btn-outline-danger" onclick="deleteEvent('${e.id}')">Delete</button></td></tr>`
+      `<tr><td>${e.featuredImage?`<img src="${imgUrl(e.featuredImage)}" height="40" class="rounded">`:'<span class="text-muted">-</span>'}</td><td>${e.title}</td><td>${new Date(e.eventDate).toLocaleDateString()}</td><td>${e.location||'-'}</td><td>${e.isPaid?`<span class="badge bg-success">${e.ticketCurrency||'TZS'} ${Number(e.ticketPrice||0).toLocaleString()}</span>`:'<span class="badge bg-secondary">Free</span>'}</td><td><span class="badge bg-${e.status==='upcoming'?'primary':e.status==='ongoing'?'success':e.status==='cancelled'?'danger':'secondary'}">${e.status}</span></td><td class="text-nowrap"><button class="btn btn-sm btn-outline-primary me-1" onclick="editEvent('${e.id}')">Edit</button>${e.isPaid?`<button class="btn btn-sm btn-outline-success me-1" onclick="goToCheckinForEvent('${e.id}')" title="View registrations & check-in"><i class="bi bi-qr-code-scan"></i></button>`:''}<button class="btn btn-sm btn-outline-danger" onclick="deleteEvent('${e.id}')">Delete</button></td></tr>`
     ).join('') || '<tr><td colspan="6" class="text-center text-muted py-3">No events yet</td></tr>';
   }
 }
@@ -1463,6 +1619,15 @@ window.openEventModal = function(data = null) {
   document.getElementById('event-title').value = data?.title || '';
   document.getElementById('event-status').value = data?.status || 'upcoming';
   document.getElementById('event-isPublished').checked = data?.isPublished !== false;
+  const isPaid = data?.isPaid || false;
+  document.getElementById('event-isPaid').checked = isPaid;
+  const ticketRow = document.getElementById('event-ticket-row');
+  ticketRow.style.removeProperty('display'); ticketRow.style.display = isPaid ? '' : 'none';
+  document.getElementById('event-ticketPrice').value = data?.ticketPrice || '';
+  document.getElementById('event-ticketCurrency').value = data?.ticketCurrency || 'TZS';
+  document.getElementById('event-isPaid').onchange = function() {
+    document.getElementById('event-ticket-row').style.display = this.checked ? '' : 'none';
+  };
   document.getElementById('event-eventDate').value = data?.eventDate ? data.eventDate.split('T')[0] : '';
   document.getElementById('event-endDate').value = data?.endDate ? data.endDate.split('T')[0] : '';
   document.getElementById('event-startTime').value = data?.startTime || '';
@@ -1491,10 +1656,14 @@ window.editEvent = async function(id) {
 
 window.saveEvent = async function() {
   const id = document.getElementById('event-id').value;
+  const isPaid = document.getElementById('event-isPaid').checked;
   const payload = {
     title: document.getElementById('event-title').value,
     status: document.getElementById('event-status').value,
     isPublished: document.getElementById('event-isPublished').checked,
+    isPaid,
+    ticketPrice: isPaid ? (parseFloat(document.getElementById('event-ticketPrice').value) || 0) : 0,
+    ticketCurrency: document.getElementById('event-ticketCurrency').value,
     eventDate: document.getElementById('event-eventDate').value,
     endDate: document.getElementById('event-endDate').value,
     startTime: document.getElementById('event-startTime').value,
@@ -1939,6 +2108,9 @@ async function loadUsers() {
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function escAttr(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
 window.openUserModal = function(idOrNull = null) {
   const data = idOrNull ? usersCache.find(u => String(u.id) === String(idOrNull)) : null;
@@ -2137,7 +2309,7 @@ const SITE_IMAGE_SLOTS = {
     { key: 'home_tile_edu',        label: 'Education Program Tile',          fallback: 'images/img_3_gray.jpg' },
     { key: 'home_tile_health',     label: 'Healthcare Program Tile',         fallback: 'images/img_2_gray.jpg' },
     { key: 'home_tile_livelihood', label: 'Livelihood Program Tile',         fallback: 'images/img_1_gray.jpg' },
-    { key: 'home_features_bg',     label: '"Why Choose WEI" Background',     fallback: 'images/hero_1.jpg' },
+    { key: 'home_features_bg',     label: '"Our Commitment" Background',     fallback: 'images/hero_1.jpg' },
     { key: 'home_support_image',   label: 'Support / Donate Section Image',  fallback: 'images/img_1.jpg' },
   ],
   about: [
@@ -2209,8 +2381,12 @@ async function loadCategories() {
       apiCall('/api/content/site/cause_categories'),
       apiCall('/api/content/site/blog_categories')
     ]);
-    if (cr.success && cr.data?.value) causeCategories = Array.isArray(cr.data.value) ? cr.data.value : causeCategories;
-    if (br.success && br.data?.value) blogCategories = Array.isArray(br.data.value) ? br.data.value : blogCategories;
+    if (cr.success && cr.data?.value) {
+      try { const p = JSON.parse(cr.data.value); if (Array.isArray(p) && p.length) causeCategories = p; } catch(e) {}
+    }
+    if (br.success && br.data?.value) {
+      try { const p = JSON.parse(br.data.value); if (Array.isArray(p) && p.length) blogCategories = p; } catch(e) {}
+    }
   } catch(e) {}
 }
 
@@ -2371,6 +2547,352 @@ function getGalleryData(prefix) {
 function renderGalleryList(prefix, items) {
   document.getElementById(`${prefix}-gallery-list`).innerHTML = '';
   (items || []).forEach(item => appendGalleryItem(prefix, item));
+}
+
+// ==================== GALLERY ADMIN ====================
+async function loadGalleryAdmin() {
+  const d = await apiCall('/api/gallery/admin');
+  const grid  = document.getElementById('gallery-admin-grid');
+  const empty = document.getElementById('gallery-admin-empty');
+
+  if (!d.success || !d.data.length) {
+    grid.innerHTML = '';
+    empty.classList.remove('d-none');
+    document.getElementById('gallery-admin-group-filter').innerHTML = '';
+    return;
+  }
+  empty.classList.add('d-none');
+
+  const groups = [...new Set(d.data.map(i => i.groupName).filter(Boolean))];
+  const filterEl = document.getElementById('gallery-admin-group-filter');
+  filterEl.innerHTML = groups.length
+    ? ['<button class="btn btn-sm btn-outline-secondary active" onclick="filterGalleryGroup(this,\'\')">All</button>',
+       ...groups.map(g => `<button class="btn btn-sm btn-outline-secondary" onclick="filterGalleryGroup(this,'${escHtml(g)}')">${escHtml(g)}</button>`)
+      ].join('')
+    : '';
+
+  grid.innerHTML = d.data.map(item => `
+    <div class="col-md-3 col-sm-4 col-6 mb-3 gallery-admin-item" data-group="${escHtml(item.groupName||'')}">
+      <div class="card h-100">
+        <div style="height:160px;overflow:hidden;background:#eee;border-radius:4px 4px 0 0;">
+          <img src="${escHtml(item.imageUrl)}" style="width:100%;height:100%;object-fit:cover;" alt="">
+        </div>
+        <div class="card-body p-2">
+          ${item.groupName ? `<span class="badge bg-secondary mb-1 d-block text-start" style="font-size:10px;">${escHtml(item.groupName)}</span>` : ''}
+          <p class="small text-muted mb-2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(item.description||'')}">${escHtml(item.description||'No description')}</p>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="editGalleryItem('${item.id}')"><i class="bi bi-pencil"></i> Edit</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteGalleryItem('${item.id}')"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const datalist = document.getElementById('gallery-groups-datalist');
+  if (datalist) datalist.innerHTML = groups.map(g => `<option value="${escHtml(g)}">`).join('');
+}
+
+window.filterGalleryGroup = function(btn, group) {
+  document.querySelectorAll('#gallery-admin-group-filter .btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.gallery-admin-item').forEach(item => {
+    item.style.display = (!group || item.dataset.group === group) ? '' : 'none';
+  });
+};
+
+window.openGalleryItemModal = function(data = null) {
+  document.getElementById('gallery-item-modal-title').textContent = data ? 'Edit Photo' : 'Add Photo';
+  document.getElementById('gallery-item-id').value        = data?.id          || '';
+  document.getElementById('gallery-item-imageUrl').value  = data?.imageUrl    || '';
+  document.getElementById('gallery-item-description').value = data?.description || '';
+  document.getElementById('gallery-item-group').value     = data?.groupName   || '';
+  document.getElementById('gallery-item-sortOrder').value = data?.sortOrder   || 0;
+  document.getElementById('gallery-item-published').checked = data ? !!data.isPublished : true;
+  const preview = document.getElementById('gallery-item-img-preview');
+  preview.innerHTML = data?.imageUrl
+    ? `<img src="${escHtml(data.imageUrl)}" style="height:60px;border-radius:4px;border:1px solid #dee2e6;">`
+    : '';
+  new bootstrap.Modal(document.getElementById('galleryItemModal')).show();
+};
+
+window.pickGalleryItemImage = function() {
+  openMediaPicker('image', (url) => {
+    document.getElementById('gallery-item-imageUrl').value = url;
+    document.getElementById('gallery-item-img-preview').innerHTML =
+      `<img src="${url}" style="height:60px;border-radius:4px;border:1px solid #dee2e6;">`;
+  });
+};
+
+window.editGalleryItem = async function(id) {
+  const d = await apiCall(`/api/gallery/${id}`);
+  if (d.success) window.openGalleryItemModal(d.data);
+  else toast('Failed to load photo', 'danger');
+};
+
+window.saveGalleryItem = async function() {
+  const id       = document.getElementById('gallery-item-id').value;
+  const imageUrl = document.getElementById('gallery-item-imageUrl').value.trim();
+  if (!imageUrl) return toast('Please pick an image', 'danger');
+  const payload = {
+    imageUrl,
+    description: document.getElementById('gallery-item-description').value.trim(),
+    groupName:   document.getElementById('gallery-item-group').value.trim(),
+    sortOrder:   parseInt(document.getElementById('gallery-item-sortOrder').value) || 0,
+    isPublished: document.getElementById('gallery-item-published').checked ? 1 : 0,
+  };
+  const r = await apiCall(id ? `/api/gallery/${id}` : '/api/gallery', id ? 'PUT' : 'POST', payload);
+  if (r.success) {
+    bootstrap.Modal.getInstance(document.getElementById('galleryItemModal')).hide();
+    loadGalleryAdmin();
+    toast('Photo saved!');
+  } else toast(r.message || 'Error saving photo', 'danger');
+};
+
+window.deleteGalleryItem = async function(id) {
+  if (!confirm('Delete this photo?')) return;
+  const r = await apiCall(`/api/gallery/${id}`, 'DELETE');
+  if (r.success) { loadGalleryAdmin(); toast('Photo deleted.', 'warning'); }
+  else toast(r.message || 'Error', 'danger');
+};
+
+// ==================== LOGIN PARTICLE ANIMATION ====================
+(function() {
+  const canvas = document.getElementById('login-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 2.5 + 0.5,
+      dx: (Math.random() - 0.5) * 0.5,
+      dy: (Math.random() - 0.5) * 0.5,
+      alpha: Math.random() * 0.45 + 0.15
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+      ctx.fill();
+      p.x += p.dx; p.y += p.dy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    });
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 90) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(255,255,255,${0.12 * (1 - dist/90)})`;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── Event Check-In ────────────────────────────────────────────────────────────
+
+let checkinAllRegs   = [];
+let checkinStream    = null;
+let checkinScanTimer = null;
+
+function goToCheckinForEvent(eventId) {
+  // Navigate to check-in page and pre-select the event
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const checkinLink = document.querySelector('.nav-link[onclick*="checkin"]');
+  if (checkinLink) checkinLink.classList.add('active');
+  showPage('checkin', checkinLink);
+  // Pre-select after select is populated
+  setTimeout(() => {
+    const sel = document.getElementById('checkin-event-select');
+    if (sel) { sel.value = eventId; loadCheckinRegistrations(); }
+  }, 400);
+}
+
+async function loadCheckinPage() {
+  // Populate event selector with paid events
+  const sel = document.getElementById('checkin-event-select');
+  try {
+    const r = await apiCall('/api/content/events/admin?limit=100');
+    if (r.success) {
+      const paid = r.data.filter(e => e.isPaid);
+      sel.innerHTML = '<option value="">— Select event —</option>'
+        + paid.map(e => `<option value="${e.id}">${escHtml(e.title)}</option>`).join('');
+    }
+  } catch(e) {}
+}
+
+async function loadCheckinRegistrations() {
+  const eventId = document.getElementById('checkin-event-select').value;
+  if (!eventId) { checkinAllRegs = []; renderCheckinTable([]); return; }
+  try {
+    const r = await apiCall(`/api/events/${eventId}/registrations`);
+    if (r.success) {
+      checkinAllRegs = r.data;
+      document.getElementById('checkin-reg-count').textContent = r.data.length;
+      renderCheckinTable(r.data);
+    }
+  } catch(e) {}
+}
+
+function renderCheckinTable(rows) {
+  const tbody = document.getElementById('checkin-reg-tbody');
+  const empty = document.getElementById('checkin-reg-empty');
+  const table = document.getElementById('checkin-reg-table');
+  if (!rows.length) {
+    empty.textContent = 'No registrations yet for this event.';
+    empty.classList.remove('d-none');
+    table.classList.add('d-none');
+    return;
+  }
+  empty.classList.add('d-none');
+  table.classList.remove('d-none');
+  tbody.innerHTML = rows.map(r => `
+    <tr id="reg-row-${escAttr(r.authCode)}" class="${r.checkedIn ? 'table-success' : ''}">
+      <td class="fw-semibold">${escHtml(r.name)}</td>
+      <td class="text-muted small">${escHtml(r.email)}</td>
+      <td><code>${escHtml(r.authCode)}</code></td>
+      <td class="small">${escHtml(r.currency || '')} ${Number(r.amount||0).toLocaleString()}</td>
+      <td><span class="badge ${r.status==='confirmed'?'bg-success':r.status==='cancelled'?'bg-danger':'bg-warning text-dark'}">${escHtml(r.status||'')}</span></td>
+      <td>${r.checkedIn
+        ? `<span class="badge bg-success"><i class="bi bi-check2-circle me-1"></i>In</span><div class="text-muted" style="font-size:10px;">${escHtml(r.checkedInAt||'')}</div>`
+        : '<span class="badge bg-secondary">Pending</span>'}</td>
+      <td>${!r.checkedIn ? `<button class="btn btn-xs btn-outline-success btn-sm py-0" onclick="checkinByCode('${escAttr(r.authCode)}')"><i class="bi bi-box-arrow-in-right"></i></button>` : ''}</td>
+    </tr>`).join('');
+}
+
+function filterCheckinList() {
+  const q = document.getElementById('checkin-search').value.toLowerCase();
+  if (!q) { renderCheckinTable(checkinAllRegs); return; }
+  renderCheckinTable(checkinAllRegs.filter(r =>
+    (r.name||'').toLowerCase().includes(q) ||
+    (r.email||'').toLowerCase().includes(q) ||
+    (r.authCode||'').includes(q)
+  ));
+}
+
+async function checkinSubmit() {
+  const code = document.getElementById('checkin-code-input').value.trim();
+  if (code.length !== 6) { showCheckinResult('error', 'Enter a 6-digit code.'); return; }
+  await checkinByCode(code);
+}
+
+async function checkinByCode(code) {
+  const resultEl = document.getElementById('checkin-result');
+  resultEl.innerHTML = '<div class="text-muted small py-2"><span class="spinner-border spinner-border-sm me-1"></span>Validating…</div>';
+  resultEl.classList.remove('d-none');
+  try {
+    const r = await apiCall('/api/events/checkin', 'POST', { code });
+    const reg = r.data;
+    if (r.success && reg) {
+      const already = reg.alreadyCheckedIn;
+      const color   = already ? 'warning' : 'success';
+      const icon    = already ? 'exclamation-triangle-fill' : 'check-circle-fill';
+      resultEl.innerHTML = `
+        <div class="alert alert-${color} d-flex align-items-start gap-3 mb-0">
+          <i class="bi bi-${icon} fs-3 mt-1"></i>
+          <div>
+            <div class="fw-bold fs-6">${already ? 'Already Checked In' : '✓ Entrance Granted!'}</div>
+            <div><strong>${escHtml(reg.name)}</strong> &bull; ${escHtml(reg.email)}</div>
+            ${reg.event ? `<div class="small mt-1"><i class="bi bi-calendar-event me-1"></i>${escHtml(reg.event.title||'')}</div>` : ''}
+            ${already ? `<div class="small text-muted">Checked in at: ${escHtml(reg.checkedInAt||'')}</div>` : ''}
+          </div>
+        </div>`;
+      document.getElementById('checkin-code-input').value = '';
+      // Update row in table if present
+      const row = document.getElementById(`reg-row-${escAttr(code)}`);
+      if (row) { row.classList.add('table-success'); loadCheckinRegistrations(); }
+    } else {
+      showCheckinResult('danger', r.message || 'Invalid code.');
+    }
+  } catch(e) {
+    showCheckinResult('danger', 'Network error.');
+  }
+}
+
+function showCheckinResult(type, msg) {
+  const el = document.getElementById('checkin-result');
+  el.innerHTML = `<div class="alert alert-${type} mb-0">${escHtml(msg)}</div>`;
+  el.classList.remove('d-none');
+}
+
+// QR Scanner using jsQR
+function toggleQRScanner() {
+  const wrap = document.getElementById('checkin-scanner-wrap');
+  if (wrap.classList.contains('d-none')) { startQRScanner(); }
+  else { stopQRScanner(); }
+}
+
+async function startQRScanner() {
+  const wrap  = document.getElementById('checkin-scanner-wrap');
+  const video = document.getElementById('checkin-video');
+  try {
+    checkinStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = checkinStream;
+    wrap.classList.remove('d-none');
+    // Load jsQR dynamically if not already loaded
+    if (typeof jsQR === 'undefined') {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    scanQRFrame();
+  } catch(e) {
+    toast('Camera access denied or unavailable.', 'danger');
+  }
+}
+
+function stopQRScanner() {
+  if (checkinStream) { checkinStream.getTracks().forEach(t => t.stop()); checkinStream = null; }
+  clearTimeout(checkinScanTimer);
+  document.getElementById('checkin-scanner-wrap').classList.add('d-none');
+}
+
+function scanQRFrame() {
+  const video  = document.getElementById('checkin-video');
+  const canvas = document.getElementById('checkin-canvas');
+  if (!checkinStream || video.readyState < video.HAVE_ENOUGH_DATA) {
+    checkinScanTimer = setTimeout(scanQRFrame, 200);
+    return;
+  }
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const img  = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+  if (code && /^\d{6}$/.test(code.data)) {
+    stopQRScanner();
+    document.getElementById('checkin-code-input').value = code.data;
+    checkinByCode(code.data);
+    return;
+  }
+  checkinScanTimer = setTimeout(scanQRFrame, 150);
 }
 </script>
 </body>

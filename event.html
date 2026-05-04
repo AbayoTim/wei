@@ -20,6 +20,16 @@
     .wei-event-detail-meta .meta-icon { color: var(--wei-primary); font-size: 18px; flex-shrink: 0; margin-top: 2px; }
     .wei-event-detail-meta .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6c757d; margin-bottom: 2px; }
     .wei-event-detail-meta .meta-value { font-weight: 500; font-size: 15px; }
+    .event-ticket-box { background: linear-gradient(135deg, #0d3d28 0%, #1a6b3e 100%); border-radius: 10px; padding: 24px; color: #fff; margin-bottom: 20px; }
+    .event-ticket-box .ticket-price { font-size: 2rem; font-weight: 800; }
+    .event-ticket-box .ticket-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+    .event-pay-btn { background: #fff; color: #1a6b3e; font-weight: 700; border: none; border-radius: 6px; padding: 10px 24px; width: 100%; cursor: pointer; transition: background .2s; margin-top: 14px; }
+    .event-pay-btn:hover { background: #f0faf4; }
+    .event-payment-form { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .event-payment-method { border: 1px solid #dee2e6; border-radius: 8px; padding: 14px; background: #fff; margin-bottom: 10px; cursor: pointer; transition: border-color .2s; }
+    .event-payment-method.selected { border-color: #1a6b3e; background: #f0faf4; }
+    .event-payment-method h6 { font-size: 13px; font-weight: 700; margin: 0 0 6px; }
+    .event-payment-method p { font-size: 12px; margin: 0; color: #555; }
   </style>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta property="og:type" content="website">
@@ -44,6 +54,7 @@
       <li><a href="/about">About Us</a></li>
       <li><a href="/causes">Our Programs</a></li>
       <li class="active"><a href="/events">Events</a></li>
+      <li><a href="/gallery">Gallery</a></li>
       <li><a href="/blog">Blog</a></li>
       <li><a href="/contact">Contact</a></li>
     </ul>
@@ -66,6 +77,7 @@
         <li><a href="/about">About Us</a></li>
         <li><a href="/causes">Our Programs</a></li>
         <li class="active"><a href="/events">Events</a></li>
+        <li><a href="/gallery">Gallery</a></li>
         <li><a href="/blog">Blog</a></li>
         <li><a href="/contact">Contact</a></li>
       </ul>
@@ -155,6 +167,45 @@
                   <div class="meta-label">Location</div>
                   <div class="meta-value" id="event-location-val"></div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Paid event ticket section (shown only for paid events) -->
+            <div id="event-ticket-section" class="d-none">
+              <div class="event-ticket-box">
+                <div class="ticket-label">Event Registration</div>
+                <div class="ticket-price" id="ticket-price-display">TZS 0</div>
+                <div style="font-size:13px;opacity:0.85;margin-top:4px;">per person &bull; ticket sent by email</div>
+                <button class="event-pay-btn" onclick="document.getElementById('event-payment-form-section').classList.toggle('d-none')">
+                  <i class="bi bi-ticket-perforated"></i> Register &amp; Pay
+                </button>
+              </div>
+              <div id="event-payment-form-section" class="event-payment-form d-none">
+                <h6 class="fw-bold mb-3">Registration &amp; Payment</h6>
+                <div id="event-payment-methods-list" class="mb-3"></div>
+                <div class="mb-2"><label class="form-label small fw-semibold">Your Name *</label><input type="text" id="ep-name" class="form-control form-control-sm"></div>
+                <div class="mb-2"><label class="form-label small fw-semibold">Email * <small class="text-muted fw-normal">(ticket will be sent here)</small></label><input type="email" id="ep-email" class="form-control form-control-sm"></div>
+                <div class="mb-2"><label class="form-label small fw-semibold">Phone</label><input type="text" id="ep-phone" class="form-control form-control-sm"></div>
+                <div class="mb-2"><label class="form-label small fw-semibold">Transaction Reference *</label><input type="text" id="ep-txref" class="form-control form-control-sm" placeholder="e.g. M-Pesa reference, bank slip no."></div>
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Payment Receipt *</label>
+                  <input type="file" id="ep-receipt" class="form-control form-control-sm" accept="image/*,.pdf">
+                </div>
+                <div id="ep-error" class="alert alert-danger py-2 small d-none"></div>
+                <div id="ep-success" class="d-none">
+                  <div class="alert alert-success py-3 small">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    <span id="ep-success-msg"></span>
+                  </div>
+                  <div class="text-center p-3 border rounded bg-white">
+                    <div class="text-muted small mb-1">Your entrance code</div>
+                    <div id="ep-auth-code" class="fw-bold" style="font-size:2.2rem;letter-spacing:10px;font-family:monospace;color:#0d3d28;"></div>
+                    <div class="text-muted" style="font-size:11px;margin-top:4px;">Check your email for the full ticket with QR code</div>
+                  </div>
+                </div>
+                <button id="ep-submit-btn" class="btn btn-success btn-sm w-100 fw-semibold mt-2" onclick="submitEventPayment()">
+                  <i class="bi bi-send"></i> Submit &amp; Get Ticket
+                </button>
               </div>
             </div>
 
@@ -319,6 +370,18 @@
       document.getElementById('event-loading').classList.add('d-none');
       document.getElementById('event-body').classList.remove('d-none');
 
+      // Paid event setup
+      if (ev.isPaid) {
+        const currency = ev.ticketCurrency || 'TZS';
+        const price    = Number(ev.ticketPrice || 0).toLocaleString();
+        document.getElementById('ticket-price-display').textContent = `${currency} ${price}`;
+        document.getElementById('event-ticket-section').classList.remove('d-none');
+        document.getElementById('event-ticket-section').dataset.eventId = ev.id;
+        document.getElementById('event-ticket-section').dataset.currency = currency;
+        document.getElementById('event-ticket-section').dataset.price    = ev.ticketPrice || 0;
+        loadEventPaymentMethods();
+      }
+
       loadOtherEvents(ev.id);
     } catch (err) {
       showError();
@@ -329,6 +392,80 @@
     document.getElementById('event-loading').classList.add('d-none');
     document.getElementById('event-error').classList.remove('d-none');
   }
+
+  let selectedPaymentMethod = null;
+
+  async function loadEventPaymentMethods() {
+    try {
+      const res  = await fetch('/api/content/site/payment_methods');
+      const data = await res.json();
+      let methods = [];
+      if (data.success && data.data?.value) {
+        try { methods = JSON.parse(data.data.value); } catch(e) {}
+      }
+      const container = document.getElementById('event-payment-methods-list');
+      if (!methods.length) { container.innerHTML = '<p class="small text-muted">Contact us for payment details.</p>'; return; }
+      container.innerHTML = '<p class="small fw-semibold mb-2">Choose payment method:</p>' + methods.map((m, i) => `
+        <div class="event-payment-method${i===0?' selected':''}" onclick="selectEventPayMethod(this,'${m.id}')" data-method="${m.id}">
+          <h6>${m.title}</h6>
+          <p>${m.details.map(d=>`<strong>${d.label}:</strong> ${d.value}`).join(' &nbsp;|&nbsp; ')}</p>
+        </div>`).join('');
+      selectedPaymentMethod = methods[0]?.id || null;
+    } catch(e) {}
+  }
+
+  window.selectEventPayMethod = function(el, id) {
+    document.querySelectorAll('.event-payment-method').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedPaymentMethod = id;
+  };
+
+  window.submitEventPayment = async function() {
+    const ticketSection = document.getElementById('event-ticket-section');
+    const eventId  = ticketSection.dataset.eventId;
+    const name     = document.getElementById('ep-name').value.trim();
+    const email    = document.getElementById('ep-email').value.trim();
+    const phone    = document.getElementById('ep-phone').value.trim();
+    const txref    = document.getElementById('ep-txref').value.trim();
+    const receipt  = document.getElementById('ep-receipt').files[0];
+    const errEl    = document.getElementById('ep-error');
+    const okEl     = document.getElementById('ep-success');
+    const btn      = document.getElementById('ep-submit-btn');
+    errEl.classList.add('d-none');
+    okEl.classList.add('d-none');
+
+    if (!name || !email || !txref) { errEl.textContent = 'Name, email and transaction reference are required.'; errEl.classList.remove('d-none'); return; }
+    if (!receipt) { errEl.textContent = 'Please attach your payment receipt.'; errEl.classList.remove('d-none'); return; }
+
+    const fd = new FormData();
+    fd.append('name',           name);
+    fd.append('email',          email);
+    fd.append('phone',          phone);
+    fd.append('paymentMethod',  selectedPaymentMethod || 'event_payment');
+    fd.append('transactionRef', txref);
+    fd.append('receipt',        receipt);
+
+    try {
+      btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Submitting...';
+      const res  = await fetch(`/api/events/${eventId}/register`, { method: 'POST', body: fd });
+      const data = await res.json();
+      btn.disabled = false; btn.innerHTML = '<i class="bi bi-send"></i> Submit &amp; Get Ticket';
+      if (data.success) {
+        document.getElementById('ep-success-msg').textContent = data.message || 'Registered! Your ticket has been sent to your email.';
+        document.getElementById('ep-auth-code').textContent = data.data?.authCode || '';
+        okEl.classList.remove('d-none');
+        btn.classList.add('d-none');
+        ['ep-name','ep-email','ep-phone','ep-txref'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('ep-receipt').value = '';
+      } else {
+        errEl.textContent = data.message || 'Submission failed. Please try again.';
+        errEl.classList.remove('d-none');
+      }
+    } catch(e) {
+      btn.disabled = false; btn.innerHTML = '<i class="bi bi-send"></i> Submit &amp; Get Ticket';
+      errEl.textContent = 'Network error. Please try again.'; errEl.classList.remove('d-none');
+    }
+  };
 
   async function loadOtherEvents(currentId) {
     try {

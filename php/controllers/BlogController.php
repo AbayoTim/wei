@@ -83,6 +83,15 @@ class BlogController
         Response::success(Blog::toPublic($blog));
     }
 
+    public static function showById(Request $req): void
+    {
+        Auth::required($req);
+        $id   = $req->param('id');
+        $blog = Blog::find($id);
+        if (!$blog) Response::error('Blog post not found.', 404);
+        Response::success(Blog::toPublic($blog));
+    }
+
     public static function store(Request $req): void
     {
         Auth::required($req);
