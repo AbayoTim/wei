@@ -901,8 +901,8 @@ img {
 }
 
 .wei-partner-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
   border-radius: 20px;
   padding: 24px 28px 20px;
   min-width: 190px;
@@ -914,6 +914,7 @@ img {
   flex-shrink: 0;
   cursor: pointer;
   text-decoration: none;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
   transition: background 0.4s ease, border-color 0.4s ease,
               transform 0.4s cubic-bezier(0.22,0.61,0.36,1),
               box-shadow 0.4s ease;
@@ -953,13 +954,12 @@ img {
 }
 
 .wei-partner-card:hover {
-  background: rgba(255,255,255,0.10);
-  border-color: rgba(0,176,216,0.5);
+  background: #f0fafd;
+  border-color: #00B0D8;
   transform: translateY(-8px) scale(1.04);
   box-shadow:
-    0 20px 50px rgba(0,0,0,0.55),
-    0 0 0 1px rgba(0,176,216,0.25),
-    0 0 30px rgba(0,176,216,0.12);
+    0 20px 40px rgba(0,0,0,0.15),
+    0 0 0 2px rgba(0,176,216,0.3);
   text-decoration: none;
 }
 
@@ -1005,24 +1005,24 @@ img {
 .wei-partner-card .partner-icon-fallback {
   width: 56px;
   height: 56px;
-  background: rgba(0,176,216,0.15);
+  background: rgba(0,176,216,0.12);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--wei-primary);
+  color: #007a96;
   font-size: 26px;
   transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 .wei-partner-card:hover .partner-icon-fallback {
-  background: rgba(0,176,216,0.28);
-  box-shadow: 0 0 20px rgba(0,176,216,0.3);
+  background: rgba(0,176,216,0.22);
+  box-shadow: 0 0 16px rgba(0,176,216,0.25);
   transform: translateY(-2px);
 }
 
 .wei-partner-card .partner-name {
-  color: rgba(255,255,255,0.65);
+  color: #1a3a4a;
   font-size: 12.5px;
   font-weight: 600;
   text-align: center;
@@ -1032,25 +1032,25 @@ img {
 }
 
 .wei-partner-card:hover .partner-name {
-  color: #fff;
+  color: #00697f;
 }
 
 .wei-partner-card .partner-type-badge {
   font-size: 10px;
-  color: rgba(0,176,216,0.8);
+  color: #007a96;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-weight: 600;
-  background: rgba(0,176,216,0.08);
+  background: rgba(0,176,216,0.1);
   padding: 3px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(0,176,216,0.2);
+  border: 1px solid rgba(0,176,216,0.3);
   transition: background 0.4s ease, color 0.4s ease;
 }
 
 .wei-partner-card:hover .partner-type-badge {
   background: rgba(0,176,216,0.18);
-  color: rgba(0,210,255,0.95);
+  color: #005f73;
 }
 
 /* Partner CTA button */
@@ -1060,9 +1060,9 @@ img {
   gap: 10px;
   padding: 13px 36px;
   border-radius: 50px;
-  background: linear-gradient(135deg, rgba(0,176,216,0.18) 0%, rgba(80,60,200,0.18) 100%);
-  border: 1px solid rgba(0,176,216,0.45);
-  color: #fff;
+  background: #fff;
+  border: 2px solid rgba(255,255,255,0.6);
+  color: #00697f;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: .6px;
@@ -1070,7 +1070,7 @@ img {
   position: relative;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
-  box-shadow: 0 0 18px rgba(0,176,216,0.2), 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
 }
 
 /* shimmer on button */
@@ -1091,12 +1091,12 @@ img {
 }
 
 .wei-partner-cta-btn:hover {
-  background: linear-gradient(135deg, rgba(0,176,216,0.35) 0%, rgba(80,60,200,0.35) 100%);
-  border-color: rgba(0,176,216,0.75);
-  color: #fff;
+  background: #f0fafd;
+  border-color: #fff;
+  color: #005f73;
   text-decoration: none;
   transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 0 32px rgba(0,176,216,0.45), 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
 }
 
 .wei-partner-cta-btn:hover::before {
