@@ -457,54 +457,6 @@ img {
   color: rgba(255,255,255,0.9);
 }
 
-/* Tanzania flag diagonal design inside hero */
-/* The Tanzania flag has: green (top-left), yellow/black/yellow diagonal band, blue (bottom-right) */
-
-/* Green triangle — top-left corner */
-.wei-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 220px 180px 0 0;
-  border-color: rgba(30,181,58,0.45) transparent transparent transparent;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* Blue triangle — bottom-right corner */
-.wei-hero::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 0 220px 180px;
-  border-color: transparent transparent rgba(0,163,221,0.45) transparent;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* Diagonal band: yellow, black, yellow — runs from bottom-left to top-right */
-.wei-hero-flag-band {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(
-    to top right,
-    transparent 38%,
-    rgba(252,209,22,0.55) 38%, rgba(252,209,22,0.55) 41%,
-    rgba(0,0,0,0.55)     41%, rgba(0,0,0,0.55)     59%,
-    rgba(252,209,22,0.55) 59%, rgba(252,209,22,0.55) 62%,
-    transparent 62%
-  );
-}
 
 .wei-hero-dots {
   position: absolute;
@@ -863,7 +815,7 @@ img {
    PARTNERS — MARQUEE
    ============================================================ */
 .wei-partners-marquee-section {
-  background: linear-gradient(150deg, #071223 0%, #0d2137 55%, #0a1a2e 100%);
+  background: #00B0D8;
   padding: 72px 0 64px;
   overflow: hidden;
   position: relative;
